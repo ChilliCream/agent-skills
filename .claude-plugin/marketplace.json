@@ -22,6 +22,7 @@
         "./skills/graphql-schema-design",
         "./skills/plan-with-docs",
         "./skills/query",
+        "./skills/relay-best-practices",
         "./skills/snapshot-test",
         "./skills/stack-init"
       ]
