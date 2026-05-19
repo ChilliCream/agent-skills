@@ -2,15 +2,14 @@
 name: mock-to-contract
 description: >-
   Turn a mock-data React+Relay feature into properly componentized code
-  backed by colocated GraphQL fragments and a clean schema-extension contract
-  for the backend team. Use when the user wants to convert a mocked UI into
-  a backend contract, walk the component hierarchy of a feature, replace
-  mock/hardcoded data with fragments, componentize a page for Relay,
-  fragmentize a feature, spec a feature for the backend team, or build a
-  schema contract from the UI. Triggers on "mock to contract", "turn this
-  mock into a contract", "walk the component hierarchy", "componentize this
-  page", "fragmentize", "spec this feature for the backend", or "schema-ify
-  this feature".
+  backed by colocated GraphQL fragments and a clean schema contract for the
+  backend team. Use when the user wants to convert a mocked UI into a backend
+  contract, walk the component hierarchy of a feature, replace mock/hardcoded
+  data with fragments, componentize a page for Relay, fragmentize a feature,
+  spec a feature for the backend team, or build a schema contract from the UI.
+  Triggers on "mock to contract", "turn this mock into a contract", "walk the
+  component hierarchy", "componentize this page", "fragmentize", "spec this
+  feature for the backend", or "schema-ify this feature".
 ---
 
 # Mock to contract: walk a feature, fragmentize, hand the schema to the backend
@@ -19,8 +18,8 @@ This skill takes a mocked-up feature — a React page with hardcoded data and
 inline JSX — and turns it into the canonical Relay-best-practices shape:
 small components, each declaring its own colocated GraphQL fragment, all
 spreading into a single preloaded query at the route boundary, all backed by
-a schema-extension file that doubles as the contract handed to the backend
-team.
+additions written directly into `schema.graphql` that double as the contract
+handed to the backend team.
 
 Use this skill the moment a user mocks up a new page or section and is ready
 to wire it for real. Do not invoke for one-off fragment additions to an
@@ -117,11 +116,8 @@ hoisted to a module-level const.
    find a type that semantically matches the entity the component renders.
 2. If you find one, use it directly.
 3. If you find a partial match — the type exists but does not yet expose the
-   field you need — extend the type in the schema-extension file. Find the
-   `schemaExtensions` directory in `relay.config.json`; new types and field
-   additions go there.
-4. If no matching type exists, introduce a new type in the schema-extension
-   file.
+   field you need — add the field directly to the type in `schema.graphql`.
+4. If no matching type exists, add the new type directly to `schema.graphql`.
 
 #### Field and type quality bar
 
@@ -182,9 +178,11 @@ compiler). The contract must include:
 See [graphql-schema-design/references/errors.md](../graphql-schema-design/references/errors.md)
 and [mutations.md](../graphql-schema-design/references/mutations.md).
 
-When you cannot wire `useMutation` (no Mutation root yet), leave the
-component's onClick handler as a `// TODO` that names the mutation it will
-call. Do not invent local state to fake mutation behavior.
+Add the mutation, its Input, Payload, and error types directly to
+`schema.graphql`. When the component's `useMutation` cannot be wired yet
+(e.g. no resolver behind it), leave the onClick handler as a `// TODO` that
+names the mutation it will call. Do not invent local state to fake mutation
+behavior.
 
 ### After the walk
 
@@ -203,9 +201,9 @@ call. Do not invent local state to fake mutation behavior.
 
 After the walk completes and compilation is green, **invoke the
 [graphql-schema-design](../graphql-schema-design/SKILL.md) skill in Review
-mode** against the schema-extension file the walk produced:
+mode** against `schema.graphql`:
 
-> /graphql-schema-design review @<path-to-extension-file>
+> /graphql-schema-design review @schema.graphql
 
 Treat the resulting findings as gate items:
 
@@ -213,8 +211,8 @@ Treat the resulting findings as gate items:
   and tsc, then come back for re-review of the changed area.
 - **Warnings** (acknowledge): present each one to the user with the
   trade-off explicit. If the user accepts the trade-off, document the
-  decision in the schema-extension file as a `# Decision: …` block or in
-  the description of the affected type. Do not silently dismiss warnings.
+  decision in `schema.graphql` as a `# Decision: …` comment on the affected
+  type. Do not silently dismiss warnings.
 - **Good**: leave alone — the review confirms patterns to keep.
 
 Iterate `walk → review → apply → re-review` until the only remaining items
@@ -284,7 +282,7 @@ Walking it:
    nodes { id ... ...EventCard_event } } }` and `viewer { ... }`, plus
    `...CreateEventDialog_query`. Wires `useQueryLoader` in App.
 9. Compile + tsc clean.
-10. **Review:** run `/graphql-schema-design review @client-schema/extensions.graphql`.
+10. **Review:** run `/graphql-schema-design review @schema.graphql`.
     Apply issues (unbounded lists → connections, Stage 6a on mutations,
     symmetric mutations, drop probe fields). Reconcile warnings with the
     user. Re-compile, done.
