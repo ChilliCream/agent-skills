@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.Ddd.Application\Reference.Ddd.Application.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.Catalog\Reference.Ddd.Catalog.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.Ordering\Reference.Ddd.Ordering.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.SharedKernel\Reference.Ddd.SharedKernel.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="HotChocolate.Types" />
+    <PackageReference Include="HotChocolate.Types.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Mocha.Mediator" />
+  </ItemGroup>
+</Project>

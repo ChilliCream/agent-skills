@@ -1,0 +1,30 @@
+{
+  "name": "chillicream-agent-skills",
+  "owner": {
+    "name": "ChilliCream",
+    "url": "https://chillicream.com"
+  },
+  "metadata": {
+    "description": "Agent skills for the ChilliCream ecosystem: HotChocolate, Banana Cake Pop, Green Donut, Mocha.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "chillicream-skills",
+      "description": "ChilliCream skills for GraphQL, message bus, batching, and tooling work.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/command",
+        "./skills/dataloader",
+        "./skills/discuss",
+        "./skills/graphql-backend",
+        "./skills/graphql-schema-design",
+        "./skills/plan-with-docs",
+        "./skills/query",
+        "./skills/snapshot-test",
+        "./skills/stack-init"
+      ]
+    }
+  ]
+}

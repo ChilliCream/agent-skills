@@ -1,0 +1,61 @@
+# Schema proposal. This is the reviewed API contract the code-first types implement.
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+interface Node {
+  id: ID!
+}
+
+type Author implements Node {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  books(first: Int, after: String, last: Int, before: String): AuthorBooksConnection
+}
+
+type Book implements Node {
+  id: ID!
+  title: String!
+  publicationYear: Int
+  isbn: String
+  createdAt: DateTime!
+  author: Author
+}
+
+type Query {
+  authorById(id: ID!): Author
+  bookById(id: ID!): Book
+}
+
+type Mutation {
+  createAuthor(input: CreateAuthorInput!): CreateAuthorPayload!
+  createBook(input: CreateBookInput!): CreateBookPayload!
+}
+
+input CreateAuthorInput {
+  name: String!
+}
+
+type CreateAuthorPayload {
+  author: Author
+  errors: [CreateAuthorError!]
+}
+
+union CreateAuthorError = DuplicateAuthorNameError | DomainValidationError | UnauthorizedError
+
+input CreateBookInput {
+  authorId: ID!
+  title: String!
+  publicationYear: Int
+  isbn: String
+}
+
+type CreateBookPayload {
+  book: Book
+  errors: [CreateBookError!]
+}
+
+union CreateBookError = AuthorNotFoundError | DuplicateBookIsbnError | DomainValidationError | UnauthorizedError

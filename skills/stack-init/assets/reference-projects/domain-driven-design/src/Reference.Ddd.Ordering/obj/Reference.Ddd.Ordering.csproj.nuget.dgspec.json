@@ -1,0 +1,194 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.Ordering/Reference.Ddd.Ordering.csproj": {}
+  },
+  "projects": {
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.Ordering/Reference.Ddd.Ordering.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.Ordering/Reference.Ddd.Ordering.csproj",
+        "projectName": "Reference.Ddd.Ordering",
+        "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.Ordering/Reference.Ddd.Ordering.csproj",
+        "packagesPath": "/Users/pascalsenn/.nuget/packages/",
+        "outputPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.Ordering/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/Users/pascalsenn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/Reference.Ddd.SharedKernel.csproj": {
+                "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/Reference.Ddd.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "centralPackageVersions": {
+            "GreenDonut": "16.0.0",
+            "GreenDonut.Data": "16.0.0",
+            "GreenDonut.Data.EntityFramework": "16.0.0",
+            "HotChocolate.AspNetCore": "16.0.0",
+            "HotChocolate.AspNetCore.Authorization": "16.0.0",
+            "HotChocolate.Data.EntityFramework": "16.0.0",
+            "HotChocolate.Types": "16.0.0",
+            "HotChocolate.Types.Analyzers": "16.0.0",
+            "Microsoft.AspNetCore.Authorization": "9.0.4",
+            "Microsoft.EntityFrameworkCore": "9.0.4",
+            "Microsoft.EntityFrameworkCore.InMemory": "9.0.4",
+            "Microsoft.EntityFrameworkCore.Sqlite": "9.0.4",
+            "Microsoft.Extensions.Configuration.Abstractions": "9.0.4",
+            "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.4",
+            "Microsoft.NET.Test.Sdk": "17.12.0",
+            "Mocha.Analyzers": "16.0.0",
+            "Mocha.Mediator": "16.0.0",
+            "xunit": "2.9.2",
+            "xunit.runner.visualstudio": "2.8.2"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/Reference.Ddd.SharedKernel.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/Reference.Ddd.SharedKernel.csproj",
+        "projectName": "Reference.Ddd.SharedKernel",
+        "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/Reference.Ddd.SharedKernel.csproj",
+        "packagesPath": "/Users/pascalsenn/.nuget/packages/",
+        "outputPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/domain-driven-design/src/Reference.Ddd.SharedKernel/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/Users/pascalsenn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "centralPackageVersions": {
+            "GreenDonut": "16.0.0",
+            "GreenDonut.Data": "16.0.0",
+            "GreenDonut.Data.EntityFramework": "16.0.0",
+            "HotChocolate.AspNetCore": "16.0.0",
+            "HotChocolate.AspNetCore.Authorization": "16.0.0",
+            "HotChocolate.Data.EntityFramework": "16.0.0",
+            "HotChocolate.Types": "16.0.0",
+            "HotChocolate.Types.Analyzers": "16.0.0",
+            "Microsoft.AspNetCore.Authorization": "9.0.4",
+            "Microsoft.EntityFrameworkCore": "9.0.4",
+            "Microsoft.EntityFrameworkCore.InMemory": "9.0.4",
+            "Microsoft.EntityFrameworkCore.Sqlite": "9.0.4",
+            "Microsoft.Extensions.Configuration.Abstractions": "9.0.4",
+            "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.4",
+            "Microsoft.NET.Test.Sdk": "17.12.0",
+            "Mocha.Analyzers": "16.0.0",
+            "Mocha.Mediator": "16.0.0",
+            "xunit": "2.9.2",
+            "xunit.runner.visualstudio": "2.8.2"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

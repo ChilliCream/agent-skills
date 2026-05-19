@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.Ddd.Catalog\Reference.Ddd.Catalog.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.Ordering\Reference.Ddd.Ordering.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.SharedKernel\Reference.Ddd.SharedKernel.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GreenDonut" />
+    <PackageReference Include="GreenDonut.Data" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="GreenDonut.Data.EntityFramework" />
+    <PackageReference Include="HotChocolate.Types.Analyzers" />
+    <PackageReference Include="HotChocolate.Data.EntityFramework" />
+    <PackageReference Include="Mocha.Analyzers" PrivateAssets="all" />
+    <PackageReference Include="Mocha.Mediator" />
+  </ItemGroup>
+</Project>

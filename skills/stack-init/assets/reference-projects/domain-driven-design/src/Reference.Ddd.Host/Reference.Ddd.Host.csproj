@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.Ddd.Application\Reference.Ddd.Application.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.GraphQL\Reference.Ddd.GraphQL.csproj" />
+    <ProjectReference Include="..\Reference.Ddd.Infrastructure\Reference.Ddd.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
+</Project>

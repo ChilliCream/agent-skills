@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "I3vfGkChUaQ=",
+  "success": true,
+  "projectFilePath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/graphql-first/src/Reference.GraphQLFirst.Domain/Reference.GraphQLFirst.Domain.csproj",
+  "expectedPackageFiles": [
+    "/Users/pascalsenn/.nuget/packages/microsoft.netcore.app.ref/9.0.14/microsoft.netcore.app.ref.9.0.14.nupkg.sha512",
+    "/Users/pascalsenn/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.14/microsoft.aspnetcore.app.ref.9.0.14.nupkg.sha512"
+  ],
+  "logs": []
+}

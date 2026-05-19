@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.Hexagonal.Core\Reference.Hexagonal.Core.csproj" />
+    <ProjectReference Include="..\Reference.Hexagonal.Adapters.GraphQL\Reference.Hexagonal.Adapters.GraphQL.csproj" />
+    <ProjectReference Include="..\Reference.Hexagonal.Adapters.Persistence\Reference.Hexagonal.Adapters.Persistence.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" Version="16.0.3" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="16.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.8" />
+    <PackageReference Include="Mocha.Mediator" Version="16.0.3" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>

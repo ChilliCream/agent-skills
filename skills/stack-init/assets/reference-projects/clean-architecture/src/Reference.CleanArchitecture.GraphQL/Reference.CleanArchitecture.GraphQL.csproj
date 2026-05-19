@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.CleanArchitecture.Application\Reference.CleanArchitecture.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GreenDonut" />
+    <PackageReference Include="HotChocolate" />
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="HotChocolate.Types.Analyzers" PrivateAssets="all" OutputItemType="Analyzer" />
+    <PackageReference Include="Mocha.Mediator" />
+  </ItemGroup>
+</Project>

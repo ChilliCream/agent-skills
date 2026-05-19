@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Mocha.Mediator" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Reference.GraphQLFirst.Application\Reference.GraphQLFirst.Application.csproj" />
+    <ProjectReference Include="..\Reference.GraphQLFirst.GraphQL\Reference.GraphQLFirst.GraphQL.csproj" />
+    <ProjectReference Include="..\Reference.GraphQLFirst.Infrastructure\Reference.GraphQLFirst.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,324 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Infrastructure/Reference.CleanArchitecture.Infrastructure.csproj": {}
+  },
+  "projects": {
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/Reference.CleanArchitecture.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/Reference.CleanArchitecture.Application.csproj",
+        "projectName": "Reference.CleanArchitecture.Application",
+        "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/Reference.CleanArchitecture.Application.csproj",
+        "packagesPath": "/Users/pascalsenn/.nuget/packages/",
+        "outputPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/Users/pascalsenn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/Reference.CleanArchitecture.Domain.csproj": {
+                "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/Reference.CleanArchitecture.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "GreenDonut": {
+              "target": "Package",
+              "version": "[16.0.3, )",
+              "versionCentrallyManaged": true
+            },
+            "GreenDonut.Data.EntityFramework": {
+              "target": "Package",
+              "version": "[16.0.3, )",
+              "versionCentrallyManaged": true
+            },
+            "HotChocolate": {
+              "target": "Package",
+              "version": "[16.0.3, )",
+              "versionCentrallyManaged": true
+            },
+            "HotChocolate.Types.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[16.0.3, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.AspNetCore.Authorization": {
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "versionCentrallyManaged": true
+            },
+            "Mocha.Mediator": {
+              "target": "Package",
+              "version": "[16.0.3, )",
+              "versionCentrallyManaged": true
+            }
+          },
+          "centralPackageVersions": {
+            "GreenDonut": "16.0.3",
+            "GreenDonut.Data.EntityFramework": "16.0.3",
+            "HotChocolate": "16.0.3",
+            "HotChocolate.AspNetCore": "16.0.3",
+            "HotChocolate.AspNetCore.Authorization": "16.0.3",
+            "HotChocolate.Types.Analyzers": "16.0.3",
+            "Microsoft.AspNetCore.Authorization": "9.0.16",
+            "Microsoft.EntityFrameworkCore": "9.0.16",
+            "Microsoft.EntityFrameworkCore.InMemory": "9.0.16",
+            "Microsoft.EntityFrameworkCore.Sqlite": "9.0.16",
+            "Microsoft.NET.Test.Sdk": "18.5.1",
+            "Mocha.Mediator": "16.0.3",
+            "xunit": "2.9.3",
+            "xunit.runner.visualstudio": "2.8.2"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/Reference.CleanArchitecture.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/Reference.CleanArchitecture.Domain.csproj",
+        "projectName": "Reference.CleanArchitecture.Domain",
+        "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/Reference.CleanArchitecture.Domain.csproj",
+        "packagesPath": "/Users/pascalsenn/.nuget/packages/",
+        "outputPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/Users/pascalsenn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "centralPackageVersions": {
+            "GreenDonut": "16.0.3",
+            "GreenDonut.Data.EntityFramework": "16.0.3",
+            "HotChocolate": "16.0.3",
+            "HotChocolate.AspNetCore": "16.0.3",
+            "HotChocolate.AspNetCore.Authorization": "16.0.3",
+            "HotChocolate.Types.Analyzers": "16.0.3",
+            "Microsoft.AspNetCore.Authorization": "9.0.16",
+            "Microsoft.EntityFrameworkCore": "9.0.16",
+            "Microsoft.EntityFrameworkCore.InMemory": "9.0.16",
+            "Microsoft.EntityFrameworkCore.Sqlite": "9.0.16",
+            "Microsoft.NET.Test.Sdk": "18.5.1",
+            "Mocha.Mediator": "16.0.3",
+            "xunit": "2.9.3",
+            "xunit.runner.visualstudio": "2.8.2"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Infrastructure/Reference.CleanArchitecture.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Infrastructure/Reference.CleanArchitecture.Infrastructure.csproj",
+        "projectName": "Reference.CleanArchitecture.Infrastructure",
+        "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Infrastructure/Reference.CleanArchitecture.Infrastructure.csproj",
+        "packagesPath": "/Users/pascalsenn/.nuget/packages/",
+        "outputPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "centralPackageVersionsManagementEnabled": true,
+        "configFilePaths": [
+          "/Users/pascalsenn/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/Reference.CleanArchitecture.Application.csproj": {
+                "projectPath": "/Users/pascalsenn/kot/agent-skills/skills/stack-init/assets/reference-projects/clean-architecture/src/Reference.CleanArchitecture.Application/Reference.CleanArchitecture.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "versionCentrallyManaged": true
+            },
+            "Microsoft.EntityFrameworkCore.Sqlite": {
+              "target": "Package",
+              "version": "[9.0.16, )",
+              "versionCentrallyManaged": true
+            }
+          },
+          "centralPackageVersions": {
+            "GreenDonut": "16.0.3",
+            "GreenDonut.Data.EntityFramework": "16.0.3",
+            "HotChocolate": "16.0.3",
+            "HotChocolate.AspNetCore": "16.0.3",
+            "HotChocolate.AspNetCore.Authorization": "16.0.3",
+            "HotChocolate.Types.Analyzers": "16.0.3",
+            "Microsoft.AspNetCore.Authorization": "9.0.16",
+            "Microsoft.EntityFrameworkCore": "9.0.16",
+            "Microsoft.EntityFrameworkCore.InMemory": "9.0.16",
+            "Microsoft.EntityFrameworkCore.Sqlite": "9.0.16",
+            "Microsoft.NET.Test.Sdk": "18.5.1",
+            "Mocha.Mediator": "16.0.3",
+            "xunit": "2.9.3",
+            "xunit.runner.visualstudio": "2.8.2"
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.14, 9.0.14]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

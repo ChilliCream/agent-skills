@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)yarp.reverseproxy/2.3.0/buildTransitive/net8.0/Yarp.ReverseProxy.targets" Condition="Exists('$(NuGetPackageRoot)yarp.reverseproxy/2.3.0/buildTransitive/net8.0/Yarp.ReverseProxy.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.options/9.0.16/buildTransitive/net8.0/Microsoft.Extensions.Options.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.options/9.0.16/buildTransitive/net8.0/Microsoft.Extensions.Options.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/9.0.16/buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/9.0.16/buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets')" />
+    <Import Project="$(NuGetPackageRoot)hotchocolate.aspnetcore/16.0.3/build/HotChocolate.AspNetCore.targets" Condition="Exists('$(NuGetPackageRoot)hotchocolate.aspnetcore/16.0.3/build/HotChocolate.AspNetCore.targets')" />
+  </ImportGroup>
+</Project>

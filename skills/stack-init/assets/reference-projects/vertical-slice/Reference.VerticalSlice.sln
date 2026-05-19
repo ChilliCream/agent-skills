@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reference.VerticalSlice", "src\Reference.VerticalSlice\Reference.VerticalSlice.csproj", "{2EBD60E2-DF09-40B5-917E-699286817E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reference.VerticalSlice.Tests", "test\Reference.VerticalSlice.Tests\Reference.VerticalSlice.Tests.csproj", "{674CB4AE-5446-4656-9126-E034473DFD07}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {2EBD60E2-DF09-40B5-917E-699286817E76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {2EBD60E2-DF09-40B5-917E-699286817E76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {2EBD60E2-DF09-40B5-917E-699286817E76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {2EBD60E2-DF09-40B5-917E-699286817E76}.Release|Any CPU.Build.0 = Release|Any CPU
+        {674CB4AE-5446-4656-9126-E034473DFD07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {674CB4AE-5446-4656-9126-E034473DFD07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {674CB4AE-5446-4656-9126-E034473DFD07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {674CB4AE-5446-4656-9126-E034473DFD07}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+EndGlobal
