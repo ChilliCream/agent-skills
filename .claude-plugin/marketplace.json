@@ -20,6 +20,7 @@
         "./skills/discuss",
         "./skills/graphql-backend",
         "./skills/graphql-schema-design",
+        "./skills/mock-to-contract",
         "./skills/plan-with-docs",
         "./skills/query",
         "./skills/relay-best-practices",
