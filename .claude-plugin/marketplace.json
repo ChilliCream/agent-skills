@@ -22,6 +22,7 @@
         "./skills/graphql-schema-design",
         "./skills/mock-to-contract",
         "./skills/plan-with-docs",
+        "./skills/prototype-feature",
         "./skills/query",
         "./skills/relay-best-practices",
         "./skills/snapshot-test",
