@@ -50,7 +50,6 @@ Draft the schema changes in SDL notation. For each new or modified type, mutatio
    - [Error handling](references/errors.md) — typed union errors and the shared `Error` interface
    - [Type design](references/types.md) — abstract types, shared types, authorization exposure
    - [Schema evolution](references/evolution.md) — safe vs dangerous vs breaking changes
-   - [HotChocolate v16](references/hotchocolate.md) — framework-specific patterns (when the project uses HotChocolate)
 
 Present the SDL proposal clearly, grouped by: new types, modified types, new queries, new mutations.
 
@@ -59,25 +58,30 @@ Present the SDL proposal clearly, grouped by: new types, modified types, new que
 This is the most important step. Challenge every design decision like a thorough API reviewer. Do NOT just propose and move on. Push back on:
 
 **Nullability:**
+
 - "Why is this field nullable? What does `null` mean to the client?"
 - "This is non-null — are you certain you can always resolve it? What about partial failures?"
 - "This list is `[T]` — can it contain nulls? Should it be `[T!]` or `[T!]!`?"
 
 **Type sharing & coupling:**
+
 - "This reuses type X from a different domain — they will diverge. Should this be a separate type?"
 - "This input type is shared across mutations — what happens when one mutation needs an extra field?"
 
 **Mutation design:**
+
 - "This mutation is too broad — it updates 5 fields. What action is the client actually performing?"
 - "This is a boolean toggle — should these be two separate mutations (enable/disable)?"
 - "Where is the error type? What can go wrong?"
 
 **Field design:**
+
 - "Boolean argument — should this be an enum? Will there be a third state?"
 - "This is a bare list — will it grow unbounded? Should it be a connection?"
 - "This field name is generic — will it collide when the type is extended?"
 
 **Evolution:**
+
 - "Does this replace an existing field? Where is the deprecation?"
 - "Can this type be extended later without breaking changes?"
 - "Are you making a non-null commitment you might regret?"
@@ -135,6 +139,7 @@ For each added, modified, or removed schema element, check against every applica
 Classify each finding:
 
 **Issues** — Rule violations that should be fixed before merging:
+
 - Naming convention violations
 - Missing error types on mutations
 - Breaking changes without a deprecation path
@@ -142,12 +147,14 @@ Classify each finding:
 - Non-null fields that may not always resolve
 
 **Warnings** — Trade-offs the author should explicitly acknowledge:
+
 - Nullable fields without a documented reason
 - Shared types across domains
 - Broad mutations that could be split
 - Fields that constrain future evolution
 
 **Good** — Patterns done well (reinforce good habits):
+
 - Consistent naming
 - Thoughtful nullability choices
 - Proper connection pagination
@@ -199,17 +206,12 @@ These principles guide both modes. They are non-negotiable.
 
 These files contain the detailed rules, decision trees, and examples. They are loaded on-demand — only read what is relevant to the current task.
 
-| Reference | When to load |
-|---|---|
-| [references/naming.md](references/naming.md) | Any new type, field, enum, or argument |
-| [references/mutations.md](references/mutations.md) | Any new or modified mutation |
-| [references/nullability.md](references/nullability.md) | Any field nullability decision |
-| [references/connections.md](references/connections.md) | Any list field or collection |
-| [references/errors.md](references/errors.md) | Any mutation or error handling |
-| [references/types.md](references/types.md) | Any new type, interface, union, or enum |
-| [references/evolution.md](references/evolution.md) | Any modification to existing schema |
-| [references/hotchocolate.md](references/hotchocolate.md) | Implementation in HotChocolate v16 projects |
-
-## Related skills
-
-- [`graphql-backend`](../graphql-backend/SKILL.md) — implementation counterpart. Once the design is approved here, hand off to `graphql-backend` to translate the SDL into HotChocolate resolvers, types, and DataLoaders.
+| Reference                                              | When to load                            |
+| ------------------------------------------------------ | --------------------------------------- |
+| [references/naming.md](references/naming.md)           | Any new type, field, enum, or argument  |
+| [references/mutations.md](references/mutations.md)     | Any new or modified mutation            |
+| [references/nullability.md](references/nullability.md) | Any field nullability decision          |
+| [references/connections.md](references/connections.md) | Any list field or collection            |
+| [references/errors.md](references/errors.md)           | Any mutation or error handling          |
+| [references/types.md](references/types.md)             | Any new type, interface, union, or enum |
+| [references/evolution.md](references/evolution.md)     | Any modification to existing schema     |
