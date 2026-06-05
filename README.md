@@ -1,6 +1,6 @@
 # ChilliCream Agent Skills
 
-Agent skills for the ChilliCream ecosystem — HotChocolate, Nitro, Green Donut, Mocha, and friends.
+Agent skills for the ChilliCream ecosystem - HotChocolate, Nitro, Green Donut, Mocha, and friends.
 
 Skills follow the [Agent Skills open standard](https://agentskills.io/specification) and work with Claude Code, the Claude API, and any other compatible agent runtime.
 
@@ -43,7 +43,7 @@ The rules are framework-agnostic GraphQL design conventions, illustrated with a 
 npx skills add ChilliCream/agent-skills
 ```
 
-This pulls the skills into your agent's skills directory. Works with any [Agent Skills](https://agentskills.io/specification)–compatible runtime.
+This pulls the skills into your agent's skills directory. Works with any [Agent Skills](https://agentskills.io/specification)-compatible runtime.
 
 ### Anywhere else
 
