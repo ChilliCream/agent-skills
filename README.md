@@ -1,6 +1,6 @@
 # ChilliCream Agent Skills
 
-Agent skills for the ChilliCream ecosystem — HotChocolate, Banana Cake Pop, Green Donut, Mocha, and friends.
+Agent skills for the ChilliCream ecosystem — HotChocolate, Nitro, Green Donut, Mocha, and friends.
 
 Skills follow the [Agent Skills open standard](https://agentskills.io/specification) and work with Claude Code, the Claude API, and any other compatible agent runtime.
 
