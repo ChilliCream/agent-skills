@@ -37,6 +37,14 @@ The rules are framework-agnostic GraphQL design conventions, illustrated with a 
 /plugin install chillicream-skills@chillicream-agent-skills
 ```
 
+### `skills` CLI (via npx)
+
+```bash
+npx skills add ChilliCream/agent-skills
+```
+
+This pulls the skills into your agent's skills directory. Works with any [Agent Skills](https://agentskills.io/specification)–compatible runtime.
+
 ### Anywhere else
 
 Copy `skills/<name>/` into whatever directory your agent loads skills from. The format is portable across compliant clients.
@@ -49,4 +57,4 @@ Otherwise, read [AGENTS.md](./AGENTS.md) for the rules and the checklist.
 
 ## License
 
-TBD.
+MIT
