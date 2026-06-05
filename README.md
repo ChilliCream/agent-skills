@@ -54,7 +54,3 @@ Copy `skills/<name>/` into whatever directory your agent loads skills from. The 
 The fastest path: open this folder in Claude Code and say _"I want to write a new skill for X."_ The bundled local [`skill-author`](.claude/skills/skill-author/SKILL.md) skill will auto-load and walk you through the conventions.
 
 Otherwise, read [AGENTS.md](./AGENTS.md) for the rules and the checklist.
-
-## License
-
-MIT
