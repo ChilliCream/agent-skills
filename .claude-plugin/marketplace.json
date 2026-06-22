@@ -15,7 +15,9 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./skills/graphql-schema-design"
+        "./skills/graphql-schema-design",
+        "./skills/prototype-feature",
+        "./skills/prototype-to-contract"
       ]
     }
   ]
