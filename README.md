@@ -19,6 +19,18 @@ skills/
 
 ## Available skills
 
+### [`prototype-feature`](skills/prototype-feature/SKILL.md)
+
+Build a clickable local-only frontend prototype before backend or schema work exists. The skill keeps the prototype aligned with the existing app, uses realistic product-domain mock data, preserves one-entity component boundaries, and models user actions as mutation-shaped local hooks.
+
+Fire it with phrases like _"prototype this feature"_, _"mock up this page"_, _"wireframe this view"_, _"just build the UI"_, _"no backend yet"_, or _"no GraphQL yet"_.
+
+### [`prototype-to-contract`](skills/prototype-to-contract/SKILL.md)
+
+Convert a local-only prototype into GraphQL-client-backed component fragments and a backend contract. The skill replaces rendered mock fields with colocated fragments, turns local action hooks into schema mutations, preserves data-masked component boundaries, and writes schema contract SDL for the backend team.
+
+Fire it with phrases like _"prototype to contract"_, _"mock to contract"_, _"turn this prototype into a contract"_, _"fragmentize this page"_, _"wire this mocked page to GraphQL"_, or _"spec this feature for the backend"_.
+
 ### [`graphql-schema-design`](skills/graphql-schema-design/SKILL.md)
 
 Design and review GraphQL schema changes. The skill acts as a senior API architect that produces SDL proposals and design feedback — it does not write implementation code. It runs in two modes:
