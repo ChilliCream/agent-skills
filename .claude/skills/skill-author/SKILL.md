@@ -1,7 +1,8 @@
 ---
 name: skill-author
 description: Authoring guide and conventions for ChilliCream agent skills. Use whenever the user wants to create a new skill, edit an existing one, improve a skill's description, or asks how to structure a SKILL.md file. Triggers on phrases like "write a skill", "new skill", "author a skill", "improve this skill", "skill description", "SKILL.md", or when editing any file under skills/*/SKILL.md or .claude/skills/*/SKILL.md.
-
+metadata:
+  internal: true
 ---
 
 # skill-author
