@@ -16,6 +16,7 @@
       "strict": false,
       "skills": [
         "./skills/graphql-schema-design",
+        "./skills/hotchocolate-best-practices",
         "./skills/prototype-feature",
         "./skills/prototype-to-contract"
       ]
