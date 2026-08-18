@@ -20,11 +20,30 @@ builder
 
 If offset-style navigation is not required, leave relative cursors disabled — they are an opt-in capability for frontends that need page jumps, not a default.
 
+## Paging options
+
+Set the page-size bounds explicitly — never ride on framework defaults:
+
+```csharp
+builder
+    .AddGraphQL()
+    .ModifyPagingOptions(o =>
+    {
+        o.DefaultPageSize = 25;
+        o.MaxPageSize = 150;
+        o.IncludeTotalCount = true;
+    });
+```
+
+- `MaxPageSize = 150` and `DefaultPageSize = 25` are good baseline values; tune them per schema, but always set them deliberately.
+- When `totalCount` is needed on pages, either opt in per field with `[UseConnection(IncludeTotalCount = true)]` or enable it globally as shown. Either way, the count query only runs when the client actually selects `totalCount`.
+- The null-ordering setting belongs in the same options block (see the ordering rules below).
+
 ## Cursor pagination needs an order
 
 A cursor encodes a position in an ordered sequence. Without a deterministic order the sequence shifts between pages — rows repeat or vanish. Two rules:
 
-1. **Every paginated query states an order.** Either a plain `OrderBy` on the queryable, or — when the field composes with `UseSorting` — a *default order* passed alongside the query context so a client-supplied sort wins and the default applies otherwise. This is enforced: `ToPageAsync`/`ToBatchPageAsync` throw an `ArgumentException` when the queryable has no ordering key.
+1. **Every paginated query states an order.** Either a plain `OrderBy` on the queryable, or — when the field composes with `UseSorting` (see [sorting.md](sorting.md) for what to allow clients to sort on) — a *default order* passed alongside the query context so a client-supplied sort wins and the default applies otherwise. This is enforced: `ToPageAsync`/`ToBatchPageAsync` throw an `ArgumentException` when the queryable has no ordering key.
 2. **The order ends in the key.** The last column(s) of the order must be the entity's key, making the total order distinct — otherwise a cursor can yield back the wrong rows, because non-unique sort columns (score, name, date) leave ties whose relative order the database may change between queries. With a single-column key, append `Id` last; with a composite key, append every key column. This holds no matter who supplied the sort.
 3. **Specify the null ordering.** Databases disagree on where `null` sorts — set it explicitly on the paging options so the behavior is defined independent of the database:
 

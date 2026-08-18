@@ -61,5 +61,7 @@ Detailed rules with worked wrong-vs-right examples. Load only what the current t
 | [references/subgraph.md](references/subgraph.md) | The project is a subgraph — detect via `.AddSourceSchemaDefaults()` in the builder chain or a `schema-settings.json` file. Covers `[Lookup]` on `byId` fields, entity references, cost enforcement, node-as-lookup |
 | [references/server-setup.md](references/server-setup.md) | New projects, `Program.cs` / builder chains, csproj packages, `[assembly: Module]`, `AddDefaultSettings` |
 | [references/mutations.md](references/mutations.md) | Any mutation, `[MutationType]`, mutation conventions, `[Error]`, payload/input shapes |
+| [references/filtering.md](references/filtering.md) | Any `UseFiltering` usage, filter input types, deciding whether a field should be filterable |
+| [references/sorting.md](references/sorting.md) | Any `UseSorting` usage, sort input types, deciding whether a field should be client-sortable |
 
 More references will be added as the skill grows.
