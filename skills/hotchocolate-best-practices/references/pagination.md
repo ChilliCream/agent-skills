@@ -2,12 +2,37 @@
 
 Pagination is cursor-based, built on the `Page<T>`/`PagingArguments` primitives and surfaced as GraphQL connections via `[UseConnection]`. Two placements, two patterns: root fields page straight off the queryable; fields on entity types page through a batch-paging DataLoader. Whether a field should be paginated at all is a schema-design question (see the `graphql-design` skill) — here is how to implement it.
 
+## Never offset pagination
+
+Do not implement offset (skip/take) pagination. Offsets drift as rows are inserted or deleted — pages skip or repeat — and the database must scan past every skipped row. When the frontend needs offset-style concepts — jump to page X, numbered page links — use **relative cursors** instead: page-jump navigation on top of stable cursor pagination, with the data access staying cursor-based.
+
+Enable them per field, or centrally for the whole schema:
+
+```csharp
+[UseConnection(EnableRelativeCursors = true)]
+```
+
+```csharp
+builder
+    .AddGraphQL()
+    .ModifyPagingOptions(o => o.EnableRelativeCursors = true);
+```
+
+If offset-style navigation is not required, leave relative cursors disabled — they are an opt-in capability for frontends that need page jumps, not a default.
+
 ## Cursor pagination needs an order
 
 A cursor encodes a position in an ordered sequence. Without a deterministic order the sequence shifts between pages — rows repeat or vanish. Two rules:
 
 1. **Every paginated query states an order.** Either a plain `OrderBy` on the queryable, or — when the field composes with `UseSorting` — a *default order* passed alongside the query context so a client-supplied sort wins and the default applies otherwise. This is enforced: `ToPageAsync`/`ToBatchPageAsync` throw an `ArgumentException` when the queryable has no ordering key.
 2. **The order ends in the key.** The last column(s) of the order must be the entity's key, making the total order distinct — otherwise a cursor can yield back the wrong rows, because non-unique sort columns (score, name, date) leave ties whose relative order the database may change between queries. With a single-column key, append `Id` last; with a composite key, append every key column. This holds no matter who supplied the sort.
+3. **Specify the null ordering.** Databases disagree on where `null` sorts — set it explicitly on the paging options so the behavior is defined independent of the database:
+
+   ```csharp
+   builder
+       .AddGraphQL()
+       .ModifyPagingOptions(o => o.NullOrdering = NullOrdering.NativeNullsLast);
+   ```
 
 The default order is a `SortDefinition<T>` transform:
 

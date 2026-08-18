@@ -136,6 +136,7 @@ It is tempting to query the database directly in a root resolver — "there is o
 [QueryType]
 internal static partial class RecommendationQueries
 {
+    [Lookup]
     public static async Task<Recommendation?> GetRecommendationByIdAsync(
         int id,
         QueryContext<Recommendation> query,
@@ -146,6 +147,8 @@ internal static partial class RecommendationQueries
 ```
 
 `LoadAsync` may return `null` when the key is not found — which is why this field is nullable (`Recommendation?`). For a non-null field use `LoadRequiredAsync` instead: it has a non-null return type and errors when the key cannot be resolved.
+
+The `[Lookup]` attribute on the field is a subgraph concept — it marks the field as a fetcher for an entity by stable key; see [subgraph.md](subgraph.md). Its relevance here: gateways batch lookup fields hard, which is one more reason root `byId` fields must be DataLoader-backed.
 
 ## Consuming rules
 

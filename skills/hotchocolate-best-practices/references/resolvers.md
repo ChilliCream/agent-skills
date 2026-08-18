@@ -54,6 +54,7 @@ Root fields follow the same shape — `[QueryType]` / `[MutationType]` on an `in
 [QueryType]
 internal static partial class ReviewQueries
 {
+    [Lookup]
     public static async Task<Review?> GetReviewByIdAsync(
         int id,
         QueryContext<Review> query,
@@ -66,7 +67,7 @@ internal static partial class ReviewQueries
 - Multiple `[QueryType]` classes merge into one `Query` type — one class per domain area, never one giant class.
 - Field names are inferred: `Get` prefix and `Async` suffix are stripped, then camelCased (`GetReviewByIdAsync` → `reviewById`). Override only with `[GraphQLName]` when the convention cannot express the name.
 - Resolver parameters that are not services, `CancellationToken`, `[Parent]`, or data-integration types (`QueryContext<T>`, `PagingArguments`) become GraphQL arguments.
-- `byId` fields go through DataLoaders — see [dataloaders.md](dataloaders.md).
+- `byId` fields go through DataLoaders — see [dataloaders.md](dataloaders.md) — and carry `[Lookup]` (see [subgraph.md](subgraph.md)).
 
 ## Descriptor escape hatch
 

@@ -19,7 +19,7 @@ You are implementing or reviewing a HotChocolate GraphQL server in .NET. All gui
 
 4. **Projections flow through `QueryContext<T>`.** Every DataLoader accepts a `QueryContext<TValue>` parameter so consumers can pass selections down to the database, and always pins its key into the projection (`query.Include(x => x.Id)`) so the key survives narrowing. The flip side: every resolver that reads parent properties declares them with `[Parent(requires: nameof(...))]` so projections keep those fields available.
 
-5. **Pagination is cursor-based and ordered.** Paginated fields use `PagingArguments` + `ToPageAsync`/`ToBatchPageAsync`; every paginated query has a deterministic order ending in a unique key, and paging on non-root types goes through a batch-paging DataLoader.
+5. **Pagination is cursor-based and ordered.** Paginated fields use `PagingArguments` + `ToPageAsync`/`ToBatchPageAsync`; every paginated query has a deterministic order ending in the key, and paging on non-root types goes through a batch-paging DataLoader. Never offset pagination — relative cursors cover jump-to-page needs.
 
 ## Project setup
 
@@ -40,14 +40,13 @@ Every HotChocolate project references the source generator as an analyzer-only p
 [assembly: Module("RecommendationTypes")]
 ```
 
-This specifies the name of the generated method that registers all GraphQL-related types of the project — types and DataLoaders alike:
+This specifies the name of the generated method that registers all GraphQL-related types of the project — types and DataLoaders alike. General server settings live in a shared `AddDefaultSettings` extension so the main chain shows only schema-specific choices — see [references/server-setup.md](references/server-setup.md):
 
 ```csharp
 builder
     .AddGraphQL()
-    .AddRecommendationTypes()
-    .AddPagingArguments()
-    .AddQueryContext();
+    .AddDefaultSettings()
+    .AddRecommendationTypes();
 ```
 
 ## Reference file index
@@ -59,5 +58,8 @@ Detailed rules with worked wrong-vs-right examples. Load only what the current t
 | [references/dataloaders.md](references/dataloaders.md) | Any DataLoader, any resolver that fetches data, any N+1 concern, any `byId` field |
 | [references/pagination.md](references/pagination.md) | Any paginated field, `[UseConnection]`, `PagingArguments`, connection/page types, sorting on collections |
 | [references/resolvers.md](references/resolvers.md) | Extending entities with `[ObjectType<T>]`, `[BindMember]`, `[Parent(requires:)]`, root type classes, field naming |
+| [references/subgraph.md](references/subgraph.md) | The project is a subgraph — detect via `.AddSourceSchemaDefaults()` in the builder chain or a `schema-settings.json` file. Covers `[Lookup]` on `byId` fields, entity references, cost enforcement, node-as-lookup |
+| [references/server-setup.md](references/server-setup.md) | New projects, `Program.cs` / builder chains, csproj packages, `[assembly: Module]`, `AddDefaultSettings` |
+| [references/mutations.md](references/mutations.md) | Any mutation, `[MutationType]`, mutation conventions, `[Error]`, payload/input shapes |
 
-More references (mutations/errors, subgraph-specific rules) will be added as the skill grows.
+More references will be added as the skill grows.
