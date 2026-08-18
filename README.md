@@ -40,6 +40,14 @@ Design and review GraphQL schema changes. The skill acts as a senior API archite
 
 The rules are framework-agnostic GraphQL design conventions, illustrated with a Book/Author domain. Fire it with phrases like _"design a mutation"_, _"new type"_, _"review schema diff"_, or `/graphql-schema-design`.
 
+### [`hotchocolate-best-practices`](skills/hotchocolate-best-practices/SKILL.md)
+
+Implementation best practices for HotChocolate 16.6+ servers — the implementation-side sibling of `graphql-schema-design`. The skill teaches the implementation-first style (attributes + source generator) and enforces the core rules: all data access flows through source-generated DataLoaders (relations _and_ root `byId` fields), projections travel via `QueryContext<T>` with explicitly pinned keys, cursor pagination with a key-tailed order and no offset paging, restrictive opt-in filtering and sorting, mutation conventions, and explicit module registration.
+
+Detailed rules live in on-demand references — DataLoaders, pagination, resolvers & type extensions, filtering, sorting, mutations, server setup, and subgraph-specific practices (lookups, gateway-enforced cost limits) that load only when the project is a source schema in a composite setup.
+
+Fire it when writing or reviewing C# in any HotChocolate project — resolvers, `[QueryType]`/`[ObjectType<T>]`/`[DataLoader]` classes, paging, or GraphQL performance work in .NET.
+
 ## Installing
 
 ### Claude Code (as a plugin)
