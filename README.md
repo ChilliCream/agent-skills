@@ -48,6 +48,26 @@ Detailed rules live in on-demand references — DataLoaders, pagination, resolve
 
 Fire it when writing or reviewing C# in any HotChocolate project — resolvers, `[QueryType]`/`[ObjectType<T>]`/`[DataLoader]` classes, paging, or GraphQL performance work in .NET.
 
+### [`nitro-mail`](skills/nitro-mail/SKILL.md)
+
+Operate Nitro's local-first agent mailbox. Covers registering agent identities, sending and replying to mail, managing inboxes and threads, and waiting for new coordination messages.
+
+### [`nitro-task`](skills/nitro-task/SKILL.md)
+
+Manage Nitro's local-first, dependency-aware agent task tracker. Covers task lifecycle, dependencies, comments, JSONL synchronization, and non-interactive agent workflows.
+
+### [`nitro-task-orchestrator`](skills/nitro-task-orchestrator/SKILL.md)
+
+Coordinate a large Nitro task backlog through implementation and review waves. Use it for autonomous multi-task delivery, not individual small changes.
+
+### [`nitro-task-planner`](skills/nitro-task-planner/SKILL.md)
+
+Turn feature briefs and feedback into an implementation-ready Nitro task graph, then hand it to the orchestration workflow.
+
+### [`nitro-wayfinder`](skills/nitro-wayfinder/SKILL.md)
+
+Plan a large, initially fuzzy feature with Nitro tasks as persistent decision memory. It guides charting, research, prototyping, and gradual conversion to implementation tickets.
+
 ## Installing
 
 ### Claude Code (as a plugin)

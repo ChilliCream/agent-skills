@@ -17,6 +17,11 @@
       "skills": [
         "./skills/graphql-schema-design",
         "./skills/hotchocolate-best-practices",
+        "./skills/nitro-mail",
+        "./skills/nitro-task",
+        "./skills/nitro-task-orchestrator",
+        "./skills/nitro-task-planner",
+        "./skills/nitro-wayfinder",
         "./skills/prototype-feature",
         "./skills/prototype-to-contract"
       ]
