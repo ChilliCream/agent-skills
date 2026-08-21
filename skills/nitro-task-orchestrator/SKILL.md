@@ -39,7 +39,7 @@ Use a single reusable workflow script (implement/review/verify/fix loop over a t
 ## Escalation modes
 
 - **User present**: ask immediately with 2-3 concrete options and a recommendation. Record the answer as a task comment so agents inherit it.
-- **User away (deferred mode)**: agents pick the most conservative reasonable interpretation, implement it, record `NEEDS-PASCAL: <question> | chose: <what I did>` as a task comment, and continue. Only hard-block when no reasonable interpretation exists. The orchestrator compiles all deferred notes into the final report.
+- **User away (deferred mode)**: agents pick the most conservative reasonable interpretation, implement it, record `NEEDS-USER: <question> | chose: <what I did>` as a task comment, and continue. Only hard-block when no reasonable interpretation exists. The orchestrator compiles all deferred notes into the final report.
 - Never let one stuck ticket stall a wave: record, skip, continue.
 
 ## Closing discipline
