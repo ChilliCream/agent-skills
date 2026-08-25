@@ -1,6 +1,6 @@
 # Wayfinding operations in nitro agent
 
-How each wayfinding operation maps onto `nitro agent tasks`, `nitro agent memory`, and `nitro agent mail`. Every read and write command used here supports `--output json`; use it whenever you read a result programmatically. The exceptions are `sync` (run it bare) and the interactive `board`, which this workflow never uses. Full command references live in the nitro-task and nitro-mail skills.
+How each wayfinding operation maps onto `nitro agent tasks`, `nitro agent memory`, and `nitro agent mail`. Every command used here supports `--output json`; use it whenever you read a result programmatically. Full command references live in the nitro-task and nitro-mail skills.
 
 The examples use one effort throughout: prefix `bill`, map `bill-3f2`, tickets `bill-3f2.1`, `bill-3f2.2`, memory tag `wayfinder-billing-export`, actor `wayfinder-1`. Substitute the literal ids you got back from `--output json`; never carry shell variables across tool calls, they do not survive.
 
@@ -15,7 +15,7 @@ nitro agent register --actor wayfinder-1 --role planner
 nitro agent whoami --actor wayfinder-1
 ```
 
-If the workspace has no tracker yet: `nitro agent init` (creates `.nitro/agents/`, with `tasks.jsonl` and `memory/` as the git-tracked source of truth).
+If the workspace has no tracker yet, run `nitro agent init` once; it sets up tasks, mail, and memory for the repository, shared across all its git worktrees. How and where state is stored is the CLI's business, not yours.
 
 ## Multi-line values
 
@@ -123,7 +123,7 @@ nitro agent tasks update bill-3f2.1 --actor wayfinder-1 --claim              # i
 
 ## Resolve
 
-The resolution comment is the contract later sessions and implementers read. Use this shape:
+The resolution comment is the contract future sessions and implementers read. Use this shape:
 
 ```markdown
 ## Decision
@@ -160,23 +160,13 @@ nitro agent tasks close bill-3f2.5 --actor wayfinder-1 --reason "Out of scope: p
 
 plus one line under **Out of scope** in the map. Never list it under **Decisions so far**.
 
-## Flush
-
-End every session with:
-
-```bash
-nitro agent tasks sync --flush-only
-```
-
-This writes `tasks.jsonl`. Git commit and push stay with the user.
-
 ## Git rules
 
 The wayfinding session never commits, pushes, or switches branches in the user's working tree. Research findings and prototypes are files; when the repository wants them off the main branch, the subagent that produced them creates a throwaway branch in a separate worktree (`git worktree add ../billing-research-storage -b research/storage`) and commits there, and the ticket links the branch or path. The working branch, main, and pushes belong to the user.
 
 ## Memory
 
-Use `nitro agent memory` for what every later session of this effort must know without rereading tickets: standing preferences and domain facts. Decisions themselves stay in tickets. The effort's memory tag is written in the map's Notes; tags and types allow only lowercase letters, digits, and hyphens.
+Use `nitro agent memory` for what every future session of this effort must know without rereading tickets: standing preferences and domain facts. Decisions themselves stay in tickets. The effort's memory tag is written in the map's Notes; tags and types allow only lowercase letters, digits, and hyphens.
 
 ```bash
 nitro agent memory save --actor wayfinder-1 --type preference --tag wayfinder-billing-export \
@@ -185,7 +175,7 @@ nitro agent memory context --tag wayfinder-billing-export             # at sessi
 nitro agent memory search "export" --tag wayfinder-billing-export    # when a question smells familiar
 ```
 
-`save` requires `--type` (`fact`, `decision`, `preference`, `reference`). Project-scope memory is stored as markdown under `.nitro/agents/memory/` and shared through git with every agent in the workspace. `memory log` is a cheap journal for a session's loose ends; promote an entry (`memory promote <id> --type ...`) only if it earns a place as a preference or fact.
+`save` requires `--type` (`fact`, `decision`, `preference`, `reference`). Project-scope memories are shared with every agent in the workspace; `--scope global` keeps one on this machine across workspaces. `memory log` is a cheap journal for a session's loose ends; promote an entry (`memory promote <id> --type ...`) only if it earns a place as a preference or fact.
 
 ## Mail
 
@@ -205,4 +195,4 @@ A `wayfinder:task` ticket (`--type task`) is manual work that blocks a decision:
 
 1. `nitro agent whoami --actor wayfinder-1`; `nitro agent mail inbox --unread --actor wayfinder-1`; `nitro agent memory context --tag <memory tag>`.
 2. Load the map. Never edit it from memory of a previous session.
-3. Claim, resolve, graduate, flush, stop.
+3. Claim, resolve, graduate, stop.

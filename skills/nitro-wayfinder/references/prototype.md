@@ -19,7 +19,7 @@ If the question is ambiguous and the human is not reachable, pick the shape that
 3. **No persistence, no polish.** No tests, no error handling beyond what makes it run, no abstractions. Scratch databases get a name that says "wipe me".
 4. **Bound it.** Set maximum execution times on queries and timeouts on calls. A subagent stuck on a hanging query yields nothing.
 5. **Prototypes may fail the design.** A falsified design is a successful prototype. Record the failure and what it implies; that is usually where the next tickets come from.
-6. **Capture the verdict where later sessions look.** The subagent writes `findings.md` next to the artifact; if it cannot write files, it returns the findings and the dispatching session commits them in the worktree. The resolution comment on the ticket carries the verdict and the locked parameters; the branch carries the evidence.
+6. **Capture the verdict where future sessions look.** The subagent writes `findings.md` next to the artifact; if it cannot write files, it returns the findings and the dispatching session commits them in the worktree. The resolution comment on the ticket carries the verdict and the locked parameters; the branch carries the evidence.
 
 ## Resolving
 

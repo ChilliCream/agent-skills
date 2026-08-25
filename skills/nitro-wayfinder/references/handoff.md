@@ -61,7 +61,6 @@ EOF
 nitro agent tasks dep cycles --output json                # {"items":[]}
 nitro agent tasks lint --output json                      # no findings on the new tasks
 nitro agent tasks ready --output json | jq '[.items[] | select(.id | startswith("bill-4a1."))]'   # per epic: only its foundations
-nitro agent tasks sync --flush-only
 ```
 
 Then close the map: `nitro agent tasks close bill-3f2 --actor wayfinder-1 --reason "Way clear; implementation under [billing export] jobs (bill-4a1), [billing export] api (bill-4a2)"`.
@@ -69,8 +68,8 @@ Then close the map: `nitro agent tasks close bill-3f2 --actor wayfinder-1 --reas
 ## Brief the orchestrator
 
 1. Find it: `nitro agent list --role orchestrator --output json`. If none is registered, report the created tasks to the user and stop; do not become the orchestrator. Mail to an unregistered name is accepted but reaches nobody.
-2. Mail a compact briefing to the name returned (normally `orchestrator`): `nitro agent mail send orchestrator --actor wayfinder-1 --subject "[plan] billing export" --body "$(cat <<'EOF' ... EOF)"` with the epic and task ids (one line each, by name), area labels, the ordering constraints, any open question that needs a user ruling, the workspace path (`nitro agent tasks where`; say so if it differs from the orchestrator's worktree), confirmation that the tracker is flushed, and a note that tasks labelled `wayfinder:*` are decision tickets, never wave material. The orchestrator reads details with `show`; do not paste descriptions.
-3. The send fires only a best-effort wake ping. If your harness can message another running session, send it a one-line pointer to the mail; otherwise the orchestrator drains its inbox between waves. If it mails back (ambiguous task, scope collision), fix the task, flush again, and `nitro agent mail reply` on the same thread with what changed.
+2. Mail a compact briefing to the name returned (normally `orchestrator`): `nitro agent mail send orchestrator --actor wayfinder-1 --subject "[plan] billing export" --body "$(cat <<'EOF' ... EOF)"` with the epic and task ids (one line each, by name), area labels, the ordering constraints, any open question that needs a user ruling, and a note that tasks labelled `wayfinder:*` are decision tickets, never wave material. The orchestrator reads details with `show`; do not paste descriptions.
+3. The send fires only a best-effort wake ping. If your harness can message another running session, send it a one-line pointer to the mail; otherwise the orchestrator drains its inbox between waves. If it mails back (ambiguous task, scope collision), fix the task and `nitro agent mail reply` on the same thread with what changed.
 
 ## What this session never does
 

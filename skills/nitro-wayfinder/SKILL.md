@@ -87,9 +87,9 @@ The user arrives with a loose idea.
 1. **Name the destination.** Grill (see [references/grilling.md](references/grilling.md)) until the destination fits in two lines. It fixes the scope, so it is settled first.
 2. **Map the frontier.** Grill again, breadth-first: fan out across the whole space, surfacing the open decisions and the fog. If this surfaces no fog and the journey fits one session, the user does not need a map: stop and ask how they want to proceed (usually: cut the tasks directly with the quality bar in [references/handoff.md](references/handoff.md)).
 3. **Create the map**, then the tickets you can state now, then wire blocking edges in a second pass (tickets need ids before they can reference each other). Everything you cannot state yet stays in **Not yet specified**.
-4. **Save standing preferences** the user expressed (`nitro agent memory save ... --type preference --tag <memory tag>`) so later sessions inherit them without rereading the chat.
+4. **Save standing preferences** the user expressed (`nitro agent memory save ... --type preference --tag <memory tag>`) so future sessions inherit them without rereading the chat.
 5. **Resolve the research tickets.** Claim each, dispatch one subagent per ticket in parallel, wait, and record each resolution as it lands. Research is the one ticket type charting resolves.
-6. Flush (`nitro agent tasks sync --flush-only`) and stop. Charting hand-resolves nothing else.
+6. End the session here. Charting resolves only research tickets (step 5); every other ticket waits for its own future session.
 
 ### Work through the map ("next")
 
@@ -101,13 +101,13 @@ The user names the map, or just says "next". Without a named map, look it up (`n
 4. Resolve it by its type. Zoom as needed: read the closed tickets it depends on in full; the map gives gists, the tickets hold the contracts.
 5. Record the resolution: comment the answer, close the ticket, append one line to the map's **Decisions so far**. Record research results the same way as they land.
 6. **Graduation pass**, the actual engine of progress: what did this answer unlock? Create the newly statable tickets (create, then wire edges), promote fog that became sharp, close tickets the answer invalidated, rule things out of scope explicitly.
-7. Flush and stop. If the map now has no open tickets and no fog, say so: the way is clear, and the next session hands off.
+7. End the session. If the map now has no open tickets and no fog, say so: the way is clear, and the next session hands off.
 
 Other sessions may be working the same map concurrently. Expect the tracker to change under you; reload the map before editing it.
 
 ## Reaching the destination
 
-When no open tickets remain and **Not yet specified** is empty, the way is clear. The outcome is tasks, not a document: cut the implementation graph under an `epic` per area, each task written to the quality bar in [references/handoff.md](references/handoff.md), wired from foundations to tests, `dep cycles` empty, `lint` clean, flushed, and briefed to the orchestrator over mail. Then close the map with a reason that names the implementation epics.
+When no open tickets remain and **Not yet specified** is empty, the way is clear. The outcome is tasks, not a document: cut the implementation graph under an `epic` per area, each task written to the quality bar in [references/handoff.md](references/handoff.md), wired from foundations to tests, `dep cycles` empty, `lint` clean, and briefed to the orchestrator over mail. Then close the map with a reason that names the implementation epics.
 
 ## Reference file index
 
