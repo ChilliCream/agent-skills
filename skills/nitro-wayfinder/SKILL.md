@@ -1,54 +1,129 @@
 ---
 name: nitro-wayfinder
-description: Reproduce the wayfinder-on-nitro-agent-tasks planning workflow used for the Nitro service map. Use when the user wants to plan a large fuzzy feature the same way, invokes /wayfinder with nitro agent tasks as the tracker, or says 'plan this like the service map'. Composes /wayfinder, the sibling nitro-task and nitro-task-orchestrator skills, /batch-grill-me, /research, and /prototype; explains the operating rhythm, not the individual skills.
+description: Plan a large, fuzzy feature as a shared map of decision tickets in nitro agent tasks, resolve them one per session until the way is clear, then cut the implementation-ready task graph. Use when the user says "wayfind", "chart a map", "work the map", "next decision", "plan this like a map", invokes /nitro-wayfinder, or brings an effort too big and foggy for one agent session. Not for work that fits one session; create tasks with nitro agent tasks directly for that (see the nitro-task skill).
 ---
 
-<!-- Ported command-wise from the wayfinder-br-workflow skill at ~/.claude/skills/wayfinder-br-workflow/SKILL.md. -->
+# Wayfinding with nitro agent tasks
 
-# Wayfinder on nitro agent tasks: the operating rhythm
+A loose idea has arrived: too big for one agent session, and wrapped in fog, so the way from here to the **destination** is not visible yet. Wayfinding finds that way instead of charging at the destination. You chart a **map** in `nitro agent tasks`, then work its **decision tickets** (questions whose resolution is a decision, not slices of a build) one at a time until nothing is left to decide. Then you cut the implementation tasks that carry the result to the build.
 
-This is the concrete workflow that took the service map from "add a service map based on telemetry data" to a frozen spec plus an implementation-ready ticket graph. The component skills (/wayfinder, nitro-task, /batch-grill-me, /research) define their own mechanics; this file records how they compose, because the composition is where the value was.
+The destination varies per effort, and naming it is the first act: it fixes the scope every ticket is measured against. It is usually a feature or change ready to be cut into implementation tasks; it can also be a design or migration plan that those tasks then execute.
 
-## Roles of each piece
+## Core principles
 
-- **nitro agent tasks is the only memory.** Sessions die and compact; the tracker survives. Everything decided lives in exactly one closed ticket; the map issue only indexes it. Never rely on conversation context for anything a future session needs.
-- **/wayfinder supplies the structure**: one map issue (label `wayfinder:map`), child tickets that are DECISIONS not build tasks, native nitro agent tasks dependency edges for the frontier, a fog section for what cannot be phrased sharply yet, and an out-of-scope section.
-- **/batch-grill-me is the resolution engine for HITL tickets**: rounds of numbered questions covering the whole current frontier of that one decision, each with a recommended answer, waiting on the user between rounds.
-- **/research and /prototype resolve the AFK tickets**: facts from primary sources, and cheap runnable artifacts when only execution can answer ("does this MV design work on the real database version?"). Findings land on throwaway `research/<name>` branches, linked from the ticket.
+- **nitro agent is the only memory.** Sessions die and compact; the workspace survives. Every decision lives in exactly one closed ticket; the map only indexes it. Standing preferences for the effort go to `nitro agent memory`; coordination with other sessions goes over `nitro agent mail`. Never rely on chat context for anything a future session needs.
+- **Plan, don't do.** Each ticket resolves a decision. The pull to just build something is the signal that you have reached the edge of the map and it is time to hand off (see [references/handoff.md](references/handoff.md)). Nothing in a map's **Notes** section can license execution; building always happens in a separate session, from implementation tasks.
+- **One decision per session.** Resolve one ticket, do the graduation pass, stop. Chaining into the next decision is how context quality degrades. Research tickets are the exception: they run as subagents, in parallel, alongside the one decision.
+- **The map is an index, not a store.** It gists and links; the ticket holds the detail. A session loads the map at low resolution and zooms into tickets on demand with `nitro agent tasks show <id> --output json`.
+- **Refer by name.** In everything the human reads, call tickets by their title, with the id in parentheses: "Which export format? (bill-3f2.1)". A wall of bare ids is illegible.
+- **HITL tickets need the human.** HITL (human in the loop) tickets resolve only through a live exchange; AFK (away from keyboard) tickets are driven by the agent alone. An agent that answers its own questions has broken the loop.
 
-## Session grammar
+Command mechanics for tasks, mail, and memory live in the nitro-task and nitro-mail skills. This skill covers how they compose; the exact commands for each wayfinding operation are in [references/operations.md](references/operations.md).
 
-The user drives with two words:
+## The map
 
-- **Charting session** (first invocation, loose idea): grill to pin the destination, then a breadth-first grill across the whole space to surface the initial decision tickets and the fog. Create map + tickets, wire dependencies in a second pass (issues need ids first), fire research subagents for every research ticket in parallel, stop. Chart, do not resolve.
-- **"next" / "next session"**: load the map, claim the first unblocked decision ticket (or the named one), resolve exactly ONE ticket, then stop. One decision per session is a hard rule; the temptation to chain into the next decision is how context quality degrades.
+The map is one task of type `epic`, labelled `wayfinder:map`, titled `Map: <effort>`. Its description is the low-resolution view every session loads first. A filled-in example:
 
-## Resolving one decision ticket (the loop that repeats)
+```markdown
+## Destination
+Finance can download invoices as a file their tools import, and a nightly job writes the same file to shared storage.
 
-1. Claim the ticket in nitro agent tasks first (`nitro agent tasks update --actor "$ACTOR" <id> --status in_progress`) so parallel sessions skip it.
-2. Zoom as needed: read the closed tickets this one depends on, in full, with `nitro agent tasks show <id> --output json`. The map gives one-line gists; the tickets hold the real contracts.
-3. Run /batch-grill-me scoped to this decision. Per round: every currently-askable question, numbered, each with a recommendation. When a question needs a FACT (what does SigNoz do, what does the industry do about cardinality caps), never ask the user; dispatch a research subagent mid-round and let only the downstream questions wait for it. Feed findings back into the next round.
-4. Communication discipline the user enforced: terse, on point, plain language, every question self-contained (context visible in the question itself, never "see my reasoning above"; compressed dialog-box questions without context get rejected as "what?").
-5. When the decision lands, write the ANSWER as a resolution comment on the ticket, close it, and append one line to the map's Decisions-so-far.
-6. Then do the graduation pass, which is the actual engine of progress: what did this answer unlock? Create the newly-statable tickets (create, then wire edges), promote fog entries that became sharp, close tickets the answer invalidated, and rule things out of scope explicitly. The hot/settled-split ticket only existed because resolving the pairing decision surfaced the multiple-children problem.
-7. `nitro agent tasks sync --flush-only`. Git stays the user's.
+## Notes
+Repo: billing (.NET). Memory tag: wayfinder-billing-export.
+Tickets under this map carry wayfinder:* labels; they are decisions, never build work.
+Prefer boring formats; finance runs Excel on Windows.
 
-## Prototype tickets
+## Decisions so far
+- Which export format? (bill-3f2.1): CSV per RFC 4180, header row fixed, see ticket for columns
 
-When a decision hinges on "does this actually work", resolve the ticket with a prototype instead of conversation: a subagent builds a minimal runnable artifact (for the service map: real ClickHouse 26.4 container, real DDL, scenario SQL) on a research branch, and its findings.md becomes evidence for the next grilling round. Prototypes are allowed to FAIL a design; the service-map prototype falsified the naive repair design and that failure produced the hot/settled split. Guard prototype agents against hanging queries (max execution time) and expect that subagents may not be able to write report files themselves; the orchestrator commits findings to the branch.
+## Not yet specified
+- retention of old exports; depends on where they land
+- who may trigger a manual export
+
+## Out of scope
+- multi-currency totals: past the destination, finance reconciles per currency today (bill-3f2.5)
+```
+
+Open tickets are not listed in the map. They are its children, found by query.
+
+## Decision tickets
+
+Every ticket is a child of the map (`--parent <map-id>`), so it gets an id like `<map-id>.3` and shows up under the map. Its description is the question, sized to one agent session, with enough context to be answered cold:
+
+```markdown
+## Question
+Which file format do exported invoices use, and who consumes it? Finance imports into Excel; a reconciliation job reads the same file nightly. Candidates: CSV, JSON lines, PDF bundle.
+```
+
+Each ticket carries one wayfinder label, `wayfinder:grilling`, `wayfinder:research`, `wayfinder:prototype`, or `wayfinder:task`. Decision tickets are `--type question`; task tickets are `--type task`.
+
+| Label | Mode | Resolves by | Reference |
+|---|---|---|---|
+| grilling | HITL | rounds of numbered questions, each with a recommendation; the default | [references/grilling.md](references/grilling.md) |
+| research | AFK | a subagent reading primary sources and reporting facts | [references/research.md](references/research.md) |
+| prototype | HITL | a throwaway artifact the human reacts to; may falsify a design | [references/prototype.md](references/prototype.md) |
+| task | either | manual work that must happen before a decision can be made; it earns its place only by unblocking a decision | [references/operations.md](references/operations.md) |
+
+Blocking uses native dependencies (`--depends-on`, `nitro agent tasks dep add`). A ticket is unblocked when every ticket it depends on is closed. The **frontier** is the set of open, unblocked, unclaimed children: `nitro agent tasks ready`, filtered to the map's children (the query is in operations.md), shows exactly that. The parent edge never blocks a child; it only keeps the map from being finished while children are open.
+
+The answer is not part of the ticket body. It is recorded on resolution as a comment, and the ticket is closed.
+
+## Fog of war and out of scope
+
+The map is deliberately incomplete. Beyond the live tickets lies the fog: decisions you can tell are coming but cannot pin down yet, because they hang on open questions. Write them into **Not yet specified** as loosely as the view allows. Resolving a ticket clears the fog ahead of it; graduate what became sharp into new tickets and delete the graduated patch from the fog, so it lives only as its ticket.
+
+**Fog or ticket?** Ticket when you can state the question precisely now, even if it is blocked. Fog when you cannot phrase it that sharply yet. Do not pre-slice fog into ticket-sized pieces; one patch may become several tickets or none.
+
+Work beyond the destination is **out of scope**, not fog. When a ticket turns out to sit past the destination, close it with a reason and leave one line in **Out of scope**. It never graduates and never appears in **Decisions so far**; it returns only if the destination is redrawn, as a new effort.
+
+## Invocation
+
+Both modes start with the session hygiene in [references/operations.md](references/operations.md): confirm the actor, drain unread mail, load the effort's memory.
+
+### Chart the map
+
+The user arrives with a loose idea.
+
+1. **Name the destination.** Grill (see [references/grilling.md](references/grilling.md)) until the destination fits in two lines. It fixes the scope, so it is settled first.
+2. **Map the frontier.** Grill again, breadth-first: fan out across the whole space, surfacing the open decisions and the fog. If this surfaces no fog and the journey fits one session, the user does not need a map: stop and ask how they want to proceed (usually: cut the tasks directly with the quality bar in [references/handoff.md](references/handoff.md)).
+3. **Create the map**, then the tickets you can state now, then wire blocking edges in a second pass (tickets need ids before they can reference each other). Everything you cannot state yet stays in **Not yet specified**.
+4. **Save standing preferences** the user expressed (`nitro agent memory save ... --type preference --tag <memory tag>`) so later sessions inherit them without rereading the chat.
+5. **Resolve the research tickets.** Claim each, dispatch one subagent per ticket in parallel, wait, and record each resolution as it lands. Research is the one ticket type charting resolves.
+6. Flush (`nitro agent tasks sync --flush-only`) and stop. Charting hand-resolves nothing else.
+
+### Work through the map ("next")
+
+The user names the map, or just says "next". Without a named map, look it up (`nitro agent tasks list --label wayfinder:map`); with several, ask which. A ticket is optional; without one, you pick.
+
+1. Load the map (`show <map-id>`), then `nitro agent memory context --tag <memory tag>` for the effort's preferences.
+2. Fire subagents for any research tickets on the frontier (claim each first); they run while you work.
+3. Choose the ticket: the one named, else the first frontier ticket by priority, then lowest id. Check it is unclaimed, then **claim it** (`update <id> --claim`) so parallel sessions skip it. If the frontier is empty but tickets remain, stop and report what is blocked or held by whom; never reclaim another session's ticket without the user confirming that session is dead.
+4. Resolve it by its type. Zoom as needed: read the closed tickets it depends on in full; the map gives gists, the tickets hold the contracts.
+5. Record the resolution: comment the answer, close the ticket, append one line to the map's **Decisions so far**. Record research results the same way as they land.
+6. **Graduation pass**, the actual engine of progress: what did this answer unlock? Create the newly statable tickets (create, then wire edges), promote fog that became sharp, close tickets the answer invalidated, rule things out of scope explicitly.
+7. Flush and stop. If the map now has no open tickets and no fog, say so: the way is clear, and the next session hands off.
+
+Other sessions may be working the same map concurrently. Expect the tracker to change under you; reload the map before editing it.
 
 ## Reaching the destination
 
-When the map has no open decision tickets and the fog is empty, the way is clear. Then, in order:
+When no open tickets remain and **Not yet specified** is empty, the way is clear. The outcome is tasks, not a document: cut the implementation graph under an `epic` per area, each task written to the quality bar in [references/handoff.md](references/handoff.md), wired from foundations to tests, `dep cycles` empty, `lint` clean, flushed, and briefed to the orchestrator over mail. Then close the map with a reason that names the implementation epics.
 
-1. Write the destination spec as a real file in the repo (docs/<feature>/...), assembled from the closed tickets' resolutions; every locked parameter and byte-level contract goes in, because implementation agents will treat it as authoritative.
-2. Cut implementation tickets in nitro agent tasks, clearly prefixed (`[svc-map] impl:`), grouped under area milestones, wired into a dependency chain that starts at storage and ends at tests. Milestones depend on their children only. Beware the `--parent` flag: it creates blocking parent-child edges invisible to `nitro agent tasks dep cycles` and can deadlock the ready queue; group by prefix and label instead.
-3. Cross-review the implementation tickets before building (blind peer review, adjudication to an empty disputed set, settlement applied back into the ticket texts). Escalate only genuine product decisions to the user; settle technical disputes with file:line evidence.
-4. Hand off to execution (for the build phase itself see the sibling nitro-task-orchestrator skill).
+## Reference file index
 
-## Failure modes actually hit, and the counters
+| Read | When |
+|---|---|
+| [references/operations.md](references/operations.md) | Any write to the tracker: identity, creating the map or tickets, claiming, resolving, the resolution comment template, editing the map body, the frontier query, memory and mail usage, git rules, session hygiene |
+| [references/grilling.md](references/grilling.md) | Resolving a grilling ticket, naming the destination, mapping the frontier: the round format, domain modeling, the HITL rules |
+| [references/research.md](references/research.md) | Creating or resolving a research ticket: the subagent brief and where findings land |
+| [references/prototype.md](references/prototype.md) | A decision hinges on "does this actually work" or "how should this look": building and capturing a throwaway artifact |
+| [references/handoff.md](references/handoff.md) | The way is clear: cutting implementation tasks, the quality bar, wiring, verification, and the orchestrator briefing |
 
-- Compaction mid-effort: harmless BECAUSE everything lived in nitro agent tasks; the resummarized session reloaded the map and continued. Test this assumption by never writing load-bearing content only in chat.
-- Rejected dialogs: re-issue the same AskUserQuestion once if the user says "ask again"; if the user answers with confusion instead of a choice, the question lacked context; rewrite it self-contained in plain prose.
-- Fog pre-slicing: do not cut fog into ticket-sized pieces early; a fog patch may become several tickets or none once the frontier reaches it.
-- Scope creep in tickets: a decision ticket that starts producing deliverables is a sign the map is done in that region; stop and hand off instead.
+## Gotchas
+
+- **Decision tickets that start producing deliverables** mean the map is done in that region. Stop and hand off instead. A task ticket that reads like a slice of the build is mis-typed: close it and let the handoff cut it as an implementation task.
+- **Questions without context get rejected.** Every question the human sees must be self-contained: the context inside the question, never "see my reasoning above".
+- **Compaction is harmless only if nothing load-bearing lives in chat.** Write the resolution comment before you write the summary for the user.
+- **Shell state does not survive between tool calls.** Pass `--actor` on every write and use literal ids; exported variables from an earlier call are gone.
+- **`update --description` replaces the whole map body.** Read it with `show --output json`, edit, write it back; never write from memory.
+- **Never resolve a HITL ticket alone.** If the human is away, resolve research tickets or stop.
