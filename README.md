@@ -52,6 +52,10 @@ Fire it when writing or reviewing C# in any HotChocolate project — resolvers, 
 
 Operate Nitro's local-first agent mailbox. Covers registering agent identities, sending and replying to mail, managing inboxes and threads, and waiting for new coordination messages.
 
+### [`nitro-memory`](skills/nitro-memory/SKILL.md)
+
+Save and recall durable agent memory with Nitro's local-first memory store. Covers the which-store rule (memory vs tasks vs mail), cheap journaling and deliberate promotion to curated entries, project and global scopes, and prompt-ready context assembly.
+
 ### [`nitro-task`](skills/nitro-task/SKILL.md)
 
 Manage Nitro's local-first, dependency-aware agent task tracker. Covers task lifecycle, dependencies, comments, JSONL synchronization, and non-interactive agent workflows.

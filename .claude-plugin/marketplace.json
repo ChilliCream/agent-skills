@@ -18,6 +18,7 @@
         "./skills/graphql-schema-design",
         "./skills/hotchocolate-best-practices",
         "./skills/nitro-mail",
+        "./skills/nitro-memory",
         "./skills/nitro-task",
         "./skills/nitro-task-orchestrator",
         "./skills/nitro-task-planner",

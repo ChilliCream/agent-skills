@@ -13,7 +13,7 @@ The orchestrator is a separate session running the sibling nitro-task-orchestrat
 
 ## Structure
 
-- One `epic` per code area (`storage`, `api`, `ui`, `jobs`...), titled `[<effort>] <area>`, labelled with the area. Implementation tasks are children of their area epic (`--parent`). The parent edge does not block the children; the epic closes when its children do (`nitro agent tasks epic close-eligible`).
+- One `epic` per code area (`storage`, `api`, `ui`, `jobs`...), titled `[<effort>] <area>`, labelled with the area. Implementation tasks are children of their area epic (`--parent`). The parent edge does not block the children; the orchestrator closes an epic once its children are done (`nitro agent tasks epic status`).
 - Order with `blocks` edges from foundations to tests: storage before services, services before API, API before UI, everything before end-to-end tests. Cross-area interactions get an explicit note in the later task ("re-verify what <id> landed").
 - Size each task for one implementer agent: one coherent change, verifiable on its own. Anything that needs two code areas becomes two linked tasks.
 - Every locked parameter from the decision tickets goes into the task that implements it, by value, with a pointer to the ticket by name and id. Implementers treat the task as authoritative and will not go looking.
