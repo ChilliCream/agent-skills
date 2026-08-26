@@ -59,7 +59,7 @@ Field rules (from the [spec](https://agentskills.io/specification)):
 The description has two jobs: tell the agent **what the skill does** and **when to fire it**. Both matter equally.
 
 Good descriptions:
-- Lead with the capability in one clause.
+- Lead with the capability in one clause -- what the skill does, never a label about the skill ("Official skill for X" says nothing an agent can act on).
 - Name explicit triggers — file types, attribute names, library names, error messages, user phrases.
 - Are slightly pushy. Agents tend to *under*-trigger skills, so bias toward firing.
 
@@ -188,6 +188,9 @@ Reference scripts from the body with their relative path: `Run scripts/scaffold-
 - **Untestable rules.** *"Write idiomatic code."* What does the agent verify? Replace with concrete rules + counter-examples.
 - **Stale references.** Pointing the agent at files that have since been renamed or deleted. Re-check paths when editing skills.
 - **Description bloat.** If you find yourself writing four sentences of triggers, the skill is probably two skills. Split it.
+- **HTML comments.** No TOC comments, no provenance notes ("Ported from ..."), no editorial asides. Comments are meta-text about the file; skills carry instructions only.
+- **Invented frontmatter keys.** `domain`, `role`, `triggers`, `output-format` and friends are not in the spec and do nothing -- the description is what drives triggering. Use only the spec fields.
+- **Implementation internals.** Document behavior and commands, not storage paths, databases, or file formats. If a CLI owns the state, the skill teaches the CLI.
 
 ## Pre-publish checklist
 
