@@ -10,7 +10,7 @@ description: >-
 
 # nitro agent memory
 
-Memory is the workspace's shared knowledge: what one session learns, every future session and every other agent starts from. Read it at session start, capture cheaply while you work, curate what proves durable. It lives locally with the repository, shared across all its git worktrees, never pushed to the remote. Always call a subcommand; bare `nitro agent` opens an interactive TUI and blocks the session. If commands report no workspace, run `nitro agent init` once from the repository root (see the sibling `nitro-task` skill).
+Memory is the workspace's shared knowledge: what one session learns, every future session and every other agent starts from. Read it at session start, capture cheaply while you work, curate what proves durable. It lives locally with the repository, shared across all its git worktrees, never pushed to the remote. Always call a subcommand; bare `nitro agent` opens an interactive TUI and blocks the session. If commands report no workspace, run `nitro agent init` once from the repository root (see the sibling `nitro-task` skill). If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## Core principles
 

@@ -9,7 +9,7 @@ description: >-
 
 # nitro agent mail
 
-Mail is how agents in one workspace coordinate: registered identities, messages, threads. It shares the workspace with `nitro agent tasks` and `nitro agent memory`, lives locally with the repository across all its git worktrees, and never reaches the remote. Always call a subcommand; bare `nitro agent` and `nitro agent mail board` open interactive TUIs and block the session. If commands report no workspace, run `nitro agent init` once from the repository root (see the sibling `nitro-task` skill).
+Mail is how agents in one workspace coordinate: registered identities, messages, threads. It shares the workspace with `nitro agent tasks` and `nitro agent memory`, lives locally with the repository across all its git worktrees, and never reaches the remote. Always call a subcommand; bare `nitro agent` and `nitro agent mail board` open interactive TUIs and block the session. If commands report no workspace, run `nitro agent init` once from the repository root (see the sibling `nitro-task` skill). If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## Core principles
 

@@ -5,7 +5,7 @@ description: Drive a nitro agent tasks backlog to completion as the orchestrator
 
 # nitro agent tasks backlog orchestration (wave pipeline)
 
-One orchestrator, disposable workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task skill; this skill is the operating model on top.
+One orchestrator, disposable workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task skill; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## The roles
 

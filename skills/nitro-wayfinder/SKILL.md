@@ -5,7 +5,7 @@ description: Plan a large, fuzzy feature as a shared map of decision tickets in 
 
 # Wayfinding with nitro agent tasks
 
-A loose idea has arrived: too big for one agent session, and wrapped in fog, so the way from here to the **destination** is not visible yet. Wayfinding finds that way instead of charging at the destination. You chart a **map** in `nitro agent tasks`, then work its **decision tickets** (questions whose resolution is a decision, not slices of a build) one at a time until nothing is left to decide. Then you cut the implementation tasks that carry the result to the build.
+A loose idea has arrived: too big for one agent session, and wrapped in fog, so the way from here to the **destination** is not visible yet. Wayfinding finds that way instead of charging at the destination. You chart a **map** in `nitro agent tasks`, then work its **decision tickets** (questions whose resolution is a decision, not slices of a build) one at a time until nothing is left to decide. Then you cut the implementation tasks that carry the result to the build. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 The destination varies per effort, and naming it is the first act: it fixes the scope every ticket is measured against. It is usually a feature or change ready to be cut into implementation tasks; it can also be a design or migration plan that those tasks then execute.
 

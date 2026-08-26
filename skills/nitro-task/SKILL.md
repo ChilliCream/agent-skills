@@ -9,7 +9,7 @@ description: >-
 
 # nitro agent tasks
 
-The tracker is the single source of truth for work and decisions: sessions die and compact, tasks survive. It never runs git commands and stores nothing in your working tree; state is local to the repository, shared across all its git worktrees, durable the moment a command succeeds, and never pushed to the remote. Always call a subcommand; bare `nitro agent` and `nitro agent tasks board` open interactive TUIs and block the session. First run in a repository: `nitro agent init` (optionally `--prefix <id-prefix>`; it also migrates legacy layouts).
+The tracker is the single source of truth for work and decisions: sessions die and compact, tasks survive. It never runs git commands and stores nothing in your working tree; state is local to the repository, shared across all its git worktrees, durable the moment a command succeeds, and never pushed to the remote. Always call a subcommand; bare `nitro agent` and `nitro agent tasks board` open interactive TUIs and block the session. First run in a repository: `nitro agent init` (optionally `--prefix <id-prefix>`; it also migrates legacy layouts). If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## Core principles
 

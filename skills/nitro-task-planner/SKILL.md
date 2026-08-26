@@ -5,7 +5,7 @@ description: Second half of nitro-task-orchestrator. Run a planning session that
 
 # nitro agent tasks backlog planning (planner role)
 
-Companion to nitro-task-orchestrator: that skill is the operating model for the orchestrator session, this one is for a separate planner session that feeds it. nitro agent tasks command mechanics live in the nitro-task skill; this skill covers the planning craft and the handoff.
+Companion to nitro-task-orchestrator: that skill is the operating model for the orchestrator session, this one is for a separate planner session that feeds it. nitro agent tasks command mechanics live in the nitro-task skill; this skill covers the planning craft and the handoff. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## The role
 
