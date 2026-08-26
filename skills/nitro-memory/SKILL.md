@@ -15,7 +15,7 @@ Memory is the workspace's shared knowledge: what one session learns, every futur
 ## Core principles
 
 - **Memory holds what you would otherwise repeat in every prompt.** Standing preferences, durable domain facts, references. Work and decisions in flight live in `nitro agent tasks`; messages to agents go over `nitro agent mail`; follow-ups and TODOs go to the tracker.
-- **Every agent reads everything.** Reads are not filtered by actor. Writes record who saved it: pass `--actor <name>` on `save` and `log`, per command -- shell state does not persist between tool calls, and without the flag the CLI records the OS user.
+- **Every agent reads everything.** Reads are not filtered by actor. Writes record who saved it: pass `--actor <name>` on `save` and `log`, the only two memory commands that take an actor. The name is handed to you, never invented. With Nitro's hooks installed, the session-start hook states it in your context: `Your Nitro actor name is "maya".` Otherwise `nitro agent login` allocates one and prints it.
 - **Capture is cheap, curation is deliberate.** `log` without ceremony; `save` or `promote` only what proved durable.
 - **One self-contained fact per memory.** A future session has no chat context: "Prefer X over Y because Z", not "as discussed, X".
 - **Save only what every agent may read and what stays true.** Credentials, tokens, and personal data stay out (deletion is not an erasure guarantee); volatile state -- current branch, counts, progress -- belongs in the journal or the tracker.
@@ -36,7 +36,7 @@ nitro agent memory tags --output json                       # reuse existing tag
 ## Capture
 
 ```bash
-nitro agent memory log "Investigated the flaky order test; suspect clock skew, unresolved." --actor alice
+nitro agent memory log "Investigated the flaky order test; suspect clock skew, unresolved." --actor maya
 ```
 
 The journal takes text (or `--file`), no type, no tags, immutable -- and write-only through the CLI: no command prints a journal entry's text, and `show`/`update`/`forget` reject journal ids with "Memory '<id>' does not exist."
@@ -44,7 +44,7 @@ The journal takes text (or `--file`), no type, no tags, immutable -- and write-o
 ## Curate
 
 ```bash
-nitro agent memory save "API JSON is camelCase; never snake_case." --type decision --tag conventions --actor alice
+nitro agent memory save "API JSON is camelCase; never snake_case." --type decision --tag conventions --actor maya
 nitro agent memory promote                                     # list unpromoted journal candidates
 nitro agent memory promote "01hqzxk8..." --type fact --tag testing
 ```

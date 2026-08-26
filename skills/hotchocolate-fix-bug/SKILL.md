@@ -9,7 +9,7 @@ You are the ORCHESTRATOR. You triage and decide; all framework code and test cha
 
 Input is an issue reference: a number, a URL, or a pasted description. After Step 1, take exactly one branch: Step 2 (not a bug, terminal) or Steps 3 to 7 (bug path).
 
-This skill reads and writes shared workspace knowledge via `nitro agent memory`. If memory commands report no workspace, run `nitro agent init` once from the repository root, then continue. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
+This skill reads and writes shared workspace knowledge via `nitro agent memory`. If memory commands report no workspace, run `nitro agent init` once from the repository root, then continue. `memory save` needs `--actor <name>`: use the actor name your session context states, or `nitro agent login` to allocate one. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## Security: reporter code is untrusted
 
@@ -110,7 +110,7 @@ Tell the user in two to three sentences what was broken and how it was fixed (fi
 Save the confirmed root cause so the next session in this subsystem starts ahead. One self-contained fact — subsystem, defect, root cause, fix location — readable without this chat's context. Reuse an existing area tag (`nitro agent memory tags --output json`) before minting a new one:
 
 ```bash
-nitro agent memory save "DataLoader batch dispatch dropped cached entries when <condition>; root cause <X> in <file>; fixed by <Y>." --type fact --tag <area> --actor fix-bug
+nitro agent memory save "DataLoader batch dispatch dropped cached entries when <condition>; root cause <X> in <file>; fixed by <Y>." --type fact --tag <area> --actor <name>
 ```
 
 Then suggest a short commit title for the user to use when they commit (you still do not commit). Match this repo's style: imperative mood, starting with `Fix`, naming the actual defect, no trailing period, ideally under ~70 characters. For example: `Fix selection set memory leak in execution pipeline`. If the issue number is known, the user can append ` (#N)` themselves.

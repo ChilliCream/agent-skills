@@ -9,24 +9,23 @@ description: >-
 
 # nitro agent tasks
 
-The tracker is the single source of truth for work and decisions: sessions die and compact, tasks survive. It never runs git commands and stores nothing in your working tree; state is local to the repository, shared across all its git worktrees, durable the moment a command succeeds, and never pushed to the remote. Always call a subcommand; bare `nitro agent` and `nitro agent tasks board` open interactive TUIs and block the session. First run in a repository: `nitro agent init` (optionally `--prefix <id-prefix>`; it also migrates legacy layouts). If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
+The tracker is the single source of truth for work and decisions, because sessions die and context compacts while tasks survive. The tracker never runs git commands and never writes anything to the working tree, so none of its state can land in a commit. Always call a subcommand, since bare `nitro agent` opens an interactive TUI and blocks the session. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## Core principles
 
 - **Use `--output json` and take ids from results.** Ids are never constructed. List commands return compact snapshots; `nitro agent tasks show <id> --output json` returns full state -- description, comments, dependencies, blockers.
 - **Comments are the decision log.** User rulings and binding decisions go in `comment add`, not only in descriptions; agents read them through `show`.
-- **Pass `--actor <name>` on every write** (create, update, comment, close, dep). Shell state does not persist between tool calls; without the flag the CLI records the OS user (fallback env: `NITRO_TASK_ACTOR`).
+- **Pass your actor name on every write**: `--actor <name>` on `create`, `q`, `update`, `close`, `reopen`, `delete`, `defer`, `undefer`, `dep add`, `dep remove`, `comment add`, `label add`, `label remove`, and `epic close-eligible`. Read commands take no actor. The name is handed to you, never invented. With Nitro's hooks installed, the session-start hook states it in your context: `Your Nitro actor name is "maya".` Otherwise `nitro agent login` allocates one and prints it.
 - **Close with evidence.** `close --reason` names the commits or facts that prove it; when unsure, comment instead of closing.
 
 ## Work a task
 
 ```bash
-ACTOR="${NITRO_TASK_ACTOR:-$(whoami)}"
 nitro agent tasks ready --output json                        # open, unblocked, unclaimed work
 nitro agent tasks show "app-1a2" --output json               # read the full task, comments included
-nitro agent tasks update "app-1a2" --claim --actor "$ACTOR"  # in_progress + assigned to you
+nitro agent tasks update "app-1a2" --claim --actor maya  # in_progress + assigned to you
 # ...work...
-nitro agent tasks close "app-1a2" --actor "$ACTOR" --reason "Implemented X in commit abc123"
+nitro agent tasks close "app-1a2" --actor maya --reason "Implemented X in commit abc123"
 ```
 
 `--claim` does not refuse a ticket someone else holds -- check `show` first; `in_progress` with another assignee means pick different work.
@@ -34,10 +33,10 @@ nitro agent tasks close "app-1a2" --actor "$ACTOR" --reason "Implemented X in co
 ## Create
 
 ```bash
-nitro agent tasks create "Fix the parser" --actor "$ACTOR" \
+nitro agent tasks create "Fix the parser" --actor maya \
   --type bug --priority p1 --label parser \
   --description "..." --depends-on "app-9z8" --parent "app-3f2"
-nitro agent tasks q "Quick capture" --actor "$ACTOR"         # prints only the new id
+nitro agent tasks q "Quick capture" --actor maya         # prints only the new id
 ```
 
 - Priorities are 0-4 / p0-p4 (0 critical, 2 default, 4 backlog); types: `task`, `bug`, `feature`, `epic`, `chore`, `docs`, `question`, or custom.
@@ -60,11 +59,11 @@ nitro agent tasks count --by status --output json
 ## Dependencies and epics
 
 ```bash
-nitro agent tasks dep add "app-1a2" "app-9z8" --actor "$ACTOR"   # app-1a2 depends on app-9z8 (blocks)
+nitro agent tasks dep add "app-1a2" "app-9z8" --actor maya   # app-1a2 depends on app-9z8 (blocks)
 nitro agent tasks dep tree "app-1a2" --output json
 nitro agent tasks dep cycles --output json                       # must return empty
 nitro agent tasks epic status --output json                      # child completion per epic
-nitro agent tasks epic close-eligible --actor "$ACTOR"           # closes every epic whose children are all closed
+nitro agent tasks epic close-eligible --actor maya           # closes every epic whose children are all closed
 ```
 
 - A `blocks` edge gates `ready`: a task is unblocked when everything it depends on is closed.
@@ -74,10 +73,10 @@ nitro agent tasks epic close-eligible --actor "$ACTOR"           # closes every 
 ## Defer and housekeeping
 
 ```bash
-nitro agent tasks defer "app-1a2" --until "2026-09-01" --actor "$ACTOR"   # hide from ready until then
-nitro agent tasks undefer "app-1a2" --actor "$ACTOR"
-nitro agent tasks label add "app-1a2" api parser --actor "$ACTOR"
-nitro agent tasks comment add "app-1a2" "Ruling: keep the old format." --actor "$ACTOR"
+nitro agent tasks defer "app-1a2" --until "2026-09-01" --actor maya   # hide from ready until then
+nitro agent tasks undefer "app-1a2" --actor maya
+nitro agent tasks label add "app-1a2" api parser --actor maya
+nitro agent tasks comment add "app-1a2" "Ruling: keep the old format." --actor maya
 nitro agent tasks lint --output json                          # quality findings (e.g. empty descriptions)
 nitro agent tasks doctor --output json                        # workspace integrity
 ```

@@ -22,14 +22,14 @@ Roles are capabilities, not model names. For the model mapping and the spawning,
 
 Planners and the orchestrator communicate over `nitro agent mail` (mechanics in the nitro-mail skill); this is the protocol.
 
-1. Check for a rival first: `nitro agent list --role orchestrator --output json` lists live sessions, so any hit is another orchestrator: stop and ask the user. Only then register: `nitro agent register --actor orchestrator --role orchestrator`. Register never rejects a taken name, so this check is the only guard; always pass `--role orchestrator` on a re-register (omitting it clears the role).
-2. Broadcast your existence: `nitro agent mail broadcast --actor orchestrator --subject "orchestrator online" --body "<workspace, branch, current wave state>"`. "No other registered agent to broadcast to." is fine at startup; later planners find you by role.
-3. Planner briefings arrive as mail. Drain the inbox between waves (`nitro agent mail inbox --unread --actor orchestrator`, `read` what needs attention, `ack` the rest); answer on the same thread with `nitro agent mail reply <message-id> --actor orchestrator`. Pass `--actor orchestrator` on every mail and task write; without it the CLI acts as the OS user. Mail carries pointers; the task itself (`nitro agent tasks show <id>`) is the spec.
+1. Check for a rival first: `nitro agent list --role orchestrator --output json` names the actors this workspace knows in that role, so any live hit is another orchestrator: stop and ask the user. Only then take the role: `nitro agent register --actor <name> --role orchestrator`. `<name>` is the actor your session context states, or one from `nitro agent login`; never invent it, and repeat `--role orchestrator` on each register, since omitting it writes an empty role. Planners find you by role, so the role is the part that must be right.
+2. Broadcast your existence: `nitro agent mail broadcast --actor <name> --subject "orchestrator online" --body "<workspace, branch, current wave state>"`. "No other registered agent to broadcast to." is fine at startup; later planners find you by role.
+3. Planner briefings arrive as mail. Drain the inbox between waves (`nitro agent mail inbox --unread --actor <name>`, `read` what needs attention, `ack` the rest); answer on the same thread with `nitro agent mail reply <message-id> --actor <name>`. Pass `--actor <name>` on every mail command and every task write. Mail carries pointers; the task itself (`nitro agent tasks show <id>`) is the spec.
 
 ## The wave model
 
 1. Group ready tasks into waves by **area label** (`nitro agent tasks ready --label <area> --output json` is one wave's worklist). Unlabeled ready tasks go back to the planner; `wayfinder:*` tasks are never wave material.
-2. At wave launch, claim the wave's tickets (`nitro agent tasks update <ids...> --claim --actor orchestrator`); release a skipped one with `--status open --assignee ""`. Inside a wave: tickets run strictly one at a time (shared files, shared verification).
+2. At wave launch, claim the wave's tickets (`nitro agent tasks update <ids...> --claim --actor <name>`); release a skipped one with `--status open --assignee ""`. Inside a wave: tickets run strictly one at a time (shared files, shared verification).
 3. Across waves: run concurrently only when their areas are disjoint. State the boundary in every agent prompt ("touch only `<area>`; other waves are active elsewhere").
 4. Global operations run solo, no other agents committing: schema regeneration, merging main, anything touching shared config. An in-progress git merge blocks every agent's commits, so never merge mid-wave.
 5. Order waves by dependency: foundations first (routing/state, transports, schema sync), features on top, polish last. Cross-wave interactions get an explicit note in the later ticket ("re-verify what X landed").
@@ -45,7 +45,7 @@ Drive every ticket through the same implement, review, verify, fix loop, so a wa
 ## Closing discipline
 
 - Anything labelled `wayfinder:*` (planning maps and their decision tickets) belongs to planning sessions: never claim, close, or epic-close it.
-- Only the orchestrator closes implementation tasks, and only after a review pass (`nitro agent tasks close <id> --actor orchestrator --reason ...`). Close reasons name the commits and the evidence.
+- Only the orchestrator closes implementation tasks, and only after a review pass (`nitro agent tasks close <id> --actor <name> --reason ...`). Close reasons name the commits and the evidence.
 - Task comments are the decision log: user rulings, attribution notes, sequencing decisions, known tooling quirks. Future agents read them via `nitro agent tasks show`.
 - After an environment incident (disk full, process death), re-check recent closures with `nitro agent tasks list --status closed`: a close you issued may not have landed.
 

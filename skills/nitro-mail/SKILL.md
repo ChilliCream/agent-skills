@@ -3,28 +3,27 @@ name: nitro-mail
 description: >-
   Send and receive mail between coding agents with `nitro agent mail`:
   local-first, per-workspace messaging for multi-agent coordination. Use when
-  registering an agent identity, messaging or replying to another agent,
-  draining an inbox, or waiting for new mail.
+  messaging or replying to another agent, draining an inbox, or waiting for
+  new mail.
 ---
 
 # nitro agent mail
 
-Mail is how agents in one workspace coordinate: registered identities, messages, threads. It shares the workspace with `nitro agent tasks` and `nitro agent memory`, lives locally with the repository across all its git worktrees, and never reaches the remote. Always call a subcommand; bare `nitro agent` and `nitro agent mail board` open interactive TUIs and block the session. If commands report no workspace, run `nitro agent init` once from the repository root (see the sibling `nitro-task` skill). If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
-
+Mail is how agents in one workspace reach each other, with messages addressed by actor name and grouped into threads. One mailbox lives with the repository and is shared across all its git worktrees, so an agent in a linked worktree sees the same mail as one on the main tree. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 ## Core principles
 
 - **Mail carries pointers, never the canonical record.** Decisions and specs live in `nitro agent tasks`; a message references them. Correlate a thread to a task through the subject: `[app-1a2] Starting`.
-- **You are your actor name.** Resolution per command: `--actor` > `NITRO_MAIL_ACTOR` > `NITRO_TASK_ACTOR` > OS user name, lowercased; only lowercase letters, digits, `-`, `_` are valid, anything else is rejected. Shell state does not persist between tool calls, so pass `--actor <name>` on every command.
-- **Register at session start, verify with `whoami`.** `nitro agent register --actor <name> --role <role>` is a silent upsert: it never rejects a taken name, and omitting `--role` on a re-register clears the role -- always repeat it. `nitro agent whoami --actor <name>` confirms registration; `nitro agent list` shows only live harness sessions, so an idle registered agent may not appear there.
+- **You act under an actor name, and every mail command takes it: `--actor <name>`.** The name is handed to you, never invented. With Nitro's hooks installed, the session-start hook states it in your context: `Your Nitro actor name is "maya".` Otherwise `nitro agent login` allocates one and prints it.
+- **Address mail to a name you looked up, never one you assumed.** `nitro agent list --role <role> --output json` names the actors this workspace knows, with their session when they have one.
 - **Read state is yours alone.** Reading, acking, and archiving affect only your copy; archiving is an inbox display state, not deletion -- archived mail stays in `threads`, `search`, and `inbox --all`.
 
 ## Send and reply
 
 ```bash
-nitro agent mail send "agent-a" --actor alice --subject "[app-1a2] Starting" --body "Claiming this now."
-nitro agent mail send "agent-a" "agent-b" --cc "agent-c" --actor alice --subject "Status" --body-file notes.txt
-nitro agent mail reply "m-abc123" --actor alice --body "On it."
-nitro agent mail broadcast --actor alice --role "backend" --subject "Heads up" --body "Deploying at 5pm."
+nitro agent mail send --to "theo" --actor maya --subject "[app-1a2] Starting" --body "Claiming this now."
+nitro agent mail send --to "theo" --to "nina" --cc "eli" --actor maya --subject "Status" --body-file notes.txt
+nitro agent mail reply --message "m-abc123" --actor maya --body "On it."
+nitro agent mail broadcast --actor maya --role "backend" --subject "Heads up" --body "Deploying at 5pm."
 ```
 
 - Sending to a never-registered name succeeds and creates an implicit mailbox for it, with a `note: '<name>' has never registered.`; only an invalid name is a hard failure. Check the spelling when the note surprises you.
@@ -35,12 +34,12 @@ nitro agent mail broadcast --actor alice --role "backend" --subject "Heads up" -
 ## Receive
 
 ```bash
-nitro agent mail inbox --unread --actor alice --output json
-nitro agent mail read "m-abc123" --actor alice --thread      # whole thread oldest first, marks it read
-nitro agent mail ack "m-abc123" "m-def456" --actor alice     # mark read without printing
-nitro agent mail archive "m-abc123" --actor alice            # done with it
-nitro agent mail threads --actor alice --output json         # your threads, last activity first
-nitro agent mail search "deploy" --actor alice --output json # subject, body, and sender, case-insensitive
+nitro agent mail inbox   --unread --actor maya --output json
+nitro agent mail read    --message m-abc123 --thread --actor maya        # whole thread oldest first, marks it read
+nitro agent mail ack     --message m-abc123 --message m-def456 --actor maya   # mark read without printing
+nitro agent mail archive --message m-abc123 --actor maya                 # done with it
+nitro agent mail threads --actor maya --output json                      # your threads, last activity first
+nitro agent mail search  --text "deploy" --actor maya --output json      # subject, body, and sender, case-insensitive
 ```
 
 - Ack what you act on, archive what is done, so other agents see the thread was handled.
@@ -50,7 +49,7 @@ nitro agent mail search "deploy" --actor alice --output json # subject, body, an
 ## Wait for mail
 
 ```bash
-nitro agent mail watch --actor alice --timeout 30
+nitro agent mail watch --actor maya --timeout 30
 ```
 
 `watch` blocks until mail addressed to you arrives, prints it oldest first, and exits 0; with `--timeout <s>` it exits 1 with empty stdout when nothing came. Its baseline is the moment it starts: already-unread mail does not trigger it -- drain `inbox --unread` first, or pass `--after <timestamp|id>` / `--include-existing` to have the backlog delivered. It never marks anything read; follow up with `read` or `ack`.

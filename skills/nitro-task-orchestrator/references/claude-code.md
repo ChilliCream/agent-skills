@@ -29,6 +29,6 @@ nitro agent hooks claude install --scope user  # or --scope project
 nitro agent hooks claude status
 ```
 
-With hooks installed, a session gets a digest of unread mail at turn boundaries, and the hook binds the session so it shows up in `nitro agent list` and mail pings can target it. Read hook command results from the human output and exit codes, not `--output json`.
+With hooks installed, Nitro gives the session an actor name and states it in your context. The session appears in `nitro agent list`, so mail addressed to it can wake it, and unread mail is shown to you at the start of each turn. Unread mail also blocks you from ending a turn, up to three times, before it lets you finish. When no actor name reaches the context, `nitro agent login` allocates one and you pass it as `--actor <name>` exactly the same way. Read hook command results from the human output and exit codes, not `--output json`.
 
-Hooks or not, the rhythm stands: drain `nitro agent mail inbox --unread --actor orchestrator` between waves. The digest is a wake-up, not the inbox.
+Hooks or not, the rhythm stands: drain `nitro agent mail inbox --unread --actor <name>` between waves. The digest is a wake-up, not the inbox.
