@@ -2,17 +2,22 @@
 
 How each wayfinding operation maps onto `nitro agent tasks`, `nitro agent memory`, and `nitro agent mail`. Every command used here supports `--output json`; use it whenever you read a result programmatically. Full command references live in the nitro-task and nitro-mail skills.
 
-The examples use one effort throughout: prefix `bill`, map `bill-3f2`, tickets `bill-3f2.1`, `bill-3f2.2`, memory tag `wayfinder-billing-export`, actor `wayfinder-1`. Substitute the literal ids you got back from `--output json`; never carry shell variables across tool calls, they do not survive.
+The examples use one effort throughout: prefix `bill`, map `bill-3f2`, tickets `bill-3f2.1`, `bill-3f2.2`, memory tag `wayfinder-billing-export`, actor `maya`. Substitute the literal ids you got back from `--output json`; never carry shell variables across tool calls, they do not survive.
 
 ## Identity
 
-Every write records an actor, and a claim assigns the ticket to that actor. Agent harnesses run each shell call in a fresh process, so an exported `NITRO_TASK_ACTOR` is gone by the next call. Pick one name for the session and pass it on every command that writes: `--actor wayfinder-1` on `tasks create`, `update`, `comment add`, `close`, `dep add`, on `memory save` and `memory log`, and on `mail send`, `reply`, `register`. (Prefixing a single command with `NITRO_TASK_ACTOR=wayfinder-1 nitro agent ...` works too; mail and memory fall back to that variable.)
+Every write records an actor, and a claim assigns the ticket to that actor. You never choose that name: the session-start hook states it in your context (`Your Nitro actor name is "maya".`). Pass it every time: `--actor maya` on `tasks create`, `update`, `comment add`, `close`, `dep add`, on `memory save` and `memory log`, and on every `mail` command. Read commands (`tasks show`, `ready`, `list`, `memory context`, `search`) take no actor.
 
-Register once per workspace, with the role the orchestrator looks for when it wants planners:
+If no actor name reached your context, allocate one -- never invent it:
 
 ```bash
-nitro agent register --actor wayfinder-1 --role planner
-nitro agent whoami --actor wayfinder-1
+nitro agent login                              # prints: Your Nitro actor is 'maya'.
+```
+
+Then take the role the orchestrator looks for when it wants planners. Repeat `--role` on every register; omitting it writes an empty role:
+
+```bash
+nitro agent register --actor maya --role planner
 ```
 
 If the workspace has no tracker yet, run `nitro agent init` once; it sets up tasks, mail, and memory for the repository, shared across all its git worktrees. How and where state is stored is the CLI's business, not yours.
@@ -36,7 +41,7 @@ Never leave scratch files in the working tree. Inline heredocs need none.
 Create:
 
 ```bash
-nitro agent tasks create "Map: billing export" --actor wayfinder-1 \
+nitro agent tasks create "Map: billing export" --actor maya \
   --type epic --label wayfinder:map --priority 1 --output json \
   --description "$(cat <<'EOF'
 ## Destination
@@ -65,7 +70,7 @@ Edit the body (read, modify, write back; `--description` replaces the whole body
 ```bash
 nitro agent tasks show bill-3f2 --output json | jq -r .description
 # compose the new body from what you just read, then:
-nitro agent tasks update bill-3f2 --actor wayfinder-1 --description "$(cat <<'EOF'
+nitro agent tasks update bill-3f2 --actor maya --description "$(cat <<'EOF'
 ...the full new body...
 EOF
 )"
@@ -78,7 +83,7 @@ Because the map is an `epic`, its `status` stays `open` while children are open,
 Create as a child of the map with one wayfinder label and the question as description:
 
 ```bash
-nitro agent tasks create "Which export format?" --actor wayfinder-1 \
+nitro agent tasks create "Which export format?" --actor maya \
   --parent bill-3f2 --label wayfinder:grilling --type question --output json \
   --description "$(cat <<'EOF'
 ## Question
@@ -92,7 +97,7 @@ The id becomes `bill-3f2.<n>`. `lint` flags open tasks with an empty description
 Blocking, in a second pass once ids exist:
 
 ```bash
-nitro agent tasks dep add bill-3f2.2 bill-3f2.1 --actor wayfinder-1   # .2 depends on .1 (type blocks)
+nitro agent tasks dep add bill-3f2.2 bill-3f2.1 --actor maya   # .2 depends on .1 (type blocks)
 nitro agent tasks create "..." --parent bill-3f2 --depends-on bill-3f2.1 ...   # or at creation
 nitro agent tasks dep cycles --output json                             # must return {"items":[]}
 ```
@@ -116,7 +121,7 @@ The first write of a session, before any work. `--claim` does not refuse a ticke
 
 ```bash
 nitro agent tasks show bill-3f2.1 --output json | jq '{status, assignee}'   # open + null: free
-nitro agent tasks update bill-3f2.1 --actor wayfinder-1 --claim              # in_progress + assignee = you
+nitro agent tasks update bill-3f2.1 --actor maya --claim              # in_progress + assignee = you
 ```
 
 `in_progress` with another assignee means another session is on it; pick the next frontier ticket.
@@ -142,12 +147,12 @@ CSV per RFC 4180, UTF-8 with BOM, CRLF line endings.
 ```
 
 ```bash
-nitro agent tasks comment add bill-3f2.1 --actor wayfinder-1 "$(cat <<'EOF'
+nitro agent tasks comment add bill-3f2.1 --actor maya "$(cat <<'EOF'
 ## Decision
 ...
 EOF
 )"
-nitro agent tasks close bill-3f2.1 --actor wayfinder-1 --reason "Decided: CSV per RFC 4180"
+nitro agent tasks close bill-3f2.1 --actor maya --reason "Decided: CSV per RFC 4180"
 ```
 
 Then append one line to the map's **Decisions so far** (see Map above) and do the graduation pass: create newly statable tickets, wire edges, close invalidated tickets with a reason (`--reason "Invalidated by bill-3f2.1: ..."`; prefer close over delete, it keeps the audit trail), delete graduated patches from the fog, move out-of-scope work.
@@ -155,7 +160,7 @@ Then append one line to the map's **Decisions so far** (see Map above) and do th
 ## Out of scope
 
 ```bash
-nitro agent tasks close bill-3f2.5 --actor wayfinder-1 --reason "Out of scope: past the destination (multi-currency totals)"
+nitro agent tasks close bill-3f2.5 --actor maya --reason "Out of scope: past the destination (multi-currency totals)"
 ```
 
 plus one line under **Out of scope** in the map. Never list it under **Decisions so far**.
@@ -169,7 +174,7 @@ The wayfinding session never commits, pushes, or switches branches in the user's
 Use `nitro agent memory` for what every future session of this effort must know without rereading tickets: standing preferences and domain facts. Decisions themselves stay in tickets. The effort's memory tag is written in the map's Notes; tags and types allow only lowercase letters, digits, and hyphens.
 
 ```bash
-nitro agent memory save --actor wayfinder-1 --type preference --tag wayfinder-billing-export \
+nitro agent memory save --actor maya --type preference --tag wayfinder-billing-export \
   "Prefer boring formats: CSV over Parquet unless a consumer needs columnar."
 nitro agent memory context --tag wayfinder-billing-export             # at session start: prompt-ready block
 nitro agent memory search "export" --tag wayfinder-billing-export    # when a question smells familiar
@@ -181,11 +186,11 @@ nitro agent memory search "export" --tag wayfinder-billing-export    # when a qu
 
 Mail is for coordination between sessions or agents, never for the canonical record:
 
-- A parallel session needs a ruling from the map owner: `nitro agent mail send <owner> --actor wayfinder-1 --subject "[bill-3f2] Which export format?" --body "..."` with the question and the ticket id.
+- A parallel session needs a ruling from the map owner: `nitro agent mail send <owner> --actor maya --subject "[bill-3f2] Which export format?" --body "..."` with the question and the ticket id.
 - Handoff to the orchestrator (see handoff.md): one briefing with task ids and ordering.
-- Check `nitro agent mail inbox --unread --actor wayfinder-1` at session start; answer with `mail reply` so threads stay intact, and record any ruling as a ticket comment.
+- Check `nitro agent mail inbox --unread --actor maya` at session start; answer with `mail reply` so threads stay intact, and record any ruling as a ticket comment.
 
-Sending fires a best-effort wake ping at recipients that have a live claimed session; it is not a delivery guarantee. Add `--no-ping` for low-priority notes.
+The message is stored before the recipient's session is woken, so a non-zero exit means the wake went unconfirmed, not that the mail was lost; never resend on that alone.
 
 ## Task tickets
 
@@ -193,6 +198,6 @@ A `wayfinder:task` ticket (`--type task`) is manual work that blocks a decision:
 
 ## Session hygiene
 
-1. `nitro agent whoami --actor wayfinder-1`; `nitro agent mail inbox --unread --actor wayfinder-1`; `nitro agent memory context --tag <memory tag>`.
+1. `nitro agent register --actor maya --role planner` (takes the role under the name your context states); `nitro agent mail inbox --unread --actor maya`; `nitro agent memory context --tag <memory tag>`.
 2. Load the map. Never edit it from memory of a previous session.
 3. Claim, resolve, graduate, stop.

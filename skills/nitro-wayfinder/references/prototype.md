@@ -26,7 +26,7 @@ If the question is ambiguous and the human is not reachable, pick the shape that
 Show the human the artifact or its findings, grill the reaction in rounds (see grilling.md), confirm the shared understanding, then write the resolution comment (template in operations.md: decision, rejected, locked parameters, assets = the branch) and close:
 
 ```bash
-nitro agent tasks close bill-3f2.4 --actor wayfinder-1 --reason "Prototyped: naive nightly rebuild too slow at 10M rows; incremental design instead"
+nitro agent tasks close bill-3f2.4 --actor maya --reason "Prototyped: naive nightly rebuild too slow at 10M rows; incremental design instead"
 ```
 
 Append the gist to the map and run the graduation pass. A falsified design typically closes some tickets, opens others, and sharpens fog.

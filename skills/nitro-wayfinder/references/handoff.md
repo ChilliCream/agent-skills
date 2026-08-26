@@ -2,7 +2,7 @@
 
 When the map has no open tickets and **Not yet specified** is empty, the way is clear. The outcome of wayfinding is not a document: it is an implementation-ready task graph in the same tracker, written so that implementer agents can build from it without the chat that produced it. This session cuts that graph, verifies it, and briefs the orchestrator. If a destination turns out to need nothing built (a pure decision), the closed tickets are the deliverable; close the map and say so.
 
-The orchestrator is a separate session running the sibling nitro-task-orchestrator skill. It registers with role `orchestrator`, groups ready tasks into waves by area label, and finds planners by role `planner`.
+The orchestrator is a separate session running the sibling nitro-task-orchestrator skill. It takes the role `orchestrator`, groups ready tasks into waves by area label, and finds planners by role `planner`. Roles, not names, are how the two sides find each other: actor names are allocated per session.
 
 ## Before writing tasks
 
@@ -33,7 +33,7 @@ Plus the metadata the orchestrator schedules by: `--priority` 0-4, `--type` (`ta
 Example, with the jobs epic created as `bill-4a1`:
 
 ```bash
-nitro agent tasks create "Write invoice CSV exporter" --actor wayfinder-1 \
+nitro agent tasks create "Write invoice CSV exporter" --actor maya \
   --parent bill-4a1 --type feature --priority 1 --label jobs --output json \
   --description "$(cat <<'EOF'
 ## Problem
@@ -63,13 +63,13 @@ nitro agent tasks lint --output json                      # no findings on the n
 nitro agent tasks ready --output json | jq '[.items[] | select(.id | startswith("bill-4a1."))]'   # per epic: only its foundations
 ```
 
-Then close the map: `nitro agent tasks close bill-3f2 --actor wayfinder-1 --reason "Way clear; implementation under [billing export] jobs (bill-4a1), [billing export] api (bill-4a2)"`.
+Then close the map: `nitro agent tasks close bill-3f2 --actor maya --reason "Way clear; implementation under [billing export] jobs (bill-4a1), [billing export] api (bill-4a2)"`.
 
 ## Brief the orchestrator
 
 1. Find it: `nitro agent list --role orchestrator --output json`. If none is registered, report the created tasks to the user and stop; do not become the orchestrator. Mail to an unregistered name is accepted but reaches nobody.
-2. Mail a compact briefing to the name returned (normally `orchestrator`): `nitro agent mail send orchestrator --actor wayfinder-1 --subject "[plan] billing export" --body "$(cat <<'EOF' ... EOF)"` with the epic and task ids (one line each, by name), area labels, the ordering constraints, any open question that needs a user ruling, and a note that tasks labelled `wayfinder:*` are decision tickets, never wave material. The orchestrator reads details with `show`; do not paste descriptions.
-3. The send fires only a best-effort wake ping. If your harness can message another running session, send it a one-line pointer to the mail; otherwise the orchestrator drains its inbox between waves. If it mails back (ambiguous task, scope collision), fix the task and `nitro agent mail reply` on the same thread with what changed.
+2. Mail a compact briefing to the actor name that query returned, never an assumed one: `nitro agent mail send <orchestrator-actor> --actor maya --subject "[plan] billing export" --body "$(cat <<'EOF' ... EOF)"` with the epic and task ids (one line each, by name), area labels, the ordering constraints, any open question that needs a user ruling, and a note that tasks labelled `wayfinder:*` are decision tickets, never wave material. The orchestrator reads details with `show`; do not paste descriptions.
+3. The briefing is stored before the orchestrator is woken, so a non-zero exit from `send` means the wake went unconfirmed, not that the mail was lost. If your harness can message another running session, send it a one-line pointer to the mail; otherwise the orchestrator drains its inbox between waves. If it mails back (ambiguous task, scope collision), fix the task and `nitro agent mail reply` on the same thread with what changed.
 
 ## What this session never does
 

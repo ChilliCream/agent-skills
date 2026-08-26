@@ -24,7 +24,7 @@ Give the subagent the ticket's question verbatim plus:
 When the subagent reports:
 
 ```bash
-nitro agent tasks comment add bill-3f2.2 --actor wayfinder-1 "$(cat <<'EOF'
+nitro agent tasks comment add bill-3f2.2 --actor maya "$(cat <<'EOF'
 ## Decision
 Exports land in the existing finance share; the reconciliation job already mounts it.
 
@@ -38,7 +38,7 @@ Exports land in the existing finance share; the reconciliation job already mount
 - docs/research/export-storage.md
 EOF
 )"
-nitro agent tasks close bill-3f2.2 --actor wayfinder-1 --reason "Researched: finance share, path locked"
+nitro agent tasks close bill-3f2.2 --actor maya --reason "Researched: finance share, path locked"
 ```
 
 The comment must carry the answer, not only a pointer. A future session reads the ticket first and the file only if it needs the evidence. Then append the gist to the map's **Decisions so far** and run the graduation pass: a fact often turns a fog entry into a sharp question.

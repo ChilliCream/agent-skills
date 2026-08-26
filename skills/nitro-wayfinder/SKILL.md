@@ -78,7 +78,7 @@ Work beyond the destination is **out of scope**, not fog. When a ticket turns ou
 
 ## Invocation
 
-Both modes start with the session hygiene in [references/operations.md](references/operations.md): confirm the actor, drain unread mail, load the effort's memory.
+Both modes start with the session hygiene in [references/operations.md](references/operations.md): take the planner role under the actor name your context states, drain unread mail, load the effort's memory.
 
 ### Chart the map
 
@@ -124,6 +124,6 @@ When no open tickets remain and **Not yet specified** is empty, the way is clear
 - **Decision tickets that start producing deliverables** mean the map is done in that region. Stop and hand off instead. A task ticket that reads like a slice of the build is mis-typed: close it and let the handoff cut it as an implementation task.
 - **Questions without context get rejected.** Every question the human sees must be self-contained: the context inside the question, never "see my reasoning above".
 - **Compaction is harmless only if nothing load-bearing lives in chat.** Write the resolution comment before you write the summary for the user.
-- **Shell state does not survive between tool calls.** Pass `--actor` on every write and use literal ids; exported variables from an earlier call are gone.
+- **Shell state does not survive between tool calls.** Pass `--actor <name>` and literal ids on every command; exported variables from an earlier call are gone.
 - **`update --description` replaces the whole map body.** Read it with `show --output json`, edit, write it back; never write from memory.
 - **Never resolve a HITL ticket alone.** If the human is away, resolve research tickets or stop.
