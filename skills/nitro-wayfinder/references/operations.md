@@ -180,7 +180,7 @@ nitro agent memory context --tag wayfinder-billing-export             # at sessi
 nitro agent memory search "export" --tag wayfinder-billing-export    # when a question smells familiar
 ```
 
-`save` requires `--type` (`fact`, `decision`, `preference`, `reference`). Project-scope memories are shared with every agent in the workspace; `--scope global` keeps one on this machine across workspaces. `memory log` is a cheap journal for a session's loose ends; promote an entry (`memory promote <id> --type ...`) only if it earns a place as a preference or fact.
+`save` requires `--type` (`fact`, `decision`, `preference`, `reference`). Memories are shared with every agent in the workspace. `memory log` is a cheap journal for a session's loose ends; promote an entry (`memory promote <id> --type ...`) only if it earns a place as a preference or fact.
 
 ## Mail
 

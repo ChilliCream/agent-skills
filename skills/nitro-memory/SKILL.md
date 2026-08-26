@@ -51,7 +51,7 @@ nitro agent memory promote "01hqzxk8..." --type fact --tag testing
 
 - `save` requires `--type`: `fact`, `decision`, `preference`, `reference`, or a custom type. Types and tags are trimmed and lowercased, then must be only lowercase letters, digits, and hyphens, up to 40 characters.
 - When a closed task's decision yields a standing rule, save the outcome as a `--type decision` memory; the deliberation stays in the task.
-- `promote` copies a journal entry verbatim into curated (`--type` required, records `promotedFrom`). Re-promoting returns the existing copy and ignores new flags; change them with `update`. Its `--scope` is a read filter; the copy always lands in the entry's own scope.
+- `promote` copies a journal entry verbatim into curated (`--type` required, records `promotedFrom`). Re-promoting returns the existing copy and ignores new flags; change them with `update`.
 - Because journal text is unreadable, promote what you logged while it is still in your context. For a cold candidate: promote with a provisional `--type`, `show` the copy to read it, `forget` it if it does not earn curation (re-promoting later works).
 
 ## Housekeeping
@@ -61,10 +61,3 @@ nitro agent memory update "01hqzxk8..." --type decision --add-tag api --remove-t
 nitro agent memory forget "01hqzxk8..." --force              # hard delete: no tombstone, no undo
 nitro agent memory doctor --output json                      # integrity check; report problems, do not hand-edit
 ```
-
-## Scopes
-
-- **`project`** (write default): shared with every agent in this repository, across all its worktrees.
-- **`global`**: this machine, across all workspaces; personal, cross-project preferences.
-
-Writes take `--scope project|global`; `update` and `forget` target the write scope, so a global memory needs `--scope global` or they fail with "Memory '<id>' does not exist." Reads default to `--scope all`: both bands, project first.
