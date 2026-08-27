@@ -5,7 +5,7 @@ description: Drive a nitro agent tasks backlog to completion as the orchestrator
 
 # nitro agent tasks backlog orchestration (wave pipeline)
 
-One orchestrator, disposable workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task skill; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
+One orchestrator, disposable workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task, nitro-mail, and nitro-memory skills; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## The roles
 
@@ -25,6 +25,15 @@ Planners and the orchestrator communicate over `nitro agent mail` (mechanics in 
 1. Check for a rival first: `nitro agent list --role orchestrator --output json` names the actors this workspace knows in that role, so any live hit is another orchestrator: stop and ask the user. Only then take the role: `nitro agent register --actor <name> --role orchestrator`. `<name>` is the actor your session context states, or one from `nitro agent login`; never invent it, and repeat `--role orchestrator` on each register, since omitting it writes an empty role. Planners find you by role, so the role is the part that must be right.
 2. Broadcast your existence: `nitro agent mail broadcast --actor <name> --subject "orchestrator online" --body "<workspace, branch, current wave state>"`. "No other registered agent to broadcast to." is fine at startup; later planners find you by role.
 3. Planner briefings arrive as mail. Drain the inbox between waves (`nitro agent mail inbox --unread --actor <name>`, `read` what needs attention, `ack` the rest); answer on the same thread with `nitro agent mail reply --message <message-id> --actor <name> --body "..."`. Pass `--actor <name>` on every mail command and every task write. Mail carries pointers; the task itself (`nitro agent tasks show <id>`) is the spec.
+
+## Shared memory
+
+Knowledge that outlives this backlog lives in `nitro agent memory` (mechanics in the nitro-memory skill): one workspace-wide store every agent and session reads, so the conventions and tooling quirks an earlier run paid for are not rediscovered here.
+
+1. Load it once at startup, before you group the first wave: `nitro agent memory context` prints a prompt-ready block; `nitro agent memory search "<words>" --output json` when a specific question smells familiar. Reads take no actor.
+2. Save what will still bind after this backlog ships -- a formatter rule, a build quirk, a standing user preference: `nitro agent memory save "<text>" --type preference --tag <area> --actor <name>`. `--type` is required (`fact`, `decision`, `preference`, `reference`).
+3. Per-task rulings stay task comments. Memory is for what a future run needs without reading this backlog; a comment is for what this task's implementer needs. When a closed task yields a standing rule, save the rule and leave the deliberation in the task.
+4. **Subagents do not read memory unless told to.** Restate the standing rules in the implementer, reviewer, and fixer prompts yourself; a rule an agent never sees is a rule it breaks.
 
 ## The wave model
 
@@ -68,4 +77,4 @@ The orchestrator personally manages shared infrastructure; agents get access ins
 
 ## Rhythm
 
-Launch wave → process completion (close passes, fix-or-escalate failures) → record decisions → launch next wave(s). Between waves, reconcile the tracker (`nitro agent tasks ready --output json`, `nitro agent tasks dep cycles --output json`, close each finished non-wayfinder epic via `nitro agent tasks epic status --output json`, duplicates from parallel planners) and drain the mailbox. Do not use `epic close-eligible`: it would also close a finished wayfinder map. End with: no open work (`nitro agent tasks list --output json` returns nothing after epics close), a final report of what shipped, and the compiled deferred-decisions list.
+Launch wave → process completion (close passes, fix-or-escalate failures) → record decisions → launch next wave(s). Between waves, promote any standing rule the wave produced into memory, then reconcile the tracker (`nitro agent tasks ready --output json`, `nitro agent tasks dep cycles --output json`, close each finished non-wayfinder epic via `nitro agent tasks epic status --output json`, duplicates from parallel planners) and drain the mailbox. Do not use `epic close-eligible`: it would also close a finished wayfinder map. End with: no open work (`nitro agent tasks list --output json` returns nothing after epics close), a final report of what shipped, and the compiled deferred-decisions list.

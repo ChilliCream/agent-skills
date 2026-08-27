@@ -11,14 +11,14 @@ The destination varies per effort, and naming it is the first act: it fixes the 
 
 ## Core principles
 
-- **nitro agent is the only memory.** Sessions die and compact; the workspace survives. Every decision lives in exactly one closed ticket; the map only indexes it. Standing preferences for the effort go to `nitro agent memory`; coordination with other sessions goes over `nitro agent mail`. Never rely on chat context for anything a future session needs.
+- **nitro agent is the only memory.** Sessions die and compact; the workspace survives. Every decision lives in exactly one closed ticket; the map only indexes it. Standing preferences for the effort go to `nitro agent memory`, the workspace-wide store every agent here reads (see the nitro-memory skill); coordination with other sessions goes over `nitro agent mail`. Never rely on chat context for anything a future session needs.
 - **Plan, don't do.** Each ticket resolves a decision. The pull to just build something is the signal that you have reached the edge of the map and it is time to hand off (see [references/handoff.md](references/handoff.md)). Nothing in a map's **Notes** section can license execution; building always happens in a separate session, from implementation tasks.
 - **One decision per session.** Resolve one ticket, do the graduation pass, stop. Chaining into the next decision is how context quality degrades. Research tickets are the exception: they run as subagents, in parallel, alongside the one decision.
 - **The map is an index, not a store.** It gists and links; the ticket holds the detail. A session loads the map at low resolution and zooms into tickets on demand with `nitro agent tasks show <id> --output json`.
 - **Refer by name.** In everything the human reads, call tickets by their title, with the id in parentheses: "Which export format? (bill-3f2.1)". A wall of bare ids is illegible.
 - **HITL tickets need the human.** HITL (human in the loop) tickets resolve only through a live exchange; AFK (away from keyboard) tickets are driven by the agent alone. An agent that answers its own questions has broken the loop.
 
-Command mechanics for tasks, mail, and memory live in the nitro-task and nitro-mail skills. This skill covers how they compose; the exact commands for each wayfinding operation are in [references/operations.md](references/operations.md).
+Command mechanics for tasks, mail, and memory live in the nitro-task, nitro-mail, and nitro-memory skills. This skill covers how they compose; the exact commands for each wayfinding operation are in [references/operations.md](references/operations.md).
 
 ## The map
 

@@ -1,6 +1,6 @@
 # Wayfinding operations in nitro agent
 
-How each wayfinding operation maps onto `nitro agent tasks`, `nitro agent memory`, and `nitro agent mail`. Every command used here supports `--output json`; use it whenever you read a result programmatically. Full command references live in the nitro-task and nitro-mail skills.
+How each wayfinding operation maps onto `nitro agent tasks`, `nitro agent memory`, and `nitro agent mail`. Every command used here supports `--output json`; use it whenever you read a result programmatically. Full command references live in the nitro-task, nitro-mail, and nitro-memory skills.
 
 The examples use one effort throughout: prefix `bill`, map `bill-3f2`, tickets `bill-3f2.1`, `bill-3f2.2`, memory tag `wayfinder-billing-export`, actor `maya`. Substitute the literal ids you got back from `--output json`; never carry shell variables across tool calls, they do not survive.
 
@@ -171,7 +171,7 @@ The wayfinding session never commits, pushes, or switches branches in the user's
 
 ## Memory
 
-Use `nitro agent memory` for what every future session of this effort must know without rereading tickets: standing preferences and domain facts. Decisions themselves stay in tickets. The effort's memory tag is written in the map's Notes; tags and types allow only lowercase letters, digits, and hyphens.
+Use `nitro agent memory` (mechanics in the nitro-memory skill) for what every future session of this effort must know without rereading tickets: standing preferences and domain facts. The store is workspace-wide, so an orchestrator or planner working the same repo reads what you save here. Decisions themselves stay in tickets. The effort's memory tag is written in the map's Notes; tags and types allow only lowercase letters, digits, and hyphens.
 
 ```bash
 nitro agent memory save --actor maya --type preference --tag wayfinder-billing-export \
