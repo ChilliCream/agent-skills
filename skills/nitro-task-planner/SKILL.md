@@ -67,12 +67,12 @@ Size tasks for one implementer agent each: one coherent change, verifiable on it
 ## Handing off to the orchestrator
 
 1. Find the orchestrator: `nitro agent list --role orchestrator --output json`. If no registered orchestrator exists, report the created tasks to the user and stop. Do not spawn or become the orchestrator yourself.
-2. Mail it a compact briefing at the actor name that query returned, never an assumed one (`nitro agent mail send <orchestrator-actor> --actor <name> --subject "[plan] <batch>" --body ...`): task IDs with one line each, area labels, ordering constraints (which tasks block which), and any open questions needing a user ruling. The orchestrator reads details with `nitro agent tasks show`; do not paste full descriptions.
+2. Mail it a compact briefing at the actor name that query returned, never an assumed one (`nitro agent mail send --to <orchestrator-actor> --actor <name> --subject "[plan] <batch>" --body ...`): task IDs with one line each, area labels, ordering constraints (which tasks block which), and any open questions needing a user ruling. The orchestrator reads details with `nitro agent tasks show`; do not paste full descriptions.
 3. The briefing is stored before the orchestrator's session is woken, so a non-zero exit from `send` means the wake went unconfirmed, not that the mail was lost -- never resend on that alone. If your harness can message another running session, send it a one-line pointer to the mail thread; otherwise leave it: it drains its inbox between waves.
 
 ## Ongoing conversation
 
-The orchestrator may mail back (a task is ambiguous, scope collides with an active wave). Answer by fixing the task (update description, add a comment, adjust deps), then `nitro agent mail reply <message-id> --actor <name>` on the same thread with what changed. The tracker stays the single source of truth; messages carry pointers, never the canonical spec.
+The orchestrator may mail back (a task is ambiguous, scope collides with an active wave). Answer by fixing the task (update description, add a comment, adjust deps), then `nitro agent mail reply --message <message-id> --actor <name> --body "..."` on the same thread with what changed. The tracker stays the single source of truth; messages carry pointers, never the canonical spec.
 
 ## What the planner NEVER does
 

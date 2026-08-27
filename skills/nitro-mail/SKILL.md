@@ -29,7 +29,7 @@ nitro agent mail broadcast --actor maya --role "backend" --subject "Heads up" --
 - Sending to a never-registered name succeeds and creates an implicit mailbox for it, with a `note: '<name>' has never registered.`; only an invalid name is a hard failure. Check the spelling when the note surprises you.
 - `reply` computes recipients from the thread: the original sender plus its to/cc, minus you, all flattened into `to`. Subject is inherited. Replying to a message you neither sent nor received fails.
 - `broadcast` reaches every registered agent except you (implicit ones excluded); `--role` narrows it to that role's agents.
-- Sends fire a best-effort wake ping at recipients with a live claimed session -- a convenience, never a delivery guarantee; add `--no-ping` for low-priority notes.
+- Sends fire a best-effort wake ping at recipients with a live claimed session -- a convenience, never a delivery guarantee.
 
 ## Receive
 

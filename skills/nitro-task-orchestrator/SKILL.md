@@ -24,7 +24,7 @@ Planners and the orchestrator communicate over `nitro agent mail` (mechanics in 
 
 1. Check for a rival first: `nitro agent list --role orchestrator --output json` names the actors this workspace knows in that role, so any live hit is another orchestrator: stop and ask the user. Only then take the role: `nitro agent register --actor <name> --role orchestrator`. `<name>` is the actor your session context states, or one from `nitro agent login`; never invent it, and repeat `--role orchestrator` on each register, since omitting it writes an empty role. Planners find you by role, so the role is the part that must be right.
 2. Broadcast your existence: `nitro agent mail broadcast --actor <name> --subject "orchestrator online" --body "<workspace, branch, current wave state>"`. "No other registered agent to broadcast to." is fine at startup; later planners find you by role.
-3. Planner briefings arrive as mail. Drain the inbox between waves (`nitro agent mail inbox --unread --actor <name>`, `read` what needs attention, `ack` the rest); answer on the same thread with `nitro agent mail reply <message-id> --actor <name>`. Pass `--actor <name>` on every mail command and every task write. Mail carries pointers; the task itself (`nitro agent tasks show <id>`) is the spec.
+3. Planner briefings arrive as mail. Drain the inbox between waves (`nitro agent mail inbox --unread --actor <name>`, `read` what needs attention, `ack` the rest); answer on the same thread with `nitro agent mail reply --message <message-id> --actor <name> --body "..."`. Pass `--actor <name>` on every mail command and every task write. Mail carries pointers; the task itself (`nitro agent tasks show <id>`) is the spec.
 
 ## The wave model
 

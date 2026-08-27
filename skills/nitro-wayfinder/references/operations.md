@@ -186,7 +186,7 @@ nitro agent memory search "export" --tag wayfinder-billing-export    # when a qu
 
 Mail is for coordination between sessions or agents, never for the canonical record:
 
-- A parallel session needs a ruling from the map owner: `nitro agent mail send <owner> --actor maya --subject "[bill-3f2] Which export format?" --body "..."` with the question and the ticket id.
+- A parallel session needs a ruling from the map owner: `nitro agent mail send --to <owner> --actor maya --subject "[bill-3f2] Which export format?" --body "..."` with the question and the ticket id.
 - Handoff to the orchestrator (see handoff.md): one briefing with task ids and ordering.
 - Check `nitro agent mail inbox --unread --actor maya` at session start; answer with `mail reply` so threads stay intact, and record any ruling as a ticket comment.
 

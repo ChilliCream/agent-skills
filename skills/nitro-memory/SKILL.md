@@ -59,5 +59,4 @@ nitro agent memory promote "01hqzxk8..." --type fact --tag testing
 ```bash
 nitro agent memory update "01hqzxk8..." --type decision --add-tag api --remove-tag draft
 nitro agent memory forget "01hqzxk8..." --force              # hard delete: no tombstone, no undo
-nitro agent memory doctor --output json                      # integrity check; report problems, do not hand-edit
 ```
