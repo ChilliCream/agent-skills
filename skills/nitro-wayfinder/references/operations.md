@@ -176,6 +176,8 @@ Use `nitro agent memory` (mechanics in the nitro-memory skill) for what every fu
 ```bash
 nitro agent memory save --actor maya --type preference --tag wayfinder-billing-export \
   "Prefer boring formats: CSV over Parquet unless a consumer needs columnar."
+nitro agent memory save --actor maya --type preference --tag wayfinder-billing-export \
+  "Wayfinder question style: batched rounds via AskUserQuestion."
 nitro agent memory context --tag wayfinder-billing-export             # at session start: prompt-ready block
 nitro agent memory search "export" --tag wayfinder-billing-export    # when a question smells familiar
 ```
@@ -198,6 +200,6 @@ A `wayfinder:task` ticket (`--type task`) is manual work that blocks a decision:
 
 ## Session hygiene
 
-1. `nitro agent register --actor maya --role planner` (takes the role under the name your context states); `nitro agent mail inbox --unread --actor maya`; `nitro agent memory context --tag <memory tag>`.
+1. `nitro agent register --actor maya --role planner` (takes the role under the name your context states); `nitro agent mail inbox --unread --actor maya`; `nitro agent memory context --tag <memory tag>` -- this is where the effort's question style comes from; if it is missing, agree one before the first question and save it (grilling.md).
 2. Load the map. Never edit it from memory of a previous session.
 3. Claim, resolve, graduate, stop.

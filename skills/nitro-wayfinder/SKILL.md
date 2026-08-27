@@ -78,24 +78,25 @@ Work beyond the destination is **out of scope**, not fog. When a ticket turns ou
 
 ## Invocation
 
-Both modes start with the session hygiene in [references/operations.md](references/operations.md): take the planner role under the actor name your context states, drain unread mail, load the effort's memory.
+Both modes start with the session hygiene in [references/operations.md](references/operations.md): take the planner role under the actor name your context states, drain unread mail, load the effort's memory. Loaded memory carries the effort's **question style**; if none is saved, agree it before the first question (see [references/grilling.md](references/grilling.md)) and save it, so later sessions inherit it and never re-ask.
 
 ### Chart the map
 
 The user arrives with a loose idea.
 
-1. **Name the destination.** Grill (see [references/grilling.md](references/grilling.md)) until the destination fits in two lines. It fixes the scope, so it is settled first.
-2. **Map the frontier.** Grill again, breadth-first: fan out across the whole space, surfacing the open decisions and the fog. If this surfaces no fog and the journey fits one session, the user does not need a map: stop and ask how they want to proceed (usually: cut the tasks directly with the quality bar in [references/handoff.md](references/handoff.md)).
-3. **Create the map**, then the tickets you can state now, then wire blocking edges in a second pass (tickets need ids before they can reference each other). Everything you cannot state yet stays in **Not yet specified**.
-4. **Save standing preferences** the user expressed (`nitro agent memory save ... --type preference --tag <memory tag>`) so future sessions inherit them without rereading the chat.
-5. **Resolve the research tickets.** Claim each, dispatch one subagent per ticket in parallel, wait, and record each resolution as it lands. Research is the one ticket type charting resolves.
-6. End the session here. Charting resolves only research tickets (step 5); every other ticket waits for its own future session.
+1. **Agree the question style.** Ask once, before any other question: batched rounds, or one at a time in Issue / Example / Recommendation prose (see [references/grilling.md](references/grilling.md)). It shapes every exchange for this effort, so it comes before the first grill.
+2. **Name the destination.** Grill until the destination fits in two lines. It fixes the scope, so it is settled first.
+3. **Map the frontier.** Grill again, breadth-first: fan out across the whole space, surfacing the open decisions and the fog. If this surfaces no fog and the journey fits one session, the user does not need a map: stop and ask how they want to proceed (usually: cut the tasks directly with the quality bar in [references/handoff.md](references/handoff.md)).
+4. **Create the map**, then the tickets you can state now, then wire blocking edges in a second pass (tickets need ids before they can reference each other). Everything you cannot state yet stays in **Not yet specified**.
+5. **Save standing preferences** the user expressed, the question style from step 1 among them (`nitro agent memory save ... --type preference --tag <memory tag>`), so future sessions inherit them without rereading the chat.
+6. **Resolve the research tickets.** Claim each, dispatch one subagent per ticket in parallel, wait, and record each resolution as it lands. Research is the one ticket type charting resolves.
+7. End the session here. Charting resolves only research tickets (step 6); every other ticket waits for its own future session.
 
 ### Work through the map ("next")
 
 The user names the map, or just says "next". Without a named map, look it up (`nitro agent tasks list --label wayfinder:map`); with several, ask which. A ticket is optional; without one, you pick.
 
-1. Load the map (`show <map-id>`), then `nitro agent memory context --tag <memory tag>` for the effort's preferences.
+1. Load the map (`show <map-id>`), then `nitro agent memory context --tag <memory tag>` for the effort's preferences, the question style included. If no style is saved, agree one before the first question and save it.
 2. Fire subagents for any research tickets on the frontier (claim each first); they run while you work.
 3. Choose the ticket: the one named, else the first frontier ticket by priority, then lowest id. Check it is unclaimed, then **claim it** (`update <id> --claim`) so parallel sessions skip it. If the frontier is empty but tickets remain, stop and report what is blocked or held by whom; never reclaim another session's ticket without the user confirming that session is dead.
 4. Resolve it by its type. Zoom as needed: read the closed tickets it depends on in full; the map gives gists, the tickets hold the contracts.
@@ -114,7 +115,7 @@ When no open tickets remain and **Not yet specified** is empty, the way is clear
 | Read | When |
 |---|---|
 | [references/operations.md](references/operations.md) | Any write to the tracker: identity, creating the map or tickets, claiming, resolving, the resolution comment template, editing the map body, the frontier query, memory and mail usage, git rules, session hygiene |
-| [references/grilling.md](references/grilling.md) | Resolving a grilling ticket, naming the destination, mapping the frontier: the round format, domain modeling, the HITL rules |
+| [references/grilling.md](references/grilling.md) | Resolving a grilling ticket, naming the destination, mapping the frontier: the question style choice, both ask formats, domain modeling, the HITL rules |
 | [references/research.md](references/research.md) | Creating or resolving a research ticket: the subagent brief and where findings land |
 | [references/prototype.md](references/prototype.md) | A decision hinges on "does this actually work" or "how should this look": building and capturing a throwaway artifact |
 | [references/handoff.md](references/handoff.md) | The way is clear: cutting implementation tasks, the quality bar, wiring, verification, and the orchestrator briefing |
