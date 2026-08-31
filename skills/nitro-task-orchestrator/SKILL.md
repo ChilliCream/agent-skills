@@ -47,8 +47,10 @@ Drive every ticket through the same implement, review, verify, fix loop, so a wa
 
 ## Escalation modes
 
-- **User present**: ask immediately with 2-3 concrete options and a recommendation. Record the answer as a task comment so agents inherit it.
-- **User away (deferred mode)**: agents pick the most conservative reasonable interpretation, implement it, record `NEEDS-USER: <question> | chose: <what I did>` as a task comment, and continue. Only hard-block when no reasonable interpretation exists. The orchestrator compiles all deferred notes into the final report.
+When you are stuck, need more input, or need something clarified, the planner is the escalation target. The planner owns the conversation with the user; never route around it to ask the user yourself. Escalate over mail: reply on the originating briefing thread when one exists, otherwise `nitro agent mail broadcast --role planner --actor <name> --subject "<task-id>: <blocker>" --body "..."`.
+
+- **Planner responsive**: mail immediately with 2-3 concrete options and a recommendation. Record the ruling as a task comment so agents inherit it.
+- **Planner away (deferred mode)**: agents pick the most conservative reasonable interpretation, implement it, record `NEEDS-PLANNER: <question> | chose: <what I did>` as a task comment, and continue. Only hard-block when no reasonable interpretation exists. The orchestrator compiles all deferred notes into the final report.
 - Never let one stuck ticket stall a wave: record, skip, continue.
 
 ## Closing discipline
