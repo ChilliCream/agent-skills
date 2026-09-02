@@ -1,11 +1,11 @@
 ---
 name: nitro-task-orchestrator
-description: Drive a nitro agent tasks backlog to completion as the orchestrator; waves of disposable subagents grouped by code area, every task reviewed before it closes. Use when the user says 'orchestrate the backlog', 'run the wave pipeline', or wants many tasks implemented autonomously. Not for single small changes.
+description: Drive a nitro agent tasks backlog to completion as the orchestrator; waves of ticket-scoped subagent teams grouped by code area, every task reviewed before it closes. Use when the user says 'orchestrate the backlog', 'run the wave pipeline', or wants many tasks implemented autonomously. Not for single small changes.
 ---
 
 # nitro agent tasks backlog orchestration (wave pipeline)
 
-One orchestrator, disposable workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task, nitro-mail, and nitro-memory skills; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
+One orchestrator, one warm team per ticket, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task, nitro-mail, and nitro-memory skills; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## The roles
 
@@ -15,6 +15,8 @@ One orchestrator, disposable workers, nitro agent tasks as the single source of 
 - **Reviewer**: reads the actual diff. Three axes: correctness (root cause, not suppression), scope creep (anything beyond the task is a finding even if the code is good), verification gaps (claims that do not hold up). Verdict pass only with zero blocker/major findings.
 - **Verifier**: only runs when the review fails. Adversarially confirms or dismisses each finding with evidence, then writes a minimal correction plan. This kills plausible-but-wrong findings before they cause churn.
 - **Fixer**: applies the verified plan exactly, nothing more. Then re-review. Cap at 3 cycles, then surface to the user.
+
+Spawn each role once per ticket (verifier and fixer on the first failed review) and resume the same agents for later cycles; they keep what they learned and cost nothing while idle. Release them when the ticket closes, never reuse them for another ticket, and replace one only if it cannot resume, after commenting the handoff on the task. Example: `app-1a2` fails review, verifier confirms, fixer commits, the same reviewer passes; a second failure reuses the same verifier and fixer, a third surfaces to the user.
 
 Roles are capabilities, not model names. For the model and effort mapping, the shipped agent definitions, and the spawning, isolation, and wake mechanics of your harness, read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md).
 
