@@ -1,6 +1,6 @@
 # Research tickets: facts a decision waits on
 
-A research ticket surfaces a fact from outside the working directory: vendor documentation, a third-party API, a standard, a knowledge base. It is AFK: a subagent resolves it while you keep working, and it is the one ticket type you may resolve several of in one session.
+A research ticket surfaces a fact from outside the working directory: vendor documentation, a third-party API, a standard, a knowledge base. It is AFK: the nitro-research skill resolves it with background subagents while you keep working, and it is the one ticket type you may resolve several of in one session.
 
 ## When to create one
 
@@ -10,18 +10,15 @@ Facts that come from the codebase itself are not research tickets; look them up 
 
 ## Dispatching
 
-Claim the ticket first (`update <id> --claim`), then dispatch the subagent. While charting, do this for every research ticket right after wiring edges, in parallel. While working the map, do it for every research ticket on the frontier at the start of the session, before the one decision you resolve by hand.
+Claim the ticket first (`update <id> --claim`), then run the nitro-research skill yourself: you are its lead. The lead never reads a source and only reads three short files back, so it costs the session little; the scout, readers, and synthesizer run as background subagents while you resolve the one decision by hand. Give nitro-research the ticket's question verbatim, name this ticket as the caller in the research epic it opens, and size it `question` by default, `investigation` when several tickets hang on the answer. It leaves a cited `findings.md` under `.nitro/research/<epic-id>-<slug>/` and saves the answer to memory.
 
-Give the subagent the ticket's question verbatim plus:
+Do this for every research ticket at once. While charting, open all research epics and dispatch their scouts right after wiring edges. While working the map, do it for every research ticket on the frontier at the start of the session, before the decision; check on the pipelines at step boundaries and record each resolution as its findings land.
 
-1. Investigate against **primary sources**: official docs, source code, specs, first-party APIs. Not a secondary write-up of them. Follow every claim back to the source that owns it.
-2. Write the findings as a Markdown file with each claim cited. Lead with the answer to the question, then the evidence, then what remains unknown.
-3. Save it where the repository already keeps such notes (`docs/research/` is a common choice); match the existing convention, and state the path in the report. If the repository wants research off the main branch, commit it in a separate worktree on a `research/<slug>` branch (see Git rules in operations.md) and report the branch.
-4. Return the answer and the path or branch. Do not edit the tracker; the session that dispatched you records the resolution.
+If the repository wants research off the main branch, run the research lead in a separate worktree on a `research/<slug>` branch (see Git rules in operations.md) and name the branch in the resolution.
 
 ## Resolving
 
-When the subagent reports:
+When the research pipeline closes:
 
 ```bash
 nitro agent tasks comment add bill-3f2.2 --actor maya "$(cat <<'EOF'
@@ -35,7 +32,7 @@ Exports land in the existing finance share; the reconciliation job already mount
 - path: /finance/exports/invoices/
 
 ## Assets
-- docs/research/export-storage.md
+- .nitro/research/rs-2b9-export-storage/findings.md
 EOF
 )"
 nitro agent tasks close bill-3f2.2 --actor maya --reason "Researched: finance share, path locked"
@@ -45,5 +42,5 @@ The comment must carry the answer, not only a pointer. A future session reads th
 
 ## Guardrails
 
-- A subagent that could not reach a primary source reports that, and the ticket stays open with a comment saying what is missing. Never close on a guess.
+- A pipeline that could not reach a primary source says so in its findings, and the ticket stays open with a comment saying what is missing. Never close on a guess.
 - Research resolves facts, not decisions. If the finding forces a choice, the choice is a grilling ticket.

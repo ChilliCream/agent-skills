@@ -67,7 +67,13 @@ Research is unaffected: a fact you need is still a subagent's job, never a quest
 - **Facts are your job, never the user's.** When a question needs a fact from the environment (what the schema looks like, what a library supports, what a vendor's API does), dispatch a subagent to find it. Do not block the round on it: only the questions downstream of that fact wait; ask the rest now. Feed the finding into the next round. A fact only this ticket needs goes into this ticket's resolution comment; a fact other tickets will depend on becomes a research ticket with a `blocks` edge (see research.md).
 - **Decisions are the user's.** Put each to them and wait. Never fill in the user's side of the exchange, and never treat a recommendation as an answer.
 - **If the user declines to answer**, re-ask the same round or question once when they say "ask again". If they answer with confusion instead of a choice, the question lacked context, not the user: rewrite it. In Style A, a dismissed picker is a decline, not an answer.
-- **Record as you go.** A ruling given mid-round is a fact for the ticket; put it into the resolution comment, not only into the next question.
+- **Log progress to the ticket, not to chat.** After every agreed point (Style B) or every answered round (Style A), add a progress comment to the ticket before asking the next question: what was agreed, and which branches are still open (template in operations.md). A ruling given mid-round goes there too. Chat holds only the question on the table; the ticket holds the state of the grill.
+
+## Logging progress and resuming
+
+The design tree is not in your head. Its state is the ticket's latest progress comment: an **Agreed** list that only grows, and an **Open** list of the branches still to visit. Write the comment before the next question goes out, so the board is never more than one question behind the conversation. When a fact arrives from a subagent, log it as an agreed point the same way.
+
+Before the first question of a claimed ticket, read its comments (`show <id> --output json`). A progress comment from an earlier session means the grill is half done: restate the last **Agreed** list to the user in one short paragraph, then continue from **Open**. Never re-ask an agreed point; if the user wants to reopen one, log the change as a new agreed point that supersedes the old.
 
 ## Model the domain as you grill
 
@@ -75,8 +81,14 @@ Decisions are made in words, so sharpen them while you ask. Challenge terms that
 
 ## When the decision lands
 
-The frontier is empty: every branch visited, nothing silently assumed. Restate the decision in one short paragraph and ask the user to confirm the shared understanding. On confirmation, immediately write the resolution comment (decision, rejected options and why, every locked parameter; template in operations.md), close the ticket, append to the map, and run the graduation pass. Do not act on the decision before the confirmation, and do not let further chat delay the write after it.
+The latest progress comment's **Open** list is empty: every branch visited, nothing silently assumed. Restate the decision in one short paragraph and ask the user to confirm the shared understanding. On confirmation, immediately write the resolution comment (decision, rejected options and why, every locked parameter; template in operations.md), compiled from the progress comments, close the ticket, append to the map, and run the graduation pass. Do not act on the decision before the confirmation, and do not let further chat delay the write after it.
 
-## Charting rounds
+While grilling, listen for the user wanting the team's input: "let's see what X thinks", "I'm not sure the finance lead agrees", "we should ask the team". Each such point is a line under the map's **For review** section, naming the ticket and why the input matters. The spec written at handoff carries them to the team; a point never written down is a review the team never gets asked for.
 
-While charting, the first grill pins the destination (two lines, fixes scope). The second grill is breadth-first: fan out across the whole space rather than deep on any one thread, to surface the decisions that can be stated now and the fog that cannot. Depth belongs to the ticket sessions, not to charting.
+## Charting tickets
+
+Charting runs as two grilling tickets under the map, created before the first question (see operations.md): **Name the destination** and **Map the frontier**. They are ordinary tickets: claimed, logged, resolved, and picked up by "next" if the charting session dies.
+
+**Name the destination** pins the destination in two lines; it fixes scope. Its resolution comment's Decision is those two lines, which then replace the map's `Draft:` destination.
+
+**Map the frontier** is breadth-first: fan out across the whole space rather than deep on any one thread, to surface the decisions that can be stated now and the fog that cannot. Depth belongs to the ticket sessions, not to charting. Each decision the user agrees is statable becomes a ticket at once, and each fog patch goes into the map's **Not yet specified** at once; the progress comment names the ticket ids created so far. Its resolution comment's Decision lists the tickets and fog it produced.

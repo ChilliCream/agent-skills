@@ -38,14 +38,14 @@ Never leave scratch files in the working tree. Inline heredocs need none.
 
 ## Map
 
-Create:
+Create it as the first write of a charting session, before the first question, with the destination as the user stated it and marked `Draft:`; the charting ticket "Name the destination" replaces that line on resolution:
 
 ```bash
 nitro agent tasks create "Map: billing export" --actor maya \
   --type epic --label wayfinder:map --priority 1 --output json \
   --description "$(cat <<'EOF'
 ## Destination
-Finance can download invoices as a file their tools import, and a nightly job writes the same file to shared storage.
+Draft: finance wants to get invoices out of the system as a file; something nightly too.
 
 ## Notes
 Repo: billing (.NET). Memory tag: wayfinder-billing-export.
@@ -54,7 +54,8 @@ Tickets under this map carry wayfinder:* labels; they are decisions, never build
 ## Decisions so far
 
 ## Not yet specified
-- retention of old exports
+
+## For review
 
 ## Out of scope
 EOF
@@ -77,6 +78,29 @@ EOF
 ```
 
 Because the map is an `epic`, its `status` stays `open` while children are open, but it is reported as blocked: `show` returns `blockers: ["bill-3f2.2:child-open", ...]`, `nitro agent tasks blocked` lists it, and `nitro agent tasks epic status` shows `isEligibleForClose: false`. That is expected; it means the map is not done. Never set `--status blocked` on it. The CLI does allow closing a map with open children, so "close the map only at handoff" is a rule you keep, not one the tool enforces.
+
+## Charting tickets
+
+Right after the map, before any question, create the two tickets that charting resolves. They are grilling tickets like any other; ids come back as `bill-3f2.1` and `bill-3f2.2`:
+
+```bash
+nitro agent tasks create "Name the destination" --actor maya \
+  --parent bill-3f2 --label wayfinder:grilling --type question --priority 0 --output json \
+  --description "$(cat <<'EOF'
+## Question
+What is the destination of this effort, in two lines? It fixes the scope every later ticket is measured against. Start from the Draft line in the map's Destination and grill until it is precise: who gets what, and what is explicitly not part of it.
+EOF
+)"
+nitro agent tasks create "Map the frontier" --actor maya \
+  --parent bill-3f2 --label wayfinder:grilling --type question --priority 0 --depends-on bill-3f2.1 --output json \
+  --description "$(cat <<'EOF'
+## Question
+Given the destination, which decisions can be stated now, and what is still fog? Breadth-first across the whole space, no depth on any thread. Each statable decision becomes a ticket under the map as soon as it is agreed; each fog patch goes into the map's Not yet specified as soon as it is agreed. Wire blocking edges between the new tickets once all have ids.
+EOF
+)"
+```
+
+Resolving "Name the destination" also rewrites the map's **Destination** (read, modify, write back). Resolving "Map the frontier" leaves the map with its tickets and fog; its resolution comment lists them.
 
 ## Decision ticket
 
@@ -126,9 +150,36 @@ nitro agent tasks update bill-3f2.1 --actor maya --claim              # in_progr
 
 `in_progress` with another assignee means another session is on it; pick the next frontier ticket.
 
+## Progress comment
+
+While a grilling or prototype ticket is being resolved, its state lives on the ticket, not in chat. After every agreed point (one-at-a-time style) or every answered round (batched style), and before the next question goes out, add a comment in this shape:
+
+```markdown
+## Progress
+### Agreed
+- Excel is the primary consumer; the nightly job reads the same file, never a second format.
+- One file per day, not one per invoice.
+- Subagent fact: Excel on Windows needs a UTF-8 BOM to read non-ASCII correctly.
+### Open
+- header columns
+- file naming
+### Created
+- Where do exports land? (bill-3f2.3)
+```
+
+```bash
+nitro agent tasks comment add bill-3f2.1 --actor maya "$(cat <<'EOF'
+## Progress
+...
+EOF
+)"
+```
+
+Each comment carries the full **Agreed** list so far, not only the delta, so the latest comment alone says where the grill stands. **Created** appears only when the point produced tickets (the frontier ticket while charting, or a graduation during a decision). A session that claims a ticket reads its comments first and resumes from the latest **Open** list.
+
 ## Resolve
 
-The resolution comment is the contract future sessions and implementers read. Use this shape:
+The resolution comment is the contract future sessions and implementers read. Compile it from the ticket's progress comments and use this shape:
 
 ```markdown
 ## Decision
@@ -155,7 +206,7 @@ EOF
 nitro agent tasks close bill-3f2.1 --actor maya --reason "Decided: CSV per RFC 4180"
 ```
 
-Then append one line to the map's **Decisions so far** (see Map above) and do the graduation pass: create newly statable tickets, wire edges, close invalidated tickets with a reason (`--reason "Invalidated by bill-3f2.1: ..."`; prefer close over delete, it keeps the audit trail), delete graduated patches from the fog, move out-of-scope work.
+Then append one line to the map's **Decisions so far** (see Map above); if the user flagged the decision for the team's input, add one line under **For review** naming the ticket and why. Then do the graduation pass: create newly statable tickets, wire edges, close invalidated tickets with a reason (`--reason "Invalidated by bill-3f2.1: ..."`; prefer close over delete, it keeps the audit trail), delete graduated patches from the fog, move out-of-scope work.
 
 ## Out of scope
 
@@ -201,5 +252,5 @@ A `wayfinder:task` ticket (`--type task`) is manual work that blocks a decision:
 ## Session hygiene
 
 1. `nitro agent register --actor maya --role planner` (takes the role under the name your context states); `nitro agent mail inbox --unread --actor maya`; `nitro agent memory context --tag <memory tag>` -- this is where the effort's question style comes from; if it is missing, agree one before the first question and save it (grilling.md).
-2. Load the map. Never edit it from memory of a previous session.
-3. Claim, resolve, graduate, stop.
+2. Load the map, or create it if this is a charting session; never edit it from memory of a previous session.
+3. Claim, read the ticket's comments, resolve while logging progress comments, graduate, stop.
