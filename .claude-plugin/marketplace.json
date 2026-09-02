@@ -25,7 +25,8 @@
         "./skills/nitro-task-planner",
         "./skills/nitro-wayfinder",
         "./skills/prototype-feature",
-        "./skills/prototype-to-contract"
+        "./skills/prototype-to-contract",
+        "./skills/nitro-research"
       ]
     }
   ]
