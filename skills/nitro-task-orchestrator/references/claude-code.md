@@ -4,9 +4,9 @@ How the harness-neutral roles and protocol in SKILL.md map onto Claude Code.
 
 ## Models and effort
 
-Apply the tier rule to the current Claude lineup; set the model override per spawned subagent and the effort per role. As of 2026 a good mapping:
+Apply the tier rule to the current Claude lineup. As of 2026 a good mapping:
 
-- **Planner (fable, medium effort)**
+- **Planner (fable, medium effort)**: usually a separate session running the nitro-task-planner skill, not a subagent you spawn.
 - **Implementer (sonnet, high effort)**
 - **Reviewer (opus, medium effort)**
 - **Verifier (fable, medium effort)**
@@ -14,9 +14,24 @@ Apply the tier rule to the current Claude lineup; set the model override per spa
 
 When lineups change, re-derive from the tier rule instead of copying these names.
 
+## Effort only works through agent definitions
+
+The Agent tool takes a `model` override per call but no effort field. Effort comes only from a subagent definition (`.claude/agents/<name>.md`, frontmatter keys `model` and `effort`, values `low`, `medium`, `high`, `xhigh`, `max`). Writing "use high effort" in a prompt does nothing; the subagent runs at the harness default.
+
+So the skill ships the four spawned roles as definitions in [assets/agents/](../assets/agents/). Before the first wave, install them into the project:
+
+```bash
+mkdir -p .claude/agents
+for f in <skill-dir>/assets/agents/wave-*.md; do
+  [ -e ".claude/agents/$(basename "$f")" ] || cp "$f" .claude/agents/
+done
+```
+
+Existing files are kept, so a project can tune model, effort, or tools locally. Then spawn by name: `subagent_type: "wave-implementer"`, `"wave-reviewer"`, `"wave-verifier"`, `"wave-fixer"`. Do not pass a `model` override; the definition carries the tier. If the definitions cannot be installed (no write access to `.claude/`), spawn `general-purpose` with a `model` override and note in the final report that effort was not controlled.
+
 ## Spawning subagents
 
-Launch a fresh subagent for every role invocation: an implementer and then a separate reviewer for each ticket, plus a verifier and fixer only when review fails. Set the model and effort override per role. Make every prompt self-contained: name the role; provide the ticket id and instruct the agent to read it with `nitro agent tasks show <id> --output json` (comments included); state the wave boundary ("touch only `<area>`"); provide the implementation commit hashes or exact diff when applicable; repeat the standing git rules from SKILL.md verbatim; and require the applicable [change](../assets/change-result.schema.json), [review](../assets/review-result.schema.json), or [verification](../assets/verification-result.schema.json) result shape. Never rely on conversation context reaching the subagent—the prompt and tracker are its contract.
+Launch a fresh subagent for every role invocation by its definition name: an implementer and then a separate reviewer for each ticket, plus a verifier and fixer only when review fails. The definitions carry the role identity and the standing git rules; the prompt still has to be self-contained for the work: provide the ticket id and instruct the agent to read it with `nitro agent tasks show <id> --output json` (comments included); state the wave boundary ("touch only `<area>`; other waves are active elsewhere"); provide the implementation commit hashes or exact diff when applicable; restate any standing rules from memory the role must obey; and paste the applicable [change](../assets/change-result.schema.json), [review](../assets/review-result.schema.json), or [verification](../assets/verification-result.schema.json) result schema. Never rely on conversation context reaching the subagent—the prompt, the definition, and the tracker are its contract.
 
 Worktree isolation is native: give each implementer its own worktree when waves run concurrently. Nitro resolves the same agent workspace from every worktree of the repository, so no extra setup is needed.
 

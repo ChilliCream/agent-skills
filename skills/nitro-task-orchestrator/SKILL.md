@@ -16,7 +16,7 @@ One orchestrator, disposable workers, nitro agent tasks as the single source of 
 - **Verifier**: only runs when the review fails. Adversarially confirms or dismisses each finding with evidence, then writes a minimal correction plan. This kills plausible-but-wrong findings before they cause churn.
 - **Fixer**: applies the verified plan exactly, nothing more. Then re-review. Cap at 3 cycles, then surface to the user.
 
-Roles are capabilities, not model names. For the model mapping and the spawning, isolation, and wake mechanics of your harness, read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md).
+Roles are capabilities, not model names. For the model and effort mapping, the shipped agent definitions, and the spawning, isolation, and wake mechanics of your harness, read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md).
 
 ## Mail identity (planner channel)
 
