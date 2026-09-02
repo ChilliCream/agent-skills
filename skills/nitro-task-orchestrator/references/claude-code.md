@@ -12,28 +12,20 @@ Apply the tier rule to the current Claude lineup. As of 2026 a good mapping:
 - **Verifier (fable, medium effort)**
 - **Fixer (sonnet, high effort)**
 
-When lineups change, re-derive from the tier rule instead of copying these names.
+When lineups change, re-derive from the tier rule instead of copying these names; the mapping lives in the `TIER` table of the workflow script.
 
-## Effort only works through agent definitions
+## The wave is a workflow
 
-The Agent tool takes a `model` override per call but no effort field. Effort comes only from a subagent definition (`.claude/agents/<name>.md`, frontmatter keys `model` and `effort`, values `low`, `medium`, `high`, `xhigh`, `max`). Writing "use high effort" in a prompt does nothing; the subagent runs at the harness default.
+A wave runs as the Workflow script in [assets/workflows/nitro-backlog-wave.js](../assets/workflows/nitro-backlog-wave.js): deterministic implement, review, verify, fix loop, model and effort per role, result schemas enforced, killed runs resumable with `resumeFromRunId`. Install it once (`cp` into `.claude/workflows/`), then per wave, after claiming tickets and creating the worktree:
 
-So the skill ships the four spawned roles as definitions in [assets/agents/](../assets/agents/). Before the first wave, install them into the project:
-
-```bash
-mkdir -p .claude/agents
-for f in <skill-dir>/assets/agents/wave-*.md; do
-  [ -e ".claude/agents/$(basename "$f")" ] || cp "$f" .claude/agents/
-done
+```
+Workflow({ name: "nitro-backlog-wave", args: { actor, repo, branch, rules?, tooling?,
+  waves: [{ area, worktree, tickets: [{ id, context? }] }] } })
 ```
 
-Existing files are kept, so a project can tune model, effort, or tools locally. Then spawn by name: `subagent_type: "wave-implementer"`, `"wave-reviewer"`, `"wave-verifier"`, `"wave-fixer"`. Do not pass a `model` override; the definition carries the tier. If the definitions cannot be installed (no write access to `.claude/`), spawn `general-purpose` with a `model` override and note in the final report that effort was not controlled.
+Each phase is a fresh agent; the review result carries the findings forward. Disjoint areas may share one call; tickets inside a wave run one at a time. The result carries per ticket the outcome, commits, cycles, and deferred notes: close the passes with their commits as evidence, escalate the rest. Standing rules from memory go into `args.rules`.
 
-## Spawning subagents
-
-Spawn one subagent per role per ticket by its definition name: an implementer and then a separate reviewer for each ticket, plus a verifier and fixer only when review fails; resume the same agents for later phases with SendMessage and release them when the ticket closes. The definitions carry the role identity and the standing git rules; the prompt still has to be self-contained for the work: provide the ticket id and instruct the agent to read it with `nitro agent tasks show <id> --output json` (comments included); state the wave boundary ("touch only `<area>`; other waves are active elsewhere"); provide the implementation commit hashes or exact diff when applicable; restate any standing rules from memory the role must obey; and paste the applicable [change](../assets/change-result.schema.json), [review](../assets/review-result.schema.json), or [verification](../assets/verification-result.schema.json) result schema. Never rely on conversation context reaching the subagent—the prompt, the definition, and the tracker are its contract.
-
-Worktree isolation is native: give each implementer its own worktree when waves run concurrently. Nitro resolves the same agent workspace from every worktree of the repository, so no extra setup is needed.
+Worktree isolation is native: give each wave its own worktree when waves run concurrently. Nitro resolves the same agent workspace from every worktree of the repository, so no extra setup is needed.
 
 ## Wake integration
 

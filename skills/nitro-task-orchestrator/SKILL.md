@@ -1,24 +1,22 @@
 ---
 name: nitro-task-orchestrator
-description: Drive a nitro agent tasks backlog to completion as the orchestrator; waves of ticket-scoped subagent teams grouped by code area, every task reviewed before it closes. Use when the user says 'orchestrate the backlog', 'run the wave pipeline', or wants many tasks implemented autonomously. Not for single small changes.
+description: Drive a nitro agent tasks backlog to completion as the orchestrator; waves of subagents grouped by code area, every task reviewed before it closes. Use when the user says 'orchestrate the backlog', 'run the wave pipeline', or wants many tasks implemented autonomously. Not for single small changes.
 ---
 
 # nitro agent tasks backlog orchestration (wave pipeline)
 
-One orchestrator, one warm team per ticket, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task, nitro-mail, and nitro-memory skills; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
+One orchestrator, delegated workers, nitro agent tasks as the single source of truth. Command mechanics live in the nitro-task, nitro-mail, and nitro-memory skills; this skill is the operating model on top. If `nitro` itself is not found, the CLI is not installed — stop and tell the user to install it: https://chillicream.com/docs/nitro/cli/installation. Do not attempt to install it yourself.
 
 ## The roles
 
 - **Orchestrator (you, the main session)**: never writes feature code. Owns the backlog, the schedule, the environment, and all task closures. Everything else is delegated.
 - **Planner**: turns user feedback or a parity goal into tasks. Each task gets: problem, concrete file scope, fix direction, verification requirements, non-goals, priority. Planners inspect the live app and the code before writing tasks, and link epics with parent-child deps. Usually a separate session running the nitro-task-planner skill, not a subagent you spawn.
-- **Implementer**: one task per agent. Reads the task with `nitro agent tasks show <id> --output json` including comments (comments carry binding decisions). Implements exactly the scope, verifies, commits, reports structured results.
+- **Implementer**: one task per agent. Reads the task with `nitro agent tasks show <id> --output json` including comments (comments carry binding decisions). Implements exactly the scope, verifies, reviews its own diff on the reviewer's three axes and fixes what it finds, commits, reports structured results.
 - **Reviewer**: reads the actual diff. Three axes: correctness (root cause, not suppression), scope creep (anything beyond the task is a finding even if the code is good), verification gaps (claims that do not hold up). Verdict pass only with zero blocker/major findings.
 - **Verifier**: only runs when the review fails. Adversarially confirms or dismisses each finding with evidence, then writes a minimal correction plan. This kills plausible-but-wrong findings before they cause churn.
 - **Fixer**: applies the verified plan exactly, nothing more. Then re-review. Cap at 3 cycles, then surface to the user.
 
-Spawn each role once per ticket (verifier and fixer on the first failed review) and resume the same agents for later cycles; they keep what they learned and cost nothing while idle. Release them when the ticket closes, never reuse them for another ticket, and replace one only if it cannot resume, after commenting the handoff on the task. Example: `app-1a2` fails review, verifier confirms, fixer commits, the same reviewer passes; a second failure reuses the same verifier and fixer, a third surfaces to the user.
-
-Roles are capabilities, not model names. For the model and effort mapping, the shipped agent definitions, and the spawning, isolation, and wake mechanics of your harness, read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md).
+Roles are capabilities, not model names. For the model and effort mapping and the spawning, isolation, and wake mechanics of your harness, read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md).
 
 ## Mail identity (planner channel)
 

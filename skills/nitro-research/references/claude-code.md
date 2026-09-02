@@ -8,36 +8,23 @@ The tier rule: locating and extracting get the cheapest model that quotes accura
 
 - **Lead**: whatever the session runs; it reads three short files and writes one paragraph, so its cost is the brief, not the model.
 - **Scout**: sonnet, medium effort; one run decides what every reader sees, and its cost is search tokens, not reasoning
-- **Reader**: sonnet, low effort; rerun a failed reader as `research-reader-retry` (sonnet, medium effort), then with an opus `model` override.
+- **Reader**: sonnet, low effort; a reader whose claims lack locations reruns at medium effort.
 - **Synthesizer**: sonnet, medium effort
 - **Verifier**: opus, medium effort; fable only when the caller says the decision is expensive to get wrong.
 
-When lineups change, re-derive from the tier rule instead of copying these names.
+When lineups change, re-derive from the tier rule instead of copying these names; the mapping lives in the `TIER` table of the workflow script.
 
 Haiku is not in the mapping on purpose: it costs half of Sonnet on the cheapest roles, is a generation older, has a 200K context that dense sources overflow, and a reader that quotes the wrong location costs more in reruns than it saved. Lower effort on the newer model is the cheaper lever.
 
-## Effort only works through agent definitions
+## The pipeline is a workflow
 
-The Agent tool takes a `model` override per call but no effort field. Effort comes only from a subagent definition (`.claude/agents/<name>.md`, frontmatter keys `model` and `effort`, values `low`, `medium`, `high`, `xhigh`, `max`). Writing "use low effort" in a prompt does nothing; the subagent runs at the harness default.
+After step 3 (brief.md written) run the Workflow script in [assets/workflows/nitro-research.js](../assets/workflows/nitro-research.js): scout, readers in parallel, synthesizer, verifier for investigations, each with the model and effort above, a failed reader re-run one tier up. Install it once (`cp` into `.claude/workflows/`), then:
 
-So the skill ships the roles as definitions in [assets/agents/](../assets/agents/). Before the first dispatch of a job, install them into the project:
-
-```bash
-mkdir -p .claude/agents
-for f in <skill-dir>/assets/agents/research-*.md; do
-  [ -e ".claude/agents/$(basename "$f")" ] || cp "$f" .claude/agents/
-done
+```
+Workflow({ name: "nitro-research", args: { folder: "<abs .nitro/research/...>", briefs: "<abs path to references/briefs.md>", size: "question" } })
 ```
 
-Existing files are kept, so a project can tune model or effort locally. Then spawn by name: `subagent_type: "research-scout"`, `"research-reader"`, `"research-reader-retry"`, `"research-synthesizer"`, `"research-verifier"`. Pass a `model` override only when escalating a failed reader; the definition's effort still applies. If the definitions cannot be installed (no write access to `.claude/`), spawn `general-purpose` with a `model` override and say in the close report that effort was not controlled.
-
-## Spawning
-
-Launch a fresh subagent for every role invocation by its definition name. Never fork: a fork inherits the lead's whole context, which is exactly the cost this pipeline avoids.
-
-Every prompt is self-contained: name the role, give the absolute folder path and the file the agent must write, paste the role's contract from [briefs.md](briefs.md), and end with "Return at most ten lines: what you wrote, where, and any failure." Readers get one source each and run in parallel in a single message. Do not give subagents your actor name or any `nitro` command; the lead claims, comments, and closes every step task itself from the subagent's returned summary. Nothing from the lead's conversation reaches a subagent unless it is in the prompt or in the folder.
-
-The definitions already grant the tools each role needs: scouts get WebSearch and WebFetch, readers WebFetch plus file access, synthesizer file access only, verifier file access plus WebFetch.
+Agents write into the folder and never touch the tracker; the result carries the answer, unknowns, per-source read summaries, and the verification counts. Create, comment, and close the step tasks from that result. A killed run resumes with `resumeFromRunId`.
 
 ## Worktrees
 
