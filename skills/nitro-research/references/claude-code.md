@@ -7,7 +7,7 @@ How the harness-neutral roles in SKILL.md map onto Claude Code.
 The tier rule: locating and extracting get the cheapest model that quotes accurately; judging gets a mid tier; only adversarial verification gets a top tier, and only for investigations. As of 2026 a good mapping:
 
 - **Lead**: whatever the session runs; it reads three short files and writes one paragraph, so its cost is the brief, not the model.
-- **Scout**: sonnet, low effort
+- **Scout**: sonnet, medium effort; one run decides what every reader sees, and its cost is search tokens, not reasoning
 - **Reader**: sonnet, low effort; rerun a failed reader as `research-reader-retry` (sonnet, medium effort), then with an opus `model` override.
 - **Synthesizer**: sonnet, medium effort
 - **Verifier**: opus, medium effort; fable only when the caller says the decision is expensive to get wrong.

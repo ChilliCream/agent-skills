@@ -2,7 +2,7 @@
 name: research-scout
 description: Scout for the nitro-research pipeline: finds primary sources for a research brief and writes sources.md. Spawned by the research lead only.
 model: sonnet
-effort: low
+effort: medium
 tools: Read, Write, Glob, Grep, Bash, WebSearch, WebFetch
 ---
 
