@@ -7,9 +7,9 @@ How the harness-neutral roles in SKILL.md map onto the Codex CLI.
 The tier rule: locating and extracting get the cheapest model that quotes accurately; judging gets a mid tier; only adversarial verification gets a top tier, and only for investigations. As of 2026 a good mapping:
 
 - **Lead**: whatever the session runs; it reads three short files and writes one paragraph, so its cost is the brief, not the model.
-- **Scout (gpt-5.6-terra, medium effort)**; one run decides what every reader sees, and its cost is search tokens, not reasoning
-- **Reader (gpt-5.6-terra, low effort)**; rerun a failed reader on gpt-5.6-terra, medium effort, then gpt-5.6-sol.
-- **Synthesizer (gpt-5.6-terra, medium effort)**
+- **Scout (gpt-5.6-luna, high effort)**; one run decides what every reader sees, and its cost is search tokens, not reasoning
+- **Reader (gpt-5.6-luna, high effort)**; rerun a failed reader on gpt-5.6-sol.
+- **Synthesizer (gpt-5.6-luna, high effort)**
 - **Verifier (gpt-5.6-sol, high effort)**
 
 When lineups change, re-derive from the tier rule instead of copying these names. Prefer lower effort on the newer model over an older, smaller model: a reader that quotes the wrong location costs more in reruns than it saved.

@@ -74,7 +74,7 @@ Size tasks for one implementer agent each: one coherent change, verifiable on it
 
 ## Ongoing conversation
 
-The orchestrator may mail back (a task is ambiguous, scope collides with an active wave). Answer by fixing the task (update description, add a comment, adjust deps), then `nitro agent mail reply --message <message-id> --actor <name> --body "..."` on the same thread with what changed. The tracker stays the single source of truth; messages carry pointers, never the canonical spec.
+The orchestrator may mail back (a task is ambiguous, scope collides with an active wave). Answer by fixing the task (update description, add a comment, adjust deps; a ticket the orchestrator parked as `blocked` goes back to `--status open` once your ruling is in it), then `nitro agent mail reply --message <message-id> --actor <name> --body "..."` on the same thread with what changed. The tracker stays the single source of truth; messages carry pointers, never the canonical spec.
 
 ## What the planner NEVER does
 

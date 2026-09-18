@@ -84,7 +84,7 @@ const verifyPrompt = (wave, t, commits, review) => `ROLE: Verifier. The review f
 ${header(wave, t)}
 Commits under review: ${commits.join(', ')} in ${wave.worktree}.
 Review findings: ${JSON.stringify(review.findings)}
-For each finding, try to refute it against the code and by running the relevant test. disposition: confirmed (real), dismissed (not real, or outside the ticket; say why), modified (real but the remediation is wrong; give the right one). correctionPlan: the smallest ordered list of concrete edits that resolves every confirmed or modified blocker and major finding, nothing else.
+Rule on every finding, keeping the review's finding ids exactly. For each finding, try to refute it against the code and by running the relevant test. disposition: confirmed (real), dismissed (not real, or outside the ticket; say why), modified (real but the remediation is wrong; give the right one). correctionPlan: the smallest ordered list of concrete edits that resolves every confirmed or modified blocker and major finding, nothing else.
 ${RULES}
 Return the verification result: status, findings [{id, disposition, evidence, correction}], correctionPlan, verified, notVerified, escalation.`
 
@@ -119,12 +119,18 @@ async function runTicket(waveIn, t) {
     if (!review) { r.outcome = 'agent-lost'; return r }
     r.reviews.push(review); take(review)
     if (review.verdict === 'unknown' || review.status !== 'completed') { r.outcome = 'review-inconclusive'; return r }
+    if (review.verdict !== 'pass' && review.findings.length === 0) { r.outcome = 'review-inconclusive'; r.escalation = 'review failed without findings'; return r }
     if (review.verdict === 'pass' || review.findings.every(f => f.severity === 'minor')) { r.outcome = 'pass'; r.commits = commits.slice(); return r }
-    if (cycle === MAX_CYCLES) { r.outcome = 'cap-reached'; r.escalation = `review failed ${MAX_CYCLES} times; surface to the user`; return r }
+    if (cycle === MAX_CYCLES) { r.outcome = 'cap-reached'; r.escalation = `review failed ${MAX_CYCLES} times; escalate to the planner`; return r }
     const verification = await agent(verifyPrompt(wave, t, commits, review), { label: `verify:${t.id}#${cycle}`, phase: 'Verify', schema: VERIFY, ...TIER.verify })
     if (!verification) { r.outcome = 'agent-lost'; return r }
     take(verification)
-    if (verification.findings.every(f => f.disposition === 'dismissed') || verification.correctionPlan.length === 0) { r.outcome = 'pass-after-verify'; r.commits = commits.slice(); return r }
+    // Only a completed verification that rules on every blocker and major finding may overturn a failed review.
+    const failing = review.findings.filter(f => f.severity !== 'minor')
+    const ruled = new Map(verification.findings.map(f => [f.id, f.disposition]))
+    if (verification.status !== 'completed' || !failing.every(f => ruled.has(f.id))) { r.outcome = 'verify-inconclusive'; r.escalation = verification.escalation || 'verifier did not rule on every blocker and major finding; escalate to the planner'; return r }
+    if (failing.every(f => ruled.get(f.id) === 'dismissed')) { r.outcome = 'pass-after-verify'; r.commits = commits.slice(); return r }
+    if (verification.correctionPlan.length === 0) { r.outcome = 'verify-inconclusive'; r.escalation = 'verifier confirmed findings without a correction plan; escalate to the planner'; return r }
     const fix = await agent(fixPrompt(wave, t, commits, verification), { label: `fix:${t.id}#${cycle}`, phase: 'Fix', schema: CHANGE, ...TIER.fix })
     if (!fix) { r.outcome = 'agent-lost'; return r }
     take(fix)
