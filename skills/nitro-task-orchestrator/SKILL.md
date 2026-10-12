@@ -16,7 +16,7 @@ One orchestrator, delegated workers, nitro agent tasks as the single source of t
 - **Verifier**: only runs when the review fails. Adversarially confirms or dismisses each finding with evidence, then writes a minimal correction plan. This kills plausible-but-wrong findings before they cause churn.
 - **Fixer**: applies the verified plan exactly, nothing more. Then re-review. Cap at 3 cycles, then escalate to the planner.
 
-Roles are capabilities, not model names. For Claude Code and Codex the mapping is settled: read [references/claude-code.md](references/claude-code.md) or [references/codex.md](references/codex.md) for the models and effort per role and for the spawning, isolation, and wake mechanics. On any other harness, match these classes: implementer and fixer on a Sonnet-class model at high effort; the reviewer on an Opus-class model at medium effort; the verifier and the planner on a Fable-class model at medium effort.
+Roles are capabilities, not model names. Read the harness reference for model selection, spawning, isolation, and wake mechanics: [Claude Code](references/claude-code.md), [Codex](references/codex.md), or [Venti](references/venti.md). On Venti, run the supplied [C# wave workflow](assets/workflows/nitro-backlog-wave.workflow.cs) with role-based model selection and typed results; serialize writers in the shared working directory. On any other harness, match these classes: implementer and fixer on a Sonnet-class model at high effort; the reviewer on an Opus-class model at medium effort; the verifier and the planner on a Fable-class model at medium effort.
 
 ## Mail identity (planner channel)
 
