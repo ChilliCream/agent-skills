@@ -19,6 +19,12 @@ skills/
 
 ## Available skills
 
+### [`bdd-best-practices`](skills/bdd-best-practices/SKILL.md)
+
+Write, review, and refactor Gherkin scenarios with 31 numbered BDD rules. Each rule has an on-demand reference explaining why it matters, with bad and good examples and sources. The examples use the GDSN domain; suite-specific conventions are identified separately from general Gherkin guidance.
+
+Fire it when writing or reviewing `.feature` files or step phrases, asking whether a scenario follows BDD best practices, or citing a rule by number, such as _"breaks rule 13"_.
+
 ### [`prototype-feature`](skills/prototype-feature/SKILL.md)
 
 Build a clickable local-only frontend prototype before backend or schema work exists. The skill keeps the prototype aligned with the existing app, uses realistic product-domain mock data, preserves one-entity component boundaries, and models user actions as mutation-shaped local hooks.

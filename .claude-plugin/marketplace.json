@@ -15,6 +15,7 @@
       "source": "./",
       "strict": false,
       "skills": [
+        "./skills/bdd-best-practices",
         "./skills/graphql-schema-design",
         "./skills/hotchocolate-best-practices",
         "./skills/hotchocolate-fix-bug",
