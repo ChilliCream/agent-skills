@@ -9,10 +9,13 @@
 A step that describes the screen breaks every time the screen changes, even when the behaviour
 stays the same.
 
-For example, `"U-DS" publishes item "I1"` stays correct when the item editor gets new tabs. A step
-like `"U-DS" opens the item editor and saves the Core data tab` has to change. So words such as
-click, button, tab, scroll or upload do not belong in a step. Page names are fine, because the
-business talks about the Items page too.
+For example, `the customer adds "Travel mug" to the cart` stays correct when the product page
+changes. A step like `the customer scrolls to the purchase panel and clicks the green Add button`
+has to change. Keep screen mechanics such as clicks, selectors and tab order in the step
+implementation. A page name is useful when it identifies where the customer observes an outcome.
+
+Keep an interface detail when it is the behaviour under test, such as keyboard navigation or an
+accessible control name. The rule removes incidental mechanics, not the feature being specified.
 
 Name a public API, message or file when the scenario tests that interface (rule 11). Keep
 endpoint paths, HTTP commands and transport setup in the bindings.
@@ -20,29 +23,30 @@ endpoint paths, HTTP commands and transport setup in the bindings.
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" opens the item editor of "I1" and saves the Core data tab with publishing on
-      Then the status column of "I1" reads "PUBLISHED"
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer scrolls to the purchase panel for "Travel mug" and clicks the green Add button
+      Then the first row of the cart table contains "Travel mug"
 ```
 
-If the editor's tabs or the column change, both steps change, although publishing did not.
+If the panel, button or table layout changes, the steps change even though adding a product did
+not.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 ## Sources

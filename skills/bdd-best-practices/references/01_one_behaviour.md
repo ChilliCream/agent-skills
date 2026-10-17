@@ -9,51 +9,49 @@
 A scenario that tests several behaviours one after the other stops at the first failure. You then
 do not know whether the rest still works.
 
-For example, a scenario creates an item, publishes it and then withdraws it. If publishing breaks,
-the scenario stops there, and nobody learns whether withdrawing still works. Write one scenario for
-each behaviour instead. The withdrawal scenario simply starts with an item that is already published
-(rule 5).
+For example, a scenario adds a product to a cart and then removes it. If adding breaks, the
+scenario stops there, and nobody learns whether removing still works. Write one scenario for each
+behaviour instead. The removal scenario starts with the product already in the cart (rule 5).
 
 ## Bad
 
 ```gherkin
-Feature: Items
+Feature: Cart management
 
-  Rule: Items have a lifecycle
-    Scenario: Item lifecycle
-      Given a data source company "DS1" with an admin "U-DS"
-      When "U-DS" creates a draft item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Draft
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
-      When "U-DS" withdraws item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Withdrawn
+  Rule: Customers can add and remove products
+    Scenario: A customer adds and removes a product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
-Three behaviours in one scenario. If publishing fails, the withdrawal is never tested.
+Two behaviours share one scenario. If adding fails, removal is never tested.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can add products that are in stock
+    Scenario: A customer adds a product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 ```gherkin
-Feature: Withdrawal
+Feature: Cart management
 
-  Rule: Withdrawing a published item makes it Withdrawn
-    Scenario: A supplier withdraws a published item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has published a complete item "I1"
-      When "U-DS" withdraws item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Withdrawn
+  Rule: Customers can remove products from their cart
+    Scenario: A customer removes the only product
+      Given a customer has a cart
+      And the customer's cart contains only "Travel mug"
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
 Each behaviour has its own scenario, and each one starts from the state it needs.

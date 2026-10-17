@@ -6,46 +6,51 @@
 
 ## Why
 
-Scenarios run in parallel and in no fixed order. A scenario that needs another scenario to run
+Scenarios can run in parallel and in any order. A scenario that needs another scenario to run
 first fails as soon as the order changes.
 
-For example, one scenario completes item "I1", and the next one publishes it. The second scenario
-only works if the first one ran before it, in the same worker. Give the second scenario its own
-`Given` steps instead, so it creates its own company, user and item.
+For example, one scenario adds "Travel mug" to a cart, and the next one removes it. The second
+scenario only works if the first ran before it and left its state behind. Give the second scenario
+its own `Given` steps so it has its own customer, cart and product.
+
+The role "the customer" and product name "Travel mug" identify records within each scenario.
+They make the story readable; they do not establish shared records across scenarios. Setup must
+isolate the actual mutable records, including cart contents and stock, even when the same role or
+product name appears in several scenarios.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier completes an item
-      Given a data source company "DS1" with an admin "U-DS"
-      When "U-DS" completes the checklist of item "I1" with:
-        | brand name | Acme |
-      Then the checklist of item "I1" shows no errors
+  Rule: Customers can add products that are in stock
+    Scenario: A customer adds a product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 
-    Scenario: A supplier publishes the completed item
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can remove products from their cart
+    Scenario: A customer removes the only product
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
-The second scenario has no `Given`. On its own, it does not know who "U-DS" or "I1" is.
+The second scenario has no `Given`. On its own, it has no customer or cart containing "Travel mug".
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can remove products from their cart
+    Scenario: A customer removes the only product
+      Given a customer has a cart
+      And the customer's cart contains only "Travel mug"
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
 ## Sources
 
-- sync-autotest specification guide, _The harness_
 - [Automation Panda, BDD 101: Writing good Gherkin](https://automationpanda.com/2017/01/30/bdd-101-writing-good-gherkin/)

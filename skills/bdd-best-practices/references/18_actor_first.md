@@ -9,34 +9,32 @@
 The reader should know at once who acts. If the actor comes at the end, the reader has to read the
 whole step first.
 
-For example, write `"U-DS" publishes item "I1"`, not `item "I1" is published by "U-DS"`. A step
-about a record starts with the record: `a data source company "DS1" exists`.
+For example, write `the customer adds "Travel mug" to the cart`, not `"Travel mug" is added to
+the cart by the customer`. A step about a product starts with the product: `product "Travel mug"
+is in stock`.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A complete item gets published
-      Given there is a complete item "I1" owned by "U-DS" of data source company "DS1"
-      When item "I1" is published by "U-DS"
-      Then on the Items page item "I1" shows as Published for "U-DS"
+  Rule: Customers can add in-stock products to their carts
+    Scenario: An in-stock product gets added to a cart
+      Given there is an empty cart belonging to a customer
+      And in stock there is product "Travel mug"
+      When "Travel mug" is added to the cart by the customer
+      Then in the cart "Travel mug" is visible to the customer
 ```
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
-
-## Sources
-
-- A decision of the sync-autotest suite

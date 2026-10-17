@@ -6,49 +6,47 @@
 
 ## Why
 
-The same act can start from different states. For example, a supplier can publish a complete item
-or an item without a brand name. Each starting state gets its own scenario, so a failure shows
-which case broke.
+The same act can start from different states. For example, a customer can try to add a product
+that is in stock or one that is out of stock. Give each state its own scenario so a failure shows
+which case broke. A Scenario Outline can also express these cases when they share the same steps
+(rule 28).
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes items
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      And "U-DS" has an item "I2" without a brand name
-      When "U-DS" publishes items "I1" and "I2"
-      Then "U-DS" sees item "I1" on the Items page as Published
-      And "U-DS" sees that item "I2" misses its brand name
+  Rule: Customers can add only products that are in stock
+    Scenario: A customer adds products with different stock levels
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      And product "Coffee beans" is out of stock
+      When the customer adds "Travel mug" and "Coffee beans" to the cart
+      Then the customer sees "Travel mug" in the cart
+      And the customer sees that "Coffee beans" is out of stock
 ```
 
-One scenario starts from two states. If the check of `I1` fails, the run never checks `I2`.
+One scenario combines two starting states. If the check for "Travel mug" fails, the run never
+checks the result for "Coffee beans".
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can add only products that are in stock
+    Scenario: A customer adds a product that is in stock
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 
-  Rule: A supplier can only publish an item that has a brand name
-    Scenario: A supplier publishes an item without a brand name
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has an item "I1" without a brand name
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees that item "I1" misses its brand name
+    Scenario: A customer tries to add a product that is out of stock
+      Given a customer has an empty cart
+      And product "Travel mug" is out of stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees that "Travel mug" is out of stock
+      And the customer sees an empty cart
 ```
 
 Each scenario starts from one state, and its title names that state.
-
-## Sources
-
-- A decision of the sync-autotest suite

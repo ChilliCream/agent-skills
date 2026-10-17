@@ -9,22 +9,24 @@
 The title is what a reader scans first and what the test report prints. A long title, or one full
 of test words and screen details, hides what the scenario is about.
 
-For example, `A supplier publishes a complete item` says who does what. `Verify that the item
-should be published after the user saves the editor` says the same thing with test words and screen
-details.
+For example, `A customer adds a product to the cart` says who does what. `Verify that the product
+should appear after the user clicks the Add button` adds test words and screen details.
+
+Use a role in the title when a personal name adds no meaning. Keep names in the steps when they
+help distinguish the participants in the story.
 
 ## Bad
 
 ```gherkin
-Scenario: Verify that the item should be published after the user saves the editor
-Scenario: Test that a new subscription shows up in the list on the Subscriptions page
+Scenario: Verify that the product should appear after the user clicks the Add button
+Scenario: Test that the order confirmation shows up after the user clicks Pay
 ```
 
 ## Good
 
 ```gherkin
-Scenario: A supplier publishes a complete item
-Scenario: A data recipient admin subscribes to a data source
+Scenario: A customer adds a product to the cart
+Scenario: A customer pays for an order
 ```
 
 ## Sources

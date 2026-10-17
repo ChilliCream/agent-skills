@@ -1,59 +1,60 @@
-# Rule 16: No sign-in step
+# Rule 16: Authentication is setup unless it is the behaviour
 
-> Do not write a sign-in step. Each step defines which actor does it.
+> State authentication as a `Given` when it supports another behaviour. Use a `When` for signing
+> in or out when authentication is the behaviour under test.
 
 [All rules](../SKILL.md)
 
 ## Why
 
-Each step defines which actor does it. For example, in `"U-DS" publishes item "I1"`, the actor is
-`"U-DS"`. The test signs in as that actor by itself, so a sign-in step adds nothing. It only makes
-the scenario longer.
+Signing in before checking order history describes how the starting state was reached. The
+business behaviour is viewing the customer's orders, so write `the customer is signed in` as a
+starting fact. The step implementation establishes the authenticated session in the way the
+application supports. Naming an actor does not itself authenticate that actor.
 
-There is one exception: a scenario about signing in or signing out. There the sign-in is the act
-that the scenario tests, so it is the `When`.
+When a scenario tests signing in or signing out, authentication is the act under test. Keep that
+act as the `When` and check its visible result.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Order history
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      And "U-DS" logs in
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Signed-in customers can see their orders
+    Scenario: A customer views an existing order
+      Given a customer has an order
+      When the customer signs in
+      And the customer views the order history
+      Then the customer sees the order in the order history
 ```
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Order history
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Signed-in customers can see their orders
+    Scenario: A customer views an existing order
+      Given a customer has an order
+      And the customer is signed in
+      When the customer views the order history
+      Then the customer sees the order in the order history
 ```
 
 ```gherkin
-Feature: Sign-in and SSO
+Feature: Customer sign-in
 
-  Rule: Signing out ends the session
-    Scenario: A user signs out
-      Given a data recipient company "DR1" with an admin "U-DR"
-      And "U-DR" is signed in
-      When "U-DR" signs out
-      Then "U-DR" is asked to sign in when opening its received items
+  Rule: Valid credentials give a customer access to their account
+    Scenario: A customer signs in with valid credentials
+      Given a customer has an account
+      And the customer is signed out
+      When the customer signs in with valid credentials
+      Then the customer sees their account details on the account page
 ```
 
-Here signing out is the behaviour, so it is the `When`.
+Here signing in is the behaviour, so it is the `When`. A sign-out scenario likewise uses
+`When the customer signs out` and checks that account access requires authentication again.
 
 ## Sources
 
-- sync-autotest specification guide, _The harness_
 - [Cucumber, Writing better Gherkin](https://cucumber.io/docs/bdd/better-gherkin/)

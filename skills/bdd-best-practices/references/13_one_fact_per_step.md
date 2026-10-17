@@ -9,38 +9,38 @@
 When a step checks two things and fails, the report cannot tell you which one was wrong. That is
 why each step states one fact.
 
-For example, after a data recipient admin subscribes, you want to check the toast and the new
-subscription. If one step checks both and it fails, you do not know whether the toast or the
-subscription is missing. With two `Then` steps, the report names the one that failed.
+For example, after a customer adds a product to a cart, a scenario may check both the confirmation
+and the cart contents. If one step checks both and fails, you do not know which outcome is wrong.
+With two `Then` steps, the report names the failed expectation.
 
-Sometimes "and" is part of one fact. `a data source company "DS1" with an admin "U-DS"` creates one
-thing, a company with its admin, so it stays one step.
+One fact can include a relationship. `a customer has an empty cart` establishes one starting
+fact; it does not need separate steps for the customer and the cart.
 
 ## Bad
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" is told that the subscription was created and sees it on the Subscriptions page
+  Rule: Adding an in-stock product confirms the addition and updates the cart
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees a confirmation and sees "Travel mug" in the cart
 ```
 
 ## Good
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" is told that the subscription was created
-      And "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: Adding an in-stock product confirms the addition and updates the cart
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees a confirmation that "Travel mug" was added to the cart
+      And the customer sees "Travel mug" in the cart
 ```
 
 ## Sources

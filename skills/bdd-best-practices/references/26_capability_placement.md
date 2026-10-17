@@ -6,28 +6,33 @@
 
 ## Why
 
-Screens move and change names, but capabilities stay. A reader looks for publishing under
-`publication/`, not under the page where the publish button is.
+Screens move and change names, but business capabilities provide a more stable way to find
+examples. A reader looks for payment behavior under checkout, even when the payment button also
+appears on a cart page. A declined payment can be initiated from several pages; it still
+illustrates a payment rule.
 
-For example, attribute templates are managed on a screen under Account, but exporting them is a
-data-exchange capability. So the scenario goes in `data-exchange/attribute-templates.feature`. The
-`specs/` tree in the sync-autotest specification guide lists all capabilities.
+Choose the capability whose business rule the scenario demonstrates. A scenario about removing a
+product belongs with cart management; a scenario about declining a payment belongs with checkout.
+Follow the repository's directory conventions while keeping that distinction visible.
 
 ## Bad
 
 ```text
-specs/account/attribute-template-export.feature    named for the screen
-specs/super-admin/subscriptions.feature            named for a role
-specs/tc-16457/create-subscription.feature         named for a test case
+specs/cart-page/payment-declined.feature
+specs/customer/remove-product.feature
+specs/case-123/payment-declined.feature
 ```
+
+These paths organize behavior by a screen, an actor, or a test-case identifier. None identifies
+the capability whose rules the examples describe.
 
 ## Good
 
 ```text
-specs/data-exchange/attribute-templates.feature
-specs/subscriptions/management.feature
+specs/checkout/payment.feature
+specs/cart/management.feature
 ```
 
-## Sources
-
-- sync-autotest specification guide, _The `specs/` tree_
+The first feature holds payment outcomes, including a declined payment. The second holds cart
+changes, including removing a product. Readers can find the behavior without knowing its screen
+or the identifier of an earlier test case.

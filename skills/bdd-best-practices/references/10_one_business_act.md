@@ -9,55 +9,56 @@
 The `When` is the act that the scenario is about. Write it the way the business would say it, not
 as the clicks it takes on the screen.
 
-For example, subscribing to a data source takes several clicks: open the form, pick the data
-source, save. In the scenario, it is one step: `"U-DR" subscribes to data source "DS1"`. A partner
-company acts the same way, only through a message: `"DS1" sends a valid item message for "I1"`.
+For example, adding a product to a cart may take several interactions: open the product, choose a
+quantity and press a button. In the scenario, it is one step:
+`the customer adds "Travel mug" to the cart`. The automation implements the interactions behind
+that step.
 
-Sometimes nobody does anything, because the scenario only checks what a user sees. The act is then
-to look: `"U-V" views item "I1"`. Name what the user looks at, not the page that the user opens.
+A scenario about information shown to a customer can use viewing as its act:
+`the customer views "Travel mug"`. Name the business object the customer looks at, rather than the
+navigation used to reach it.
 
 ## Bad
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" opens the new subscription form
-      And "U-DR" picks data source "DS1"
-      And "U-DR" saves the form
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer opens the page for "Travel mug"
+      And the customer selects a quantity of 1
+      And the customer presses the Add to cart button
+      Then the customer sees "Travel mug" in the cart
 ```
 
-Three steps describe the screen, but together they are one act.
+Three steps describe the screen, but together they are one business act.
 
 ## Good
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 ```gherkin
-Feature: Publishing
+Feature: Product availability
 
-  Rule: A viewer cannot publish an item
-    Scenario: A viewer views a complete item
-      Given a data source company "DS1" with a viewer "U-V"
-      And "DS1" has a complete item "I1"
-      When "U-V" views item "I1"
-      Then "U-V" cannot publish item "I1"
+  Rule: An out-of-stock product is shown as unavailable
+    Scenario: A customer views an out-of-stock product
+      Given product "Travel mug" is out of stock
+      When a customer views "Travel mug"
+      Then the customer sees "Travel mug" as Out of stock
 ```
 
-The viewer does nothing, so the act is to look at the item.
+Viewing the product is the act that exposes its availability to the customer.
 
 ## Sources
 

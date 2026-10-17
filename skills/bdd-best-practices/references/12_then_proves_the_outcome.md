@@ -9,46 +9,47 @@
 If a `Then` checks only a sign of the outcome, it can pass even though the act failed. The scenario
 stays green while the behaviour is broken.
 
-For example, after a subscription, GDSN shows the toast "Subscription created!". The toast can
-appear even if no subscription was saved. So check the subscription itself on the Subscriptions
-page. The toast can be an extra `Then`, but never the only one.
+For example, after adding a product, a webshop shows the message "Added to cart". The message can
+appear even if the cart was not updated. Check that the product is in the customer's cart. The
+message can be an extra assertion, but it cannot be the only proof of the cart change.
 
-The same goes for an "or". `"U-DS" sees item "I1" as Published or Draft` passes even if publishing
-did nothing. Decide which outcome is correct, and check only that one.
+The same goes for an "or". An assertion that accepts either "Travel mug" in the cart or an empty
+cart passes even if adding the product did nothing. Decide which outcome is correct, and check
+that outcome.
 
 ## Bad
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" is on the Subscriptions page
-      And "U-DR" is told that the subscription was created
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees the cart page
+      And the customer is told that "Travel mug" was added to the cart
 ```
 
-A page and a toast. Neither proves that the subscription exists.
+A page and a confirmation message do not prove that the cart contains the product.
 
 ## Good
 
 ```gherkin
-Feature: Subscription management
+Feature: Shopping cart
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" is told that the subscription was created
-      And "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer is told that "Travel mug" was added to the cart
+      And the customer sees "Travel mug" in the cart
 ```
 
-The last step proves the subscription, so the toast is only extra.
+The last step proves the cart change. Keep the confirmation assertion only when that message is
+also part of the behaviour being specified.
 
 ## Sources
 
-- sync-autotest specification guide, _Inputs and the behaviour outline_
 - [Automation Panda, BDD 101: Writing good Gherkin](https://automationpanda.com/2017/01/30/bdd-101-writing-good-gherkin/)
