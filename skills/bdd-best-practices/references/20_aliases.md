@@ -1,68 +1,71 @@
 # Rule 20: Name records by an alias
 
-> Give everything that a scenario creates an alias, such as `"DS1"`, `"U-DS"` or `"I1"`. Never
-> write a real name, ID or e-mail for a record. Write a concrete value only when the rule depends on
-> that value.
+> Use aliases or generated, isolated fixtures for incidental record identifiers. Write concrete
+> values when the business rule depends on them.
 
 [All rules](../SKILL.md)
 
 ## Why
 
-The automation creates new test data in every run, and GDSN never deletes it. A fixed ID or e-mail
-would collide with the one from the previous run. With an alias, the scenario stays the same, and
-the automation creates new real values for it in each run.
+An identifier such as `"C1"` lets a reader follow the same customer through a scenario without
+reading a database ID or an e-mail address. The setup code can map that alias to a generated record
+in an isolated fixture. Projects can also use generated fixtures directly when their step
+implementation supports that approach. Choose the mechanism the project provides; an alias does
+not provide isolation by itself.
+
+Fixed incidental identifiers can couple tests to shared data or collide in parallel runs. Create
+isolated data for each scenario, using the project's fixture and cleanup strategy.
 
 Sometimes the value itself is what the rule is about. A scenario about e-mail validation needs the
-invalid e-mail, so write it in the step. The user still gets an alias, and the automation still
-creates every other value.
+invalid e-mail, so write it in the step. The attempted customer can still have an alias, while
+incidental values come from the fixture.
 
-This also affects counts. A count is only reliable for the records that your scenario created. For
-example, you can check that the Items page lists item `"I1"` once. You cannot check that the super
-admin sees 12 subscriptions, because earlier runs created subscriptions too.
+Scope counts to known data. For example, count products in customer `"C1"`'s isolated cart. A
+shop-wide product count is meaningful only when the fixture controls the whole product set.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "Acme Foods A/S" with an admin "jens@acme.dk"
-      And "jens@acme.dk" has a complete item "5701234567892"
-      When "jens@acme.dk" publishes item "5701234567892"
-      Then "jens@acme.dk" sees item "5701234567892" on the Items page as Published
+  Rule: A customer can add an in-stock product to the cart
+    Scenario: A customer adds a product to the cart
+      Given a customer "customer-2048@example.com" has a cart
+      And a product "product-93746" is in stock
+      When "customer-2048@example.com" adds product "product-93746" to the cart
+      Then "customer-2048@example.com" sees product "product-93746" in the cart
 ```
 
-On the second run, this e-mail and this GTIN already exist in GDSN.
+The e-mail address and product ID do not affect the cart rule. Their extra detail hides which
+records the reader needs to follow and can tie the scenario to shared fixtures.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: A customer can add an in-stock product to the cart
+    Scenario: A customer adds a product to the cart
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
 An e-mail validation scenario needs the invalid value:
 
 ```gherkin
-Feature: User management
+Feature: Customer registration
 
-  Rule: A new user requires a valid e-mail address
-    Scenario: The super admin enters an invalid e-mail address for a new user
-      Given a data source company "DS1" exists
-      When the super admin creates user "U1" for company "DS1" with e-mail "not-an-email"
-      Then the super admin sees an invalid e-mail error for user "U1"
+  Rule: A new customer requires a valid e-mail address
+    Scenario: A visitor registers with an invalid e-mail address
+      Given the shop accepts customer registrations
+      When a visitor registers customer "C1" with e-mail "not-an-email"
+      Then the visitor sees an invalid e-mail error for customer "C1"
 ```
 
-The alias `"U1"` names the attempted user. The value `"not-an-email"` is the invalid input.
+The alias `"C1"` names the attempted customer. The value `"not-an-email"` is the invalid input.
 
 ## Sources
 
-- sync-autotest specification guide, _The harness_
 - [Cucumber, Gherkin reference](https://cucumber.io/docs/gherkin/reference/)

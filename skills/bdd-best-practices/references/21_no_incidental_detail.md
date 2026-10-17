@@ -9,40 +9,41 @@
 Every extra detail makes the reader look for a reason that is not there, and it is one more thing
 that can break.
 
-For example, a scenario about target markets needs target market 208, so it stays. It does not need
-the publication date or the number of users, so they go.
+For example, a scenario about insufficient stock needs the available and requested quantities.
+It does not need the customer's preferred language or the product price, so they go.
 
-If a date matters, write it relative to the run, such as `10 days from today`. A fixed date is
-wrong the next day.
+If elapsed time matters, define the scenario's reference date or clock and express dates relative
+to it, such as `10 days before today`. A fixed date is also valid when the scenario controls the
+clock. Make the time relationship explicit so the scenario remains valid on later runs.
 
 ## Bad
 
 ```gherkin
-Feature: Matching
+Feature: Shopping cart
 
-  Rule: A subscription matches the items published to its target market
-    Scenario: A subscription for the same target market receives the item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has published a complete item "I1" for target market 208 on 2026-10-05
-      And a data recipient company "DR1" with an admin "U-DR" and 3 users
-      When "U-DR" subscribes to data source "DS1" for target market 208
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+  Rule: A cart quantity cannot exceed available stock
+    Scenario: A customer requests more units than are in stock
+      Given a customer "C1" has a cart
+      And "C1" has a preferred language of "English"
+      And a product "P1" has 2 units in stock
+      And product "P1" costs 12 euros
+      When "C1" adds 3 units of product "P1" to the cart
+      Then "C1" sees an insufficient stock error for product "P1"
 ```
 
-The date and the three users change nothing about matching.
+The language and price change nothing about the stock limit.
 
 ## Good
 
 ```gherkin
-Feature: Matching
+Feature: Shopping cart
 
-  Rule: A subscription matches the items published to its target market
-    Scenario: A subscription for the same target market receives the item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has published a complete item "I1" for target market 208
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1" for target market 208
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+  Rule: A cart quantity cannot exceed available stock
+    Scenario: A customer requests more units than are in stock
+      Given a customer "C1" has a cart
+      And a product "P1" has 2 units in stock
+      When "C1" adds 3 units of product "P1" to the cart
+      Then "C1" sees an insufficient stock error for product "P1"
 ```
 
 ## Sources

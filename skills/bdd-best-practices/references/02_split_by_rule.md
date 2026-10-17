@@ -9,53 +9,57 @@
 A scenario that checks the consequences of two rules breaks when either rule changes. It is then
 hard to tell which rule the failure is about.
 
-For example, when a data recipient admin subscribes to a data source, two things happen. The
-subscription shows on the Subscriptions page, which is a rule about subscriptions. The subscription
-also starts the delivery workflows, which is a rule about delivery. So you write two scenarios with
-the same `When`, one in each feature.
+For example, checkout confirms an order for the customer and reduces the available stock for the
+shop manager. Order confirmation and stock availability are separate business rules. Write two
+scenarios with the same `When`, each with the setup and outcome relevant to its rule.
 
 ## Bad
 
 ```gherkin
-Feature: Subscription management
+Feature: Checkout
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
-      And the subscription of "DR1" to "DS1" is Done on the Workflows page
+  Rule: A successful checkout confirms the customer's order
+    Scenario: A customer checks out
+      Given a customer "C1" has a cart
+      And the cart of "C1" contains one unit of product "P1"
+      And one unit of product "P1" is available
+      And a shop manager "M1" manages the stock
+      When "C1" checks out
+      Then "C1" sees order "O1" as confirmed
+      And "M1" sees no available stock for product "P1"
 ```
 
-The last step checks a delivery rule inside a scenario about subscriptions.
+The last step checks a stock rule inside a scenario about order confirmation.
 
 ## Good
 
 ```gherkin
-Feature: Subscription management
+Feature: Checkout
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: A successful checkout confirms the customer's order
+    Scenario: A customer checks out
+      Given a customer "C1" has a cart
+      And the cart of "C1" contains one unit of product "P1"
+      And one unit of product "P1" is available
+      When "C1" checks out
+      Then "C1" sees order "O1" as confirmed
 ```
 
 ```gherkin
-Feature: Synchronisation
+Feature: Stock management
 
-  Rule: A subscription to a data source starts the delivery workflows
-    Scenario: A new subscription starts the delivery workflows
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then the subscription of "DR1" to "DS1" is Done on the Workflows page
+  Rule: Checkout reduces available stock by the ordered quantity
+    Scenario: A customer buys the last available unit
+      Given a customer "C1" has a cart
+      And the cart of "C1" contains one unit of product "P1"
+      And one unit of product "P1" is available
+      And a shop manager "M1" manages the stock
+      When "C1" checks out
+      Then "M1" sees no available stock for product "P1"
 ```
 
-The first scenario goes in `subscriptions/management.feature`, the second in
-`delivery/synchronisation.feature`.
+The first scenario belongs in the checkout feature; the second belongs in the stock management
+feature. Each fails for the business rule it describes.
 
 ## Sources
 

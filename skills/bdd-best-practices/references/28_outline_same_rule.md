@@ -6,50 +6,55 @@
 
 ## Why
 
-An Outline runs the same steps once for each row of its table. That works when the rows differ only
-in their values. If one row needs a different step, the shared steps hide the difference.
+An Outline runs the same steps once for each row of its Examples table. It works well when the
+rows vary business values within one behavior. If a row needs a different action or assertion,
+write a separate scenario so that difference stays visible.
 
-For example, a subscription that receives an item and one that receives nothing need different
-`Then` steps: "sees" and "does not see". Write them as two scenarios. A table column that switches
-between them only hides that they are two cases.
+For example, adding an available product succeeds; adding an unavailable product is rejected.
+Putting `sees` and `does not see` into a result column hides different outcomes inside step text.
+Keep those outcomes explicit. A quantity or price placeholder is a value; a placeholder that
+changes what the step does is a warning sign.
 
 ## Bad
 
 ```gherkin
-Feature: Matching
+Feature: Cart management
 
-  Rule: A subscription matches the items published to its target market
-    Scenario Outline: A subscription receives the items of its target market
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data recipient company "DR1" with an admin "U-DR"
-      And "U-DS" has published a complete item "I1" for target market 208
-      When "U-DR" subscribes to data source "DS1" for target market <market>
-      Then "U-DR" <result> item "I1" from "DS1" on the Received Items page
+  Rule: Only products in stock can be added to a cart
+    Scenario Outline: A customer adds a product
+      Given a customer "C1" has a cart
+      And a product "P1" is <stock state>
+      When "C1" adds product "P1" to the cart
+      Then "C1" <result> product "P1" in the cart
 
-      Examples: Target market of the subscription
-        | market | result       |
-        | 208    | sees         |
-        | 752    | does not see |
+      Examples: Stock availability
+        | stock state  | result       |
+        | in stock     | sees         |
+        | out of stock | does not see |
 ```
+
+The result column changes the assertion's meaning instead of supplying an expected business
+value.
 
 ## Good
 
 ```gherkin
-Feature: Matching
+Feature: Cart management
 
-  Rule: A subscription matches the items published to its target market
+  Rule: Only products in stock can be added to a cart
     Background:
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data recipient company "DR1" with an admin "U-DR"
-      And "U-DS" has published a complete item "I1" for target market 208
+      Given a customer "C1" has a cart
 
-    Scenario: A subscription for the same target market receives the item
-      When "U-DR" subscribes to data source "DS1" for target market 208
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+    Scenario: A customer adds an available product
+      Given a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 
-    Scenario: A subscription for another target market receives nothing
-      When "U-DR" subscribes to data source "DS1" for target market 752
-      Then "U-DR" does not see item "I1" from "DS1" on the Received Items page
+    Scenario: A customer cannot add an unavailable product
+      Given a product "P1" is out of stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees that product "P1" is out of stock
+      And "C1" does not see product "P1" in the cart
 ```
 
 ## Sources

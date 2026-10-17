@@ -1,55 +1,55 @@
 # Rule 5: Test each behaviour in one place
 
-> Do not test the same thing twice. If a scenario needs a result that another scenario tests, put it
-> in a `Given`.
+> Test each behaviour directly in its own scenario. Express a result needed as a prerequisite in a
+> `Given`.
 
 [All rules](../SKILL.md)
 
 ## Why
 
-Do not test the same thing twice. If your scenario needs something that another scenario already
-tests, put it in a `Given` and do not check it again.
+Keep a scenario focused on its rule. If it needs a result that another scenario already tests,
+state that prerequisite in a `Given` instead of repeating the earlier action and its assertions.
 
-For example, you write a scenario for publishing. You need an item to publish, but creating an item
-has its own scenario. So you write `Given "U-DS" has a complete item "I1"` and only check what
-publishing does. If item creation breaks, only the creation scenario fails, not every scenario that
-starts with an item.
+For example, checkout needs a product in the customer's cart, but adding products has its own
+scenario. State that the cart already contains the product, and check the checkout outcome. This
+keeps repeated cart assertions out of checkout scenarios. The setup implementation may still use
+shared application code, so a setup failure can affect more than one scenario.
 
-There is one exception. If the act you test could break the earlier result, check it. For example,
-an item message must keep attribute 816, so the scenario that sends the message checks 816
-afterwards.
+Check an earlier property when preserving it is part of the rule under test. For example, if a
+discount must keep the cart quantity unchanged, asserting that quantity after applying the discount
+is relevant to that rule.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Checkout
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
-      And "U-DS" sees the brand name of item "I1"
+  Rule: A successful checkout confirms the customer's order
+    Scenario: A customer checks out
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
+      Given "C1" is ready to check out
+      When "C1" checks out
+      Then "C1" sees order "O1" as confirmed
 ```
 
-The creation scenario already checks the brand name, and publishing does not change it.
+The cart scenario already checks adding a product. Repeating it here introduces a second action
+and an assertion that does not describe order confirmation.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Checkout
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: A successful checkout confirms the customer's order
+    Scenario: A customer checks out
+      Given a customer "C1" has a cart
+      And the cart of "C1" contains product "P1"
+      And a product "P1" is in stock
+      When "C1" checks out
+      Then "C1" sees order "O1" as confirmed
 ```
 
-The `Given` provides the item, and the `Then` only checks what publishing does.
-
-## Sources
-
-- A decision of the sync-autotest suite
+The `Given` provides a cart with a product, and the `Then` checks the checkout result.

@@ -1,59 +1,64 @@
 # Rule 27: A Background holds only shared Givens
 
-> A `Background` holds only the `Given` steps that every scenario below it needs.
+> A `Background` holds only the `Given` steps that every scenario in its scope needs.
 
 [All rules](../SKILL.md)
 
 ## Why
 
-A `Background` runs before each scenario below it. A step that only one scenario needs makes all
-the others harder to read. An act in a `Background` is worse, because every scenario then has two
-acts.
+A `Background` runs before each scenario in its Feature or Rule. Keep it focused on the shared
+starting state. An action in the Background hides part of the behavior being tested; a condition
+used by only one scenario distracts readers of the others.
 
-For example, two scenarios check which subscription receives a published item. Both need the two
-companies and the item, so these go in the `Background`. The subscription is the act of each
-scenario, so it stays in its `When`.
+For example, both cart scenarios need a customer with a cart. Stock availability differs between
+the scenarios, so each scenario states its own stock condition and keeps adding the product as
+its action.
 
-Keep a `Background` short. If it grows beyond about four lines, look for one step that can replace
-several.
+Keep a Background short. If it grows beyond about four lines, look for a business-level step that
+can express several related setup details together.
 
 ## Bad
 
 ```gherkin
-Feature: Matching
+Feature: Checkout
 
-  Rule: A subscription matches the items published to its target market
+  Rule: Successful payment creates a confirmed order
     Background:
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DS" publishes a complete item "I1" for target market 208
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
 
-    Scenario: A subscription for the same target market receives the item
-      When "U-DR" subscribes to data source "DS1" for target market 208
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+    Scenario: A customer pays for the cart
+      When "C1" pays for the cart successfully
+      Then "C1" sees a confirmed order "O1"
 ```
 
-The publication is an act, so every scenario now has two acts.
+The Background contains an action, so the scenario has two actions split across two locations.
+For a checkout example, express the prepared cart as a starting condition.
 
 ## Good
 
 ```gherkin
-Feature: Matching
+Feature: Cart management
 
-  Rule: A subscription matches the items published to its target market
+  Rule: Only products in stock can be added to a cart
     Background:
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data recipient company "DR1" with an admin "U-DR"
-      And "U-DS" has published a complete item "I1" for target market 208
+      Given a customer "C1" has a cart
 
-    Scenario: A subscription for the same target market receives the item
-      When "U-DR" subscribes to data source "DS1" for target market 208
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+    Scenario: A customer adds an available product
+      Given a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 
-    Scenario: A subscription for another target market receives nothing
-      When "U-DR" subscribes to data source "DS1" for target market 752
-      Then "U-DR" does not see item "I1" from "DS1" on the Received Items page
+    Scenario: A customer cannot add an unavailable product
+      Given a product "P1" is out of stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees that product "P1" is out of stock
+      And "C1" does not see product "P1" in the cart
 ```
+
+The Background contains the common starting state; each scenario supplies its relevant variation
+and its action.
 
 ## Sources
 

@@ -9,34 +9,34 @@
 A scenario often has several users, so with "I" the reader cannot tell who is speaking. A `Then` in
 the future tense ("will see") reads like a later event, not like the result of the act.
 
-For example, write `"U-DS" publishes item "I1"`, not `I published item "I1"`. A `Given` may say what
-already happened, such as `"U-DS" has published a complete item "I1"`, because it describes the
-state now.
+For example, write `"C1" adds product "P1" to the cart`, not `I added product "P1" to the cart`. A
+`Given` may describe a completed event when it establishes the state now, such as `a customer
+"C1" has placed order "O1"`.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: I publish an item
-      Given I am the admin of data source company "DS1"
-      And I had created a complete item "I1"
-      When I published item "I1"
-      Then I will see item "I1" on the Items page as Published
+  Rule: Customers can add in-stock products to their carts
+    Scenario: I add a product to my cart
+      Given I had a cart
+      And a product "P1" was in stock
+      When I added product "P1" to my cart
+      Then I will see product "P1" in my cart
 ```
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
 ## Sources

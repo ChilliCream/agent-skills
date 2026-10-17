@@ -1,45 +1,62 @@
-# Rule 25: Every scenario sits under a Rule
+# Rule 25: Make business rules explicit with Rule
 
-> Put every scenario under a Rule.
+> Group scenarios under a `Rule` when the runner supports it and the heading clarifies the
+> business rule illustrated by those scenarios.
 
 [All rules](../SKILL.md)
 
 ## Why
 
-A Feature is a capability, such as publishing. A Rule is one business rule of that capability, and
-a scenario is an example of that rule. Without the Rule line, the reader sees the example but not
-the rule it shows.
+A Feature describes a capability, such as cart management. A Rule names a business rule of that
+capability, and its scenarios give examples. This grouping helps readers see why the examples
+belong together.
 
-A test case is none of these. Do not copy its title or its step numbers into the feature file.
-Split it into the examples it contains (rule 6).
+`Rule` is optional in Gherkin. Use it when it improves the explanation and the project's runner
+supports it. A short feature with one obvious rule can remain readable without this grouping.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Scenario: A supplier publishes a complete item
-    Given a data source company "DS1" with an admin "U-DS"
-    And "U-DS" has a complete item "I1"
-    When "U-DS" publishes item "I1"
-    Then "U-DS" sees item "I1" on the Items page as Published
+  Scenario: A customer adds an available product
+    Given a customer "C1" has a cart
+    And a product "P1" is in stock
+    When "C1" adds product "P1" to the cart
+    Then "C1" sees product "P1" in the cart
+
+  Scenario: A customer cannot add an unavailable product
+    Given a customer "C1" has a cart
+    And a product "P1" is out of stock
+    When "C1" adds product "P1" to the cart
+    Then "C1" sees that product "P1" is out of stock
+    And "C1" does not see product "P1" in the cart
 ```
+
+The scenarios are valid, but the shared stock rule is left for readers to infer.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Cart management
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: Only products in stock can be added to a cart
+    Scenario: A customer adds an available product
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
+
+    Scenario: A customer cannot add an unavailable product
+      Given a customer "C1" has a cart
+      And a product "P1" is out of stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees that product "P1" is out of stock
+      And "C1" does not see product "P1" in the cart
 ```
+
+The heading states the business rule that both examples illustrate.
 
 ## Sources
 
-- sync-autotest specification guide, _The `specs/` tree_
-- sync-autotest specification guide, _Inputs and the behaviour outline_
 - [Cucumber, Gherkin reference](https://cucumber.io/docs/gherkin/reference/)

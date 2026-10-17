@@ -10,37 +10,40 @@ A scenario reads like a short story. The `Given` steps say what is already there
 what someone does, and the `Then` steps say what happens as a result. Each part comes once, in this
 order.
 
-If you want to check something before the `When`, it belongs in a `Given`. For example, "the item
-is still a draft" is not a result of anything. It is how the scenario starts.
+If you want to check something before the `When`, it belongs in a `Given`. For example, "the cart
+is empty" is how the scenario starts, not a result of adding a product.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Draft
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      Then "C1" sees an empty cart
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
-The first `Then` checks how the scenario starts, before anything has happened.
+The first `Then` checks how the scenario starts, before the action under test.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer "C1" has a cart
+      And the cart is empty
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
+
+The empty cart is a starting fact. The final `Then` checks the result of adding the product.
 
 ## Sources
 

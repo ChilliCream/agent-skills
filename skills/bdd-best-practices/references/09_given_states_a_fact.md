@@ -9,43 +9,44 @@
 A `Given` describes how the world looks when the scenario starts. It does not tell the story of how
 it got that way.
 
-For example, your scenario needs an item that is ready to publish. Write
-`"U-DS" has a complete item "I1"`. Do not write that the user opened the Items page, created a
-draft and filled in the mandatory fields. Those steps make the scenario long, and they break it as
-soon as publishing needs one more field, even though the thing you test did not change.
+For example, a cart scenario needs an in-stock product. Write `a product "P1" is in stock`. Avoid
+recounting how a shop manager created the product, set its price and recorded its stock. Those
+steps lengthen the scenario and couple it to product setup, even though cart behaviour has not
+changed.
 
 ## Bad
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" opens the Items page
-      And "U-DS" creates a draft item "I1"
-      And "U-DS" fills in the mandatory fields of item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer "C1" has a cart
+      And a shop manager "M1" creates product "P1"
+      And "M1" sets a price for product "P1"
+      And "M1" records stock for product "P1"
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
-Three steps tell how the item was made. The scenario only needs to know that it exists and is
-complete.
+Three steps tell how the product was prepared. The scenario only needs the resulting starting
+state.
 
 ## Good
 
 ```gherkin
-Feature: Publishing
+Feature: Shopping cart
 
-  Rule: Publishing a complete item makes it Published
-    Scenario: A supplier publishes a complete item
-      Given a data source company "DS1" with an admin "U-DS"
-      And "U-DS" has a complete item "I1"
-      When "U-DS" publishes item "I1"
-      Then "U-DS" sees item "I1" on the Items page as Published
+  Rule: An in-stock product can be added to a cart
+    Scenario: A customer adds an in-stock product
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
-One `Given` says that the item exists and is complete. The step decides what "complete" means.
+One step states the relevant product fact. Its setup can create a product available for purchase
+without making those preparation details part of the business example.
 
 ## Sources
 

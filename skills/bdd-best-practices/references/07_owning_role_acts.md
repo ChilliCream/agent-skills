@@ -10,77 +10,75 @@
 Often several roles can do the same thing. Write the scenario once, for the role that normally does
 it.
 
-For example, a data recipient admin normally subscribes to a data source. The super admin can
-subscribe for a company too, but that is the same behaviour. So there is one scenario, and the
-recipient admin acts in it.
+For example, a customer normally cancels their own unpaid order. A shop manager may also be able to
+cancel it, but repeating the same scenario for the manager adds no new business rule.
 
 There are two exceptions. Each is a rule of its own, and it gets its own scenario:
 
-- The role has a user story of its own: "As a super admin, I want to manage the subscriptions of
-  another company". The result can be the same as for the normal role.
-- The role gets a different result. For example, a viewer cannot publish an item.
+- The role has a user story of its own: "As a shop manager, I want to cancel an order at a customer's
+  request". The result can be the same as for the customer.
+- The role gets a different result. For example, a customer cannot change a product's stock level,
+  while a shop manager can.
 
 ## Bad
 
 ```gherkin
-Feature: Subscription management
+Feature: Order cancellation
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: The super admin subscribes a data recipient to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" exists
-      When the super admin subscribes "DR1" to data source "DS1"
-      Then the super admin sees the subscription of "DR1" to "DS1" on the Subscriptions page
+  Rule: An unpaid order can be cancelled
+    Scenario: A shop manager cancels an unpaid order
+      Given a customer "C1" has an unpaid order "O1"
+      And a shop manager "M1" can manage customer orders
+      When "M1" cancels order "O1"
+      Then "M1" sees order "O1" as Cancelled
 
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
+    Scenario: A customer cancels an unpaid order
+      Given a customer "C1" has an unpaid order "O1"
+      When "C1" cancels order "O1"
+      Then "C1" sees order "O1" as Cancelled
 ```
 
-The same behaviour twice. The super admin does not normally subscribe for a company, and no user
-story asks for it.
+The same behaviour appears twice. The customer normally cancels their own order, and this rule
+states no separate need for the manager.
 
 ## Good
 
 ```gherkin
-Feature: Subscription management
+Feature: Order cancellation
 
-  Rule: A subscription targets one data source in one target market
-    Scenario: A data recipient admin subscribes to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" with an admin "U-DR"
-      When "U-DR" subscribes to data source "DS1"
-      Then "U-DR" sees the subscription to "DS1" on the Subscriptions page
+  Rule: An unpaid order can be cancelled
+    Scenario: A customer cancels an unpaid order
+      Given a customer "C1" has an unpaid order "O1"
+      When "C1" cancels order "O1"
+      Then "C1" sees order "O1" as Cancelled
 ```
 
 ```gherkin
-Feature: Subscription management
+Feature: Order cancellation
 
-  Rule: A super admin can manage the subscriptions of another company
-    Scenario: The super admin subscribes a data recipient to a data source
-      Given a data source company "DS1" exists
-      And a data recipient company "DR1" exists
-      When the super admin subscribes "DR1" to data source "DS1"
-      Then the super admin sees the subscription of "DR1" to "DS1" on the Subscriptions page
+  Rule: A shop manager can cancel an unpaid order at the customer's request
+    Scenario: A shop manager handles a cancellation request
+      Given a customer "C1" has an unpaid order "O1"
+      And a shop manager "M1" can manage customer orders
+      And "C1" has requested cancellation of order "O1"
+      When "M1" cancels order "O1"
+      Then "M1" sees order "O1" as Cancelled
 ```
 
-The super admin has a user story of its own, so its Rule names that story.
+The manager has a user story of their own, so its Rule names that story.
 
 ```gherkin
-Feature: Publishing
+Feature: Stock management
 
-  Rule: A viewer cannot publish an item
-    Scenario: A viewer views a complete item
-      Given a data source company "DS1" with a viewer "U-V"
-      And "DS1" has a complete item "I1"
-      When "U-V" views item "I1"
-      Then "U-V" cannot publish item "I1"
+  Rule: Only shop managers can change a product's stock level
+    Scenario: A customer tries to change a stock level
+      Given a customer "C1" exists
+      And product "P1" has a stock level of 3
+      When "C1" attempts to change the stock level of product "P1" to 5
+      Then "C1" is told that only shop managers can change stock levels
+      And "C1" sees product "P1" with a stock level of 3
 ```
 
-The viewer gets a different result, so the viewer gets a scenario of its own.
-
-## Sources
-
-- A decision of the sync-autotest suite
+The customer gets a different result from the manager, so the customer gets a scenario of their own.
+Use an actor's supported interface for this check; if customers cannot attempt the action, describe
+that restriction through the customer-visible interface instead.

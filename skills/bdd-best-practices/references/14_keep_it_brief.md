@@ -11,51 +11,49 @@ A short scenario is easy to read. If yours has more than about five steps, it of
 behaviour or carries a detail that changes nothing. Move the second behaviour to its own scenario
 and remove the detail.
 
-For example, to show that a subscribed recipient receives a published item, you need a supplier, a
-recipient and the subscription. A second data source or a draft item changes nothing, so leave it
-out.
+For example, to show that a customer can add an in-stock product to a cart, you need the customer,
+the cart and the product's stock state. Another customer's cart and a delivery address change
+nothing, so leave them out.
 
-Five is not a hard limit. Every company and every user comes from a `Given`, so six or seven steps
-can be correct. If the outcome needs every step, keep them all.
+Five is not a hard limit. A scenario may need several actors or starting facts, so six or seven
+steps can be correct. If the outcome needs every step, keep them all.
 
 ## Bad
 
 ```gherkin
-Feature: Synchronisation
+Feature: Shopping cart
 
-  Rule: A subscribed data recipient receives the items its data source publishes
-    Scenario: A subscribed data recipient receives a newly published item
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data source company "DS2" with an admin "U-DS2"
-      And a data recipient company "DR1" with an admin "U-DR"
-      And a data recipient company "DR2" with an admin "U-DR2"
-      And "U-DR" is subscribed to data source "DS1"
-      And "U-DR2" is subscribed to data source "DS2"
-      And "U-DS" has a draft item "I2"
-      When "U-DS" publishes a complete item "I1"
-      Then "U-DS" is told that the item was published
-      And "U-DR" sees item "I1" from "DS1" on the Received Items page
-      And "U-DR2" does not see item "I1" from "DS1" on the Received Items page
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer "C1" has a cart
+      And a customer "C2" has a cart
+      And a product "P1" is in stock
+      And a product "P2" is in stock
+      And "C2" has product "P2" in the cart
+      And "C1" has a saved delivery address
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees a confirmation that product "P1" was added to the cart
+      And "C1" sees product "P1" in the cart
+      And "C2" does not see product "P1" in the cart
 ```
 
-`DS2` and the draft `I2` change nothing. The message to `U-DS` and the check of `U-DR2` belong to
-other rules, so they go in other scenarios.
+`P2` and the delivery address change nothing. The confirmation and the isolation of `C2`'s cart
+belong to other rules, so they go in other scenarios.
 
 ## Good
 
 ```gherkin
-Feature: Synchronisation
+Feature: Shopping cart
 
-  Rule: A subscribed data recipient receives the items its data source publishes
-    Scenario: A subscribed data recipient receives a newly published item
-      Given a data source company "DS1" with an admin "U-DS"
-      And a data recipient company "DR1" with an admin "U-DR"
-      And "U-DR" is subscribed to data source "DS1"
-      When "U-DS" publishes a complete item "I1"
-      Then "U-DR" sees item "I1" from "DS1" on the Received Items page
+  Rule: Customers can add in-stock products to their carts
+    Scenario: A customer adds an in-stock product to the cart
+      Given a customer "C1" has a cart
+      And a product "P1" is in stock
+      When "C1" adds product "P1" to the cart
+      Then "C1" sees product "P1" in the cart
 ```
 
-Each of the five steps is needed to show that `U-DR` receives `I1`.
+Each of the four steps is needed to show that `C1` can add `P1` to the cart.
 
 ## Sources
 
