@@ -9,25 +9,6 @@ Write Gherkin scenarios that a business reader understands without reading the t
 The examples use a webshop with customers, products, carts and orders. Apply the same principles
 to the vocabulary and observable outcomes of the project you are working on.
 
-## BRIEF principles
-
-Use [Seb Rose's BRIEF principles](https://cucumber.io/blog/bdd/keep-your-scenarios-brief/)
-to check whether a scenario explains a business rule clearly. The numbered rules below put
-these principles into practice.
-
-| Principle | Apply it | Related rules |
-| --- | --- | --- |
-| **Business language** | Use terms the people who use the product understand and agree on. | 19 |
-| **Real data** | Use realistic examples and concrete values that reveal the rule, such as totals just below and at a shipping threshold. Create the required data in the fixture. | 20, 21, 29 |
-| **Intention revealing** | Say what the actor wants to do and what outcome proves it. Keep incidental screen mechanics in the step implementation. | 10, 12, 15, 22 |
-| **Essential** | Include only facts, values and outcomes needed to explain this rule. | 6, 21 |
-| **Focused** | Illustrate one behaviour under one business rule in each scenario. | 1, 2, 5 |
-| **Brief** | Keep the whole example easy to read. Aim for about five steps and retain any additional facts the rule needs. | 14 |
-
-"Real data" means meaningful examples, including realistic synthetic data. It does not require
-production records or expose incidental database IDs. A single customer can be `the customer`;
-use memorable names when the reader needs to distinguish several customers (rule 20).
-
 ## Using the rules
 
 - **Writing:** check each scenario against the rules below before you show it.
@@ -121,6 +102,17 @@ The scenario needs a customer with a cart; their creation belongs in the setup i
 ### Tags
 
 31. [Give each tag a documented purpose. Follow the project's runner configuration and tag policy.](references/31_purposeful_tags.md)
+
+## Supporting readability check
+
+BRIEF is an optional reminder of writing principles covered by the rules above:
+
+- **Business language:** use the project's agreed vocabulary (rule 19).
+- **Real data:** use meaningful examples and concrete values that reveal the rule (rules 20, 21, 29).
+- **Intention revealing:** make the business action and its outcome clear (rules 10, 12, 15, 22).
+- **Essential:** keep the facts and details this rule needs (rules 6, 21).
+- **Focused:** illustrate one behaviour under one business rule (rules 1, 2, 5).
+- **Brief:** keep the example easy to read without losing necessary facts (rule 14).
 
 ## Sources
 

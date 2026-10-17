@@ -29,9 +29,9 @@ the required records and handle cleanup independently of other scenarios.
 
 Use realistic synthetic examples. A product called `"Travel mug"` makes the story concrete without
 requiring an existing production product with that name. Likewise, Alice in one scenario need not
-be the same database record as Alice in another. This follows BRIEF's real-data principle: use
-concrete examples to reveal intention, rather than depending on production records. Rule 21 explains
-which details the business rule needs.
+be the same database record as Alice in another. Create the required records in the fixture and
+keep concrete values that help explain the rule. Rule 21 explains which details the business rule
+needs.
 
 ## Bad
 
