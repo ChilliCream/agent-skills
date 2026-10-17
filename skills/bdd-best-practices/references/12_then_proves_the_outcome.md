@@ -13,8 +13,9 @@ For example, after adding a product, a webshop shows the message "Added to cart"
 appear even if the cart was not updated. Check that the product is in the customer's cart. The
 message can be an extra assertion, but it cannot be the only proof of the cart change.
 
-The same goes for an "or". `"C1" sees product "P1" in the cart or an empty cart` passes even if
-adding the product did nothing. Decide which outcome is correct, and check that outcome.
+The same goes for an "or". An assertion that accepts either "Travel mug" in the cart or an empty
+cart passes even if adding the product did nothing. Decide which outcome is correct, and check
+that outcome.
 
 ## Bad
 
@@ -23,11 +24,11 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees the cart page
-      And "C1" is told that product "P1" was added to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees the cart page
+      And the customer is told that "Travel mug" was added to the cart
 ```
 
 A page and a confirmation message do not prove that the cart contains the product.
@@ -39,11 +40,11 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" is told that product "P1" was added to the cart
-      And "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer is told that "Travel mug" was added to the cart
+      And the customer sees "Travel mug" in the cart
 ```
 
 The last step proves the cart change. Keep the confirmation assertion only when that message is

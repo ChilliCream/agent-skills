@@ -8,9 +8,9 @@
 ## Why
 
 Signing in before checking order history describes how the starting state was reached. The
-business behaviour is viewing the customer's orders, so write `"C1" is signed in` as a starting
-fact. The step implementation establishes the authenticated session in the way the application
-supports. Naming an actor does not itself authenticate that actor.
+business behaviour is viewing the customer's orders, so write `the customer is signed in` as a
+starting fact. The step implementation establishes the authenticated session in the way the
+application supports. Naming an actor does not itself authenticate that actor.
 
 When a scenario tests signing in or signing out, authentication is the act under test. Keep that
 act as the `When` and check its visible result.
@@ -22,10 +22,10 @@ Feature: Order history
 
   Rule: Signed-in customers can see their orders
     Scenario: A customer views an existing order
-      Given a customer "C1" has an order "O1"
-      When "C1" signs in
-      And "C1" views the order history
-      Then "C1" sees order "O1" in the order history
+      Given a customer has an order
+      When the customer signs in
+      And the customer views the order history
+      Then the customer sees the order in the order history
 ```
 
 ## Good
@@ -35,10 +35,10 @@ Feature: Order history
 
   Rule: Signed-in customers can see their orders
     Scenario: A customer views an existing order
-      Given a customer "C1" has an order "O1"
-      And "C1" is signed in
-      When "C1" views the order history
-      Then "C1" sees order "O1" in the order history
+      Given a customer has an order
+      And the customer is signed in
+      When the customer views the order history
+      Then the customer sees the order in the order history
 ```
 
 ```gherkin
@@ -46,14 +46,14 @@ Feature: Customer sign-in
 
   Rule: Valid credentials give a customer access to their account
     Scenario: A customer signs in with valid credentials
-      Given a customer "C1" has an account
-      And "C1" is signed out
-      When "C1" signs in with valid credentials
-      Then "C1" sees their account details on the account page
+      Given a customer has an account
+      And the customer is signed out
+      When the customer signs in with valid credentials
+      Then the customer sees their account details on the account page
 ```
 
 Here signing in is the behaviour, so it is the `When`. A sign-out scenario likewise uses
-`When "C1" signs out` and checks that account access requires authentication again.
+`When the customer signs out` and checks that account access requires authentication again.
 
 ## Sources
 

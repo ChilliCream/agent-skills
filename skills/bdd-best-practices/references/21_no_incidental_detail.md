@@ -23,12 +23,12 @@ Feature: Shopping cart
 
   Rule: A cart quantity cannot exceed available stock
     Scenario: A customer requests more units than are in stock
-      Given a customer "C1" has a cart
-      And "C1" has a preferred language of "English"
-      And a product "P1" has 2 units in stock
-      And product "P1" costs 12 euros
-      When "C1" adds 3 units of product "P1" to the cart
-      Then "C1" sees an insufficient stock error for product "P1"
+      Given a customer has an empty cart
+      And the customer has a preferred language of "English"
+      And product "Travel mug" has 2 units in stock
+      And "Travel mug" costs 12 euros
+      When the customer adds 3 units of "Travel mug" to the cart
+      Then the customer sees an insufficient stock error for "Travel mug"
 ```
 
 The language and price change nothing about the stock limit.
@@ -40,10 +40,10 @@ Feature: Shopping cart
 
   Rule: A cart quantity cannot exceed available stock
     Scenario: A customer requests more units than are in stock
-      Given a customer "C1" has a cart
-      And a product "P1" has 2 units in stock
-      When "C1" adds 3 units of product "P1" to the cart
-      Then "C1" sees an insufficient stock error for product "P1"
+      Given a customer has an empty cart
+      And product "Travel mug" has 2 units in stock
+      When the customer adds 3 units of "Travel mug" to the cart
+      Then the customer sees an insufficient stock error for "Travel mug"
 ```
 
 ## Sources

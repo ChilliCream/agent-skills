@@ -20,12 +20,12 @@ Feature: Cart management
 
   Rule: Customers can add and remove products
     Scenario: A customer adds and removes a product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
-      When "C1" removes product "P1" from the cart
-      Then "C1" sees an empty cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
 Two behaviours share one scenario. If adding fails, removal is never tested.
@@ -37,10 +37,10 @@ Feature: Cart management
 
   Rule: Customers can add products that are in stock
     Scenario: A customer adds a product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 ```gherkin
@@ -48,10 +48,10 @@ Feature: Cart management
 
   Rule: Customers can remove products from their cart
     Scenario: A customer removes the only product
-      Given a customer "C1" has a cart
-      And the cart of "C1" contains only product "P1"
-      When "C1" removes product "P1" from the cart
-      Then "C1" sees an empty cart
+      Given a customer has a cart
+      And the customer's cart contains only "Travel mug"
+      When the customer removes "Travel mug" from the cart
+      Then the customer sees an empty cart
 ```
 
 Each behaviour has its own scenario, and each one starts from the state it needs.

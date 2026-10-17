@@ -27,15 +27,15 @@ Feature: Order cancellation
 
   Rule: An unpaid order can be cancelled
     Scenario: A shop manager cancels an unpaid order
-      Given a customer "C1" has an unpaid order "O1"
-      And a shop manager "M1" can manage customer orders
-      When "M1" cancels order "O1"
-      Then "M1" sees order "O1" as Cancelled
+      Given a customer has an unpaid order
+      And a shop manager can manage customer orders
+      When the shop manager cancels the order
+      Then the shop manager sees the order as Cancelled
 
     Scenario: A customer cancels an unpaid order
-      Given a customer "C1" has an unpaid order "O1"
-      When "C1" cancels order "O1"
-      Then "C1" sees order "O1" as Cancelled
+      Given a customer has an unpaid order
+      When the customer cancels the order
+      Then the customer sees the order as Cancelled
 ```
 
 The same behaviour appears twice. The customer normally cancels their own order, and this rule
@@ -48,9 +48,9 @@ Feature: Order cancellation
 
   Rule: An unpaid order can be cancelled
     Scenario: A customer cancels an unpaid order
-      Given a customer "C1" has an unpaid order "O1"
-      When "C1" cancels order "O1"
-      Then "C1" sees order "O1" as Cancelled
+      Given a customer has an unpaid order
+      When the customer cancels the order
+      Then the customer sees the order as Cancelled
 ```
 
 ```gherkin
@@ -58,11 +58,11 @@ Feature: Order cancellation
 
   Rule: A shop manager can cancel an unpaid order at the customer's request
     Scenario: A shop manager handles a cancellation request
-      Given a customer "C1" has an unpaid order "O1"
-      And a shop manager "M1" can manage customer orders
-      And "C1" has requested cancellation of order "O1"
-      When "M1" cancels order "O1"
-      Then "M1" sees order "O1" as Cancelled
+      Given a customer has an unpaid order
+      And a shop manager can manage customer orders
+      And the customer has requested cancellation of the order
+      When the shop manager cancels the order
+      Then the shop manager sees the order as Cancelled
 ```
 
 The manager has a user story of their own, so its Rule names that story.
@@ -72,11 +72,10 @@ Feature: Stock management
 
   Rule: Only shop managers can change a product's stock level
     Scenario: A customer tries to change a stock level
-      Given a customer "C1" exists
-      And product "P1" has a stock level of 3
-      When "C1" attempts to change the stock level of product "P1" to 5
-      Then "C1" is told that only shop managers can change stock levels
-      And "C1" sees product "P1" with a stock level of 3
+      Given product "Travel mug" has a stock level of 3
+      When a customer attempts to change the stock level of "Travel mug" to 5
+      Then the customer is told that only shop managers can change stock levels
+      And the customer sees "Travel mug" with a stock level of 3
 ```
 
 The customer gets a different result from the manager, so the customer gets a scenario of their own.

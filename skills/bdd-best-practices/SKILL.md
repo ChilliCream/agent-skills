@@ -9,6 +9,25 @@ Write Gherkin scenarios that a business reader understands without reading the t
 The examples use a webshop with customers, products, carts and orders. Apply the same principles
 to the vocabulary and observable outcomes of the project you are working on.
 
+## BRIEF principles
+
+Use [Seb Rose's BRIEF principles](https://cucumber.io/blog/bdd/keep-your-scenarios-brief/)
+to check whether a scenario explains a business rule clearly. The numbered rules below put
+these principles into practice.
+
+| Principle | Apply it | Related rules |
+| --- | --- | --- |
+| **Business language** | Use terms the people who use the product understand and agree on. | 19 |
+| **Real data** | Use realistic examples and concrete values that reveal the rule, such as totals just below and at a shipping threshold. Create the required data in the fixture. | 20, 21, 29 |
+| **Intention revealing** | Say what the actor wants to do and what outcome proves it. Keep incidental screen mechanics in the step implementation. | 10, 12, 15, 22 |
+| **Essential** | Include only facts, values and outcomes needed to explain this rule. | 6, 21 |
+| **Focused** | Illustrate one behaviour under one business rule in each scenario. | 1, 2, 5 |
+| **Brief** | Keep the whole example easy to read. Aim for about five steps and retain any additional facts the rule needs. | 14 |
+
+"Real data" means meaningful examples, including realistic synthetic data. It does not require
+production records or expose incidental database IDs. A single customer can be `the customer`;
+use memorable names when the reader needs to distinguish several customers (rule 20).
+
 ## Using the rules
 
 - **Writing:** check each scenario against the rules below before you show it.
@@ -30,12 +49,12 @@ Before:
 Feature: Cart management
   Rule: A customer can add an in-stock product to the cart
     Scenario: A customer adds an in-stock product
-      Given "C1" opens the registration page
-      And "C1" registers as a customer
-      And "C1" creates a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a visitor opens the registration page
+      And the visitor registers as a customer
+      And the customer creates an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 After:
@@ -44,10 +63,10 @@ After:
 Feature: Cart management
   Rule: A customer can add an in-stock product to the cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 The scenario needs a customer with a cart; their creation belongs in the setup implementation.
@@ -81,7 +100,7 @@ The scenario needs a customer with a cart; their creation belongs in the setup i
 17. [Write in the third person and the present tense.](references/17_third_person_present.md)
 18. [Start each step with who or what it is about.](references/18_actor_first.md)
 19. [Use the project's business vocabulary consistently.](references/19_business_words.md)
-20. [Use aliases or generated, isolated fixtures for incidental record identifiers. Use concrete values when the business rule depends on them.](references/20_aliases.md)
+20. [Use meaningful names and roles. Name entities when it helps distinguish them, and use concrete values when the rule depends on them.](references/20_meaningful_names.md)
 21. [Leave out every value and every step that the rule does not need.](references/21_no_incidental_detail.md)
 
 ### Titles

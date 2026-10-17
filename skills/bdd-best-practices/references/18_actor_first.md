@@ -9,8 +9,9 @@
 The reader should know at once who acts. If the actor comes at the end, the reader has to read the
 whole step first.
 
-For example, write `"C1" adds product "P1" to the cart`, not `product "P1" is added to the cart by
-"C1"`. A step about a product starts with the product: `a product "P1" is in stock`.
+For example, write `the customer adds "Travel mug" to the cart`, not `"Travel mug" is added to
+the cart by the customer`. A step about a product starts with the product: `product "Travel mug"
+is in stock`.
 
 ## Bad
 
@@ -19,10 +20,10 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: An in-stock product gets added to a cart
-      Given there is a cart belonging to customer "C1"
-      And in stock there is a product "P1"
-      When product "P1" is added to the cart by "C1"
-      Then in the cart product "P1" is visible to "C1"
+      Given there is an empty cart belonging to a customer
+      And in stock there is product "Travel mug"
+      When "Travel mug" is added to the cart by the customer
+      Then in the cart "Travel mug" is visible to the customer
 ```
 
 ## Good
@@ -32,8 +33,8 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: A customer adds an in-stock product to the cart
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```

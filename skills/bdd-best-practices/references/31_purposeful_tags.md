@@ -21,9 +21,9 @@ Feature: Checkout
   Rule: Checkout creates an order for the products in the cart
     @fast @important @customer @cart @order @checkout
     Scenario: A customer checks out
-      Given a customer "C1" has a cart ready for checkout
-      When "C1" checks out
-      Then "C1" sees an order confirmation for the products in the cart
+      Given a customer has a cart ready for checkout
+      When the customer checks out
+      Then the customer sees an order confirmation for the products in the cart
 ```
 
 Assume none of these tags has a documented consumer. They repeat the scenario's subject or make
@@ -37,9 +37,9 @@ Feature: Checkout
   Rule: Checkout creates an order for the products in the cart
     @checkout
     Scenario: A customer checks out
-      Given a customer "C1" has a cart ready for checkout
-      When "C1" checks out
-      Then "C1" sees an order confirmation for the products in the cart
+      Given a customer has a cart ready for checkout
+      When the customer checks out
+      Then the customer sees an order confirmation for the products in the cart
 ```
 
 In this example, the project's test configuration selects `@checkout` for its checkout checks.

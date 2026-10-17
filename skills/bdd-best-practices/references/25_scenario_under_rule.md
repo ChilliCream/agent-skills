@@ -20,17 +20,17 @@ supports it. A short feature with one obvious rule can remain readable without t
 Feature: Cart management
 
   Scenario: A customer adds an available product
-    Given a customer "C1" has a cart
-    And a product "P1" is in stock
-    When "C1" adds product "P1" to the cart
-    Then "C1" sees product "P1" in the cart
+    Given a customer has an empty cart
+    And product "Travel mug" is in stock
+    When the customer adds "Travel mug" to the cart
+    Then the customer sees "Travel mug" in the cart
 
   Scenario: A customer cannot add an unavailable product
-    Given a customer "C1" has a cart
-    And a product "P1" is out of stock
-    When "C1" adds product "P1" to the cart
-    Then "C1" sees that product "P1" is out of stock
-    And "C1" does not see product "P1" in the cart
+    Given a customer has an empty cart
+    And product "Travel mug" is out of stock
+    When the customer adds "Travel mug" to the cart
+    Then the customer sees that "Travel mug" is out of stock
+    And the customer does not see "Travel mug" in the cart
 ```
 
 The scenarios are valid, but the shared stock rule is left for readers to infer.
@@ -42,17 +42,17 @@ Feature: Cart management
 
   Rule: Only products in stock can be added to a cart
     Scenario: A customer adds an available product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 
     Scenario: A customer cannot add an unavailable product
-      Given a customer "C1" has a cart
-      And a product "P1" is out of stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees that product "P1" is out of stock
-      And "C1" does not see product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is out of stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees that "Travel mug" is out of stock
+      And the customer does not see "Travel mug" in the cart
 ```
 
 The heading states the business rule that both examples illustrate.

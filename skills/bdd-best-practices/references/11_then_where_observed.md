@@ -24,10 +24,10 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then the cart database contains a row for "C1" and "P1"
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the cart database contains a row for "Travel mug" in the customer's cart
       And the internal cart service returns status 200
 ```
 
@@ -40,10 +40,10 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 When the business behaviour is offered through a public API, check the result through that API:
@@ -53,10 +53,10 @@ Feature: Shopping cart through the public API
 
   Rule: The public API returns the updated cart after a product is added
     Scenario: A customer adds a product through the public API
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart through the public API
-      Then the public API response shows product "P1" in the cart for "C1"
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart through the public API
+      Then the public API response shows "Travel mug" in the customer's cart
 ```
 
 ## Sources

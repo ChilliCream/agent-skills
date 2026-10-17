@@ -12,6 +12,9 @@ of test words and screen details, hides what the scenario is about.
 For example, `A customer adds a product to the cart` says who does what. `Verify that the product
 should appear after the user clicks the Add button` adds test words and screen details.
 
+Use a role in the title when a personal name adds no meaning. Keep names in the steps when they
+help distinguish the participants in the story.
+
 ## Bad
 
 ```gherkin

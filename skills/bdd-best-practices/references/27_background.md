@@ -24,13 +24,13 @@ Feature: Checkout
 
   Rule: Successful payment creates a confirmed order
     Background:
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
 
     Scenario: A customer pays for the cart
-      When "C1" pays for the cart successfully
-      Then "C1" sees a confirmed order "O1"
+      When the customer pays for the cart successfully
+      Then the customer sees a confirmed order
 ```
 
 The Background contains an action, so the scenario has two actions split across two locations.
@@ -43,18 +43,18 @@ Feature: Cart management
 
   Rule: Only products in stock can be added to a cart
     Background:
-      Given a customer "C1" has a cart
+      Given a customer has an empty cart
 
     Scenario: A customer adds an available product
-      Given a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 
     Scenario: A customer cannot add an unavailable product
-      Given a product "P1" is out of stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees that product "P1" is out of stock
-      And "C1" does not see product "P1" in the cart
+      Given product "Travel mug" is out of stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees that "Travel mug" is out of stock
+      And the customer does not see "Travel mug" in the cart
 ```
 
 The Background contains the common starting state; each scenario supplies its relevant variation

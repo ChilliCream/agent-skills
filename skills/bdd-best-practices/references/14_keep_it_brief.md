@@ -25,20 +25,20 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: A customer adds an in-stock product to the cart
-      Given a customer "C1" has a cart
-      And a customer "C2" has a cart
-      And a product "P1" is in stock
-      And a product "P2" is in stock
-      And "C2" has product "P2" in the cart
-      And "C1" has a saved delivery address
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees a confirmation that product "P1" was added to the cart
-      And "C1" sees product "P1" in the cart
-      And "C2" does not see product "P1" in the cart
+      Given a customer named Alice has an empty cart
+      And a customer named Bob has a cart
+      And product "Travel mug" is in stock
+      And product "Coffee beans" is in stock
+      And Bob has "Coffee beans" in the cart
+      And Alice has a saved delivery address
+      When Alice adds "Travel mug" to the cart
+      Then Alice sees a confirmation that "Travel mug" was added to the cart
+      And Alice sees "Travel mug" in the cart
+      And Bob does not see "Travel mug" in the cart
 ```
 
-`P2` and the delivery address change nothing. The confirmation and the isolation of `C2`'s cart
-belong to other rules, so they go in other scenarios.
+The coffee beans and the delivery address change nothing. The confirmation and the isolation of
+Bob's cart belong to other rules, so they go in other scenarios.
 
 ## Good
 
@@ -47,13 +47,14 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: A customer adds an in-stock product to the cart
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
-Each of the four steps is needed to show that `C1` can add `P1` to the cart.
+Each of the four steps is needed to show that the customer can add the travel mug to the cart.
+With only one customer left, the role identifies the actor without a name.
 
 ## Sources
 

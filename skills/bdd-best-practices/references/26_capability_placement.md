@@ -8,7 +8,8 @@
 
 Screens move and change names, but business capabilities provide a more stable way to find
 examples. A reader looks for payment behavior under checkout, even when the payment button also
-appears on a cart page.
+appears on a cart page. A declined payment can be initiated from several pages; it still
+illustrates a payment rule.
 
 Choose the capability whose business rule the scenario demonstrates. A scenario about removing a
 product belongs with cart management; a scenario about declining a payment belongs with checkout.

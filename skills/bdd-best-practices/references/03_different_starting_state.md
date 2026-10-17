@@ -18,15 +18,16 @@ Feature: Cart management
 
   Rule: Customers can add only products that are in stock
     Scenario: A customer adds products with different stock levels
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      And a product "P2" is out of stock
-      When "C1" adds products "P1" and "P2" to the cart
-      Then "C1" sees product "P1" in the cart
-      And "C1" sees that product "P2" is out of stock
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      And product "Coffee beans" is out of stock
+      When the customer adds "Travel mug" and "Coffee beans" to the cart
+      Then the customer sees "Travel mug" in the cart
+      And the customer sees that "Coffee beans" is out of stock
 ```
 
-One scenario combines two starting states. If the check of `P1` fails, the run never checks `P2`.
+One scenario combines two starting states. If the check for "Travel mug" fails, the run never
+checks the result for "Coffee beans".
 
 ## Good
 
@@ -35,17 +36,17 @@ Feature: Cart management
 
   Rule: Customers can add only products that are in stock
     Scenario: A customer adds a product that is in stock
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 
     Scenario: A customer tries to add a product that is out of stock
-      Given a customer "C1" has an empty cart
-      And a product "P1" is out of stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees that product "P1" is out of stock
-      And "C1" sees an empty cart
+      Given a customer has an empty cart
+      And product "Travel mug" is out of stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees that "Travel mug" is out of stock
+      And the customer sees an empty cart
 ```
 
 Each scenario starts from one state, and its title names that state.

@@ -25,7 +25,7 @@ Scenario: A payment is accepted or declined
 ```gherkin
 Scenario: A customer adds a product to the cart
 Scenario: A customer pays for an order with a valid card
-Scenario: A customer pays for an order with a declined card
+Scenario: A customer attempts payment with a declined card
 ```
 
 Each title names one behaviour.

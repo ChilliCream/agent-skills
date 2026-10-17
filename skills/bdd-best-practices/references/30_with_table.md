@@ -12,7 +12,7 @@ or an expected collection in a `Then`. Choose the form that explains the busines
 clearly; the step keyword does not determine whether a table is appropriate.
 
 A table works when its rows describe related facts and its headings use business language.
-For one product identifier or one quantity, a sentence is usually clearer. Keep unrelated setup
+For one product name or one quantity, a sentence is usually clearer. Keep unrelated setup
 facts in separate steps, and express actions as steps rather than as commands hidden in table
 cells. `Examples` tables serve a different purpose: rules 28 and 29 explain them.
 
@@ -24,8 +24,8 @@ Feature: Cart management
   Rule: Products in stock can be added to a cart
     Scenario: A customer adds an available product
       Given these settings:
-        | customer | product | stock    | action      | expected result |
-        | C1       | P1      | in stock | add to cart | product in cart |
+        | customer   | product    | stock    | action      | expected result |
+        | a customer | Travel mug | in stock | add to cart | product in cart |
       When the settings are processed
       Then the expected result is correct
 ```
@@ -39,10 +39,10 @@ Feature: Cart management
 
   Rule: Products in stock can be added to a cart
     Scenario: A customer adds an available product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 A short sentence carries each simple fact. Use tables when the structure itself matters:
@@ -52,20 +52,20 @@ Feature: Cart totals
 
   Rule: The cart total is the sum of its product quantities multiplied by their prices
     Scenario: A customer adds several products in one action
-      Given a customer "C1" has an empty cart
+      Given a customer has an empty cart
       And these products are in stock:
-        | product | unit price |
-        | P1      | 10 EUR     |
-        | P2      | 5 EUR      |
-      When "C1" adds these products to the cart together:
-        | product | quantity |
-        | P1      | 2        |
-        | P2      | 1        |
-      Then "C1" sees these products in the cart:
-        | product | quantity | line total |
-        | P1      | 2        | 20 EUR     |
-        | P2      | 1        | 5 EUR      |
-      And "C1" sees a cart total of 25 EUR
+        | product      | unit price |
+        | Travel mug   | 10 EUR     |
+        | Coffee beans | 5 EUR      |
+      When the customer adds these products to the cart together:
+        | product      | quantity |
+        | Travel mug   | 2        |
+        | Coffee beans | 1        |
+      Then the customer sees these products in the cart:
+        | product      | quantity | line total |
+        | Travel mug   | 2        | 20 EUR     |
+        | Coffee beans | 1        | 5 EUR      |
+      And the customer sees a cart total of 25 EUR
 ```
 
 Each table has one purpose: product prices, the input to a single action, or the resulting cart

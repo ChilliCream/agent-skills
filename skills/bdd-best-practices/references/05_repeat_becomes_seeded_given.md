@@ -26,13 +26,13 @@ Feature: Checkout
 
   Rule: A successful checkout confirms the customer's order
     Scenario: A customer checks out
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
-      Given "C1" is ready to check out
-      When "C1" checks out
-      Then "C1" sees order "O1" as confirmed
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
+      Given the customer is ready to check out
+      When the customer checks out
+      Then the customer sees the new order as Confirmed in the order history
 ```
 
 The cart scenario already checks adding a product. Repeating it here introduces a second action
@@ -45,11 +45,11 @@ Feature: Checkout
 
   Rule: A successful checkout confirms the customer's order
     Scenario: A customer checks out
-      Given a customer "C1" has a cart
-      And the cart of "C1" contains product "P1"
-      And a product "P1" is in stock
-      When "C1" checks out
-      Then "C1" sees order "O1" as confirmed
+      Given a customer has a cart
+      And the customer's cart contains "Travel mug"
+      And product "Travel mug" is in stock
+      When the customer checks out
+      Then the customer sees the new order as Confirmed in the order history
 ```
 
 The `Given` provides a cart with a product, and the `Then` checks the checkout result.

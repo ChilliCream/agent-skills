@@ -20,13 +20,13 @@ Feature: Checkout
 
   Rule: A successful checkout confirms the customer's order
     Scenario: A customer checks out
-      Given a customer "C1" has a cart
-      And the cart of "C1" contains one unit of product "P1"
-      And one unit of product "P1" is available
-      And a shop manager "M1" manages the stock
-      When "C1" checks out
-      Then "C1" sees order "O1" as confirmed
-      And "M1" sees no available stock for product "P1"
+      Given a customer has a cart
+      And the customer's cart contains one unit of "Travel mug"
+      And one unit of product "Travel mug" is available
+      And a shop manager manages the stock
+      When the customer checks out
+      Then the customer sees the new order as Confirmed in the order history
+      And the shop manager sees no available stock for "Travel mug"
 ```
 
 The last step checks a stock rule inside a scenario about order confirmation.
@@ -38,11 +38,11 @@ Feature: Checkout
 
   Rule: A successful checkout confirms the customer's order
     Scenario: A customer checks out
-      Given a customer "C1" has a cart
-      And the cart of "C1" contains one unit of product "P1"
-      And one unit of product "P1" is available
-      When "C1" checks out
-      Then "C1" sees order "O1" as confirmed
+      Given a customer has a cart
+      And the customer's cart contains one unit of "Travel mug"
+      And one unit of product "Travel mug" is available
+      When the customer checks out
+      Then the customer sees the new order as Confirmed in the order history
 ```
 
 ```gherkin
@@ -50,12 +50,12 @@ Feature: Stock management
 
   Rule: Checkout reduces available stock by the ordered quantity
     Scenario: A customer buys the last available unit
-      Given a customer "C1" has a cart
-      And the cart of "C1" contains one unit of product "P1"
-      And one unit of product "P1" is available
-      And a shop manager "M1" manages the stock
-      When "C1" checks out
-      Then "M1" sees no available stock for product "P1"
+      Given a customer has a cart
+      And the customer's cart contains one unit of "Travel mug"
+      And one unit of product "Travel mug" is available
+      And a shop manager manages the stock
+      When the customer checks out
+      Then the shop manager sees no available stock for "Travel mug"
 ```
 
 The first scenario belongs in the checkout feature; the second belongs in the stock management

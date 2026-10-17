@@ -9,10 +9,10 @@
 A step that describes the screen breaks every time the screen changes, even when the behaviour
 stays the same.
 
-For example, `"C1" adds product "P1" to the cart` stays correct when the product page changes. A
-step like `"C1" scrolls to the purchase panel and clicks the green Add button` has to change. Keep
-screen mechanics such as clicks, selectors and tab order in the step implementation. A page name
-is useful when it identifies where the customer observes an outcome.
+For example, `the customer adds "Travel mug" to the cart` stays correct when the product page
+changes. A step like `the customer scrolls to the purchase panel and clicks the green Add button`
+has to change. Keep screen mechanics such as clicks, selectors and tab order in the step
+implementation. A page name is useful when it identifies where the customer observes an outcome.
 
 Keep an interface detail when it is the behaviour under test, such as keyboard navigation or an
 accessible control name. The rule removes incidental mechanics, not the feature being specified.
@@ -27,10 +27,10 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: A customer adds an in-stock product to the cart
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" scrolls to the purchase panel for "P1" and clicks the green Add button
-      Then the second row of the cart table contains "P1"
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer scrolls to the purchase panel for "Travel mug" and clicks the green Add button
+      Then the first row of the cart table contains "Travel mug"
 ```
 
 If the panel, button or table layout changes, the steps change even though adding a product did
@@ -43,10 +43,10 @@ Feature: Shopping cart
 
   Rule: Customers can add in-stock products to their carts
     Scenario: A customer adds an in-stock product to the cart
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 ## Sources

@@ -20,11 +20,11 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And a product "P1" is in stock
-      Then "C1" sees an empty cart
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has a cart
+      And product "Travel mug" is in stock
+      Then the customer sees an empty cart
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 The first `Then` checks how the scenario starts, before the action under test.
@@ -36,11 +36,10 @@ Feature: Shopping cart
 
   Rule: An in-stock product can be added to a cart
     Scenario: A customer adds an in-stock product
-      Given a customer "C1" has a cart
-      And the cart is empty
-      And a product "P1" is in stock
-      When "C1" adds product "P1" to the cart
-      Then "C1" sees product "P1" in the cart
+      Given a customer has an empty cart
+      And product "Travel mug" is in stock
+      When the customer adds "Travel mug" to the cart
+      Then the customer sees "Travel mug" in the cart
 ```
 
 The empty cart is a starting fact. The final `Then` checks the result of adding the product.
