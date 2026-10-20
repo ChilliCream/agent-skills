@@ -19,6 +19,7 @@
         "./skills/graphql-schema-design",
         "./skills/hotchocolate-best-practices",
         "./skills/hotchocolate-fix-bug",
+        "./skills/mocha-best-practices",
         "./skills/nitro-mail",
         "./skills/nitro-memory",
         "./skills/nitro-task",
