@@ -87,9 +87,7 @@ below are conventions rather than compiler errors.
    public sealed class OrderAuditConsumer(ILogger<OrderAuditConsumer> logger)
        : IConsumer<OrderPlacedEvent>
    {
-       public ValueTask ConsumeAsync(
-           IConsumeContext<OrderPlacedEvent> context,
-           CancellationToken cancellationToken)
+       public ValueTask ConsumeAsync(IConsumeContext<OrderPlacedEvent> context)
        {
            logger.LogInformation(
                "Audit {OrderId} message {MessageId} correlation {CorrelationId}",

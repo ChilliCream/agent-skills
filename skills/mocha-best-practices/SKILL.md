@@ -14,6 +14,11 @@ Messaging mistakes are expensive: a wrong pattern choice leaks into every consum
 business events silently, and a handler that is not idempotent corrupts data on the first redelivery. Most of the rules
 below exist because the failure they prevent is invisible in development and only shows up under production load.
 
+When the task is to build a new artifact rather than to judge an existing one,
+[mocha-implement](../mocha-implement/SKILL.md) carries the step-by-step recipes (handler, request/reply, saga, outbox,
+endpoint, scheduling, mediator, test) with the verification commands for each. This skill carries the reasoning those
+recipes compress.
+
 ## Core principles
 
 1. **The pattern follows the question, not convenience.** "Who needs to know?" is an event (`PublishAsync`,
