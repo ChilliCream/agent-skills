@@ -27,6 +27,16 @@ builder.Services
     .AddRabbitMQ();
 ```
 
+## What to turn on
+
+| Situation | Configuration |
+| --- | --- |
+| The handler only reads and dispatches nothing | Nothing. Do not pay for an outbox you do not need. |
+| The handler writes to the database and publishes or sends | `UsePostgresOutbox()` plus `UseTransaction()` |
+| Every handler is provably idempotent on a business key | Outbox only |
+| Handlers are not all idempotent, or a duplicate is expensive | Outbox plus `UsePostgresInbox()` |
+| A publish from an endpoint or background job that also writes | Outbox, plus an explicit transaction at the call site |
+
 ## Delivery guarantees
 
 | Configuration | Guarantee | Consequence for your handlers |

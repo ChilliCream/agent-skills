@@ -14,11 +14,6 @@ Messaging mistakes are expensive: a wrong pattern choice leaks into every consum
 business events silently, and a handler that is not idempotent corrupts data on the first redelivery. Most of the rules
 below exist because the failure they prevent is invisible in development and only shows up under production load.
 
-When the task is to build a new artifact rather than to judge an existing one,
-[mocha-implement](../mocha-implement/SKILL.md) carries the step-by-step recipes (handler, request/reply, saga, outbox,
-endpoint, scheduling, mediator, test) with the verification commands for each. This skill carries the reasoning those
-recipes compress.
-
 ## Core principles
 
 1. **The pattern follows the question, not convenience.** "Who needs to know?" is an event (`PublishAsync`,
@@ -137,6 +132,39 @@ Detailed rules with worked wrong-vs-right examples. Load only what the current t
 | [references/transports.md](references/transports.md) | Choosing a transport, transport-specific endpoint settings (prefetch, batch size), what the InMemory transport does not exercise, health checks, topology provisioning |
 | [references/observability.md](references/observability.md) | Tracing and metrics setup, what spans Mocha emits, trace context propagation, custom diagnostic observers, log correlation |
 | [references/testing.md](references/testing.md) | Writing or reviewing a test that publishes, sends or consumes a message, testing sagas, testing outbox and inbox flows, deciding between the in-memory transport and a real broker |
+
+## Verifying a change
+
+A green build is not evidence that a handler is wired up. Three generator diagnostics are `Info` severity, which means
+the type is excluded from code generation, its queue is never created, nothing consumes the message, and nothing fails:
+MO0004 and MO0006 (open generic mediator types) and MO0012 (open generic messaging handler). Raise them in the
+project's `.editorconfig` so they cannot pass unnoticed:
+
+```ini
+[*.cs]
+dotnet_diagnostic.MO0004.severity = warning
+dotnet_diagnostic.MO0006.severity = warning
+dotnet_diagnostic.MO0012.severity = warning
+```
+
+Then confirm what was actually registered, rather than reasoning about the naming conventions:
+
+```csharp
+var runtime = host.Services.GetRequiredService<IMessagingRuntime>();
+
+var queues = runtime.Description.Transports
+    .SelectMany(t => t.ReceiveEndpoints)
+    .Where(e => e.Kind is ReceiveEndpointKind.Default)   // excludes _error, _skipped and reply endpoints
+    .Select(e => e.Name)
+    .OrderBy(n => n, StringComparer.Ordinal)
+    .ToArray();
+
+Assert.Equal(["order-service.order-placed"], queues);
+```
+
+`MessageBusDescription` also carries `Consumers`, `MessageTypes`, `Routes` (inbound and outbound) and `Sagas`, where
+each saga state lists its transitions and an `IsFinal` flag. That answers "is my handler bound?", "where does this
+message go?" and "can this state reach a final state?" without starting a broker.
 
 ## Reviewing
 

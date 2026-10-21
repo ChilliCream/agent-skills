@@ -81,6 +81,17 @@ guarantee. Manual registration exists for what the generator cannot see.
    MO0015, MO0016 and MO0018 only fire when `PublishAot` is `true`. The rest always fire. There are no code fixes, so
    none of these can be resolved with a lightbulb.
 
+   The three `Info` rules are the dangerous ones, because `dotnet build` does not surface them by default and CI never
+   sees them. Raise them in the project's `.editorconfig` so a handler that was dropped from code generation cannot
+   reach a review unnoticed:
+
+   ```ini
+   [*.cs]
+   dotnet_diagnostic.MO0004.severity = warning
+   dotnet_diagnostic.MO0006.severity = warning
+   dotnet_diagnostic.MO0012.severity = warning
+   ```
+
 5. **Do not give a saga constructor dependencies.** The saga runtime instantiates sagas with `new()`, so a constructor
    parameter is MO0014, an error. Services a transition needs are resolved where the transition runs, not on the saga
    instance ([sagas.md](sagas.md)).

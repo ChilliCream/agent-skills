@@ -180,6 +180,23 @@ every endpoint, route and binding, and `IMessagingRuntime.Description` exposes t
 message goes somewhere unexpected, look at the topology first, then at `AddMessage<T>()` registrations, then at the
 conventions.
 
+```csharp
+var runtime = host.Services.GetRequiredService<IMessagingRuntime>();
+
+var queues = runtime.Description.Transports
+    .SelectMany(t => t.ReceiveEndpoints)
+    .Where(e => e.Kind is ReceiveEndpointKind.Default)   // excludes _error, _skipped and reply endpoints
+    .Select(e => e.Name)
+    .OrderBy(n => n, StringComparer.Ordinal)
+    .ToArray();
+
+Assert.Equal(["order-service.order-placed"], queues);
+```
+
+`Description.Routes.Inbound` and `.Outbound` answer the two follow-up questions: which consumer is bound to a message
+type, and where a dispatched message is addressed. An assertion on those names is worth writing for any service whose
+queue names other teams depend on, because it turns a rename into a failing test instead of a drained-queue incident.
+
 ## Gotchas
 
 - Two contract types whose names differ only by a stripped suffix (`OrderPlaced` and `OrderPlacedEvent`) resolve to the
