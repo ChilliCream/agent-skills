@@ -19,18 +19,18 @@ EOF
 cat "$skill_dir/assets/workflows/nitro-backlog-wave.workflow.cs" \
   "$skill_dir/scripts/venti-workflow-test-stubs.cs" > "$test_dir/Program.cs"
 dotnet build "$test_dir/tests.csproj" --nologo >&2
-for scenario in pass fix dismissed contradictory missing-ruling empty-plan cap blocked agent-failed resume five-tickets; do
+for scenario in pass fix dismissed contradictory missing-ruling empty-plan cap blocked agent-failed resume resume-fix five-tickets; do
   WAVE_TEST_SCENARIO="$scenario" dotnet "$test_dir/bin/Debug/net${sdk_major}.0/tests.dll"
 done
 
 # Invalid input must fail before any agent starts.
 ulimit -c 0
-for scenario in six-tickets four-cycles zero-cycles; do
+for scenario in thirteen-tickets four-cycles zero-cycles; do
   if WAVE_TEST_SCENARIO="$scenario" dotnet "$test_dir/bin/Debug/net${sdk_major}.0/tests.dll" > "$test_dir/rejection.log" 2>&1; then
     echo "FAIL $scenario: workflow accepted invalid input" >&2
     exit 1
   fi
-  if [ "$scenario" = six-tickets ]; then
+  if [ "$scenario" = thirteen-tickets ]; then
     expected="Split this wave into smaller runs to stay within 50 agents."
   else
     expected="maxCycles must be between 1 and 3."

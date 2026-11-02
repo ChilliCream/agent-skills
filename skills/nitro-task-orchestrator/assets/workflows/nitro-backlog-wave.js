@@ -68,7 +68,7 @@ const implementPrompt = (wave, t) => `ROLE: Implementer. You implement exactly o
 ${header(wave, t)}
 Implement exactly the ticket's scope (problem, file scope, fix direction, verification, non-goals). Root-cause fixes only. Anything beyond the ticket is scope creep and fails review. Write or update the focused tests the ticket's verification section demands.
 Before reporting, review your own diff the way the external reviewer will: correctness (root cause, not suppression), scope creep, verification gaps. Fix what you find; do not report findings you could have fixed.
-Commit in ${wave.worktree} with pathspec commits and a conventional subject.
+Commit in ${wave.worktree} with pathspec commits and a plain imperative subject in sentence case, with no type or scope prefix and no trailing period.
 ${RULES}
 Return the change result: status, commits (hashes you created), verified (what you ran and saw pass), notVerified, escalation (NEEDS-PLANNER text or null).`
 

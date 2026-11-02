@@ -10,7 +10,7 @@ Apply the tier rule to Venti's available lineup; the workflow declares roles wit
 - **Implementer**: Sonnet/Terra-class model at high effort.
 - **Reviewer**: Opus/Sol-class model at medium effort.
 - **Verifier**: Fable/Astra-class model at medium effort.
-- **Fixer**: Sonnet/Terra-class model at high effort.
+- **Corrections**: continue the implementer session at its original model and effort; there is no separate fixer role.
 
 When lineups change, re-derive from the tier rule instead of copying model names; check and override the proposed picks before confirming.
 
@@ -26,7 +26,23 @@ Workflow({ name: "Nitro Backlog Wave", path: "<absolute-skill-directory>/assets/
 
 The first call compiles and proposes role picks; start it with `Workflow({ confirm: { run: "<returned-run-id>" } })`. End the turn after confirmation; `WorkflowFinished` wakes the session. Do not poll.
 
-Each phase is a fresh agent; the review result carries the findings forward. This workflow takes one area per call; tickets and waves run one at a time. Each ticket gets at most three review cycles; a third failed review escalates to the planner. With that default cap, pass at most five tickets per run. The result carries per ticket the outcome, commits, cycles, and deferred notes: verify and close the passes with their commits as evidence, escalate the rest. Standing rules from memory go into `args.rules`.
+Each ticket keeps one implementer and one reviewer for its whole run, so neither has to rebuild context between cycles. The reviewer never edits files.
+
+When a review fails, a fresh verifier checks every finding and writes the smallest correction plan. The implementer applies only that plan. The reviewer then checks the correction, plan adherence, scope and regressions rather than reviewing unchanged code again. It reopens a dismissed finding only with new evidence; otherwise an intentionally dismissed suggestion can be mistaken for an unaddressed defect.
+
+```text
+Implementer A -> Reviewer B -> fresh Verifier C
+Implementer A (applies plan) -> Reviewer B (checks correction) -> fresh Verifier D
+Implementer A (applies plan) -> Reviewer B (checks correction) -> pass or escalate
+```
+
+If the verifier dismisses all blocker and major findings, the ticket passes without a correction. A third failed review goes to the planner, with no further verifier or correction.
+
+Each run takes one area and at most twelve tickets, and handles tickets one at a time. Split larger waves into several runs.
+
+To re-review existing commits, pass `mode: "review"` with `commits` and `priorCycles`. This starts a new reviewer, because earlier runs' conversations do not carry over. If corrections are needed, a new implementer starts from the verified plan.
+
+The result carries per ticket the outcome, commits, cycles, and deferred notes: verify and close the passes with their commits as evidence, escalate the rest. Standing rules from memory go into `args.rules`.
 
 Agents share the working directory: start in the target repository or a prepared worktree, pass its absolute path as `repo`, and run no other writers alongside the workflow. Nitro resolves the same agent workspace from every worktree of the repository, so no extra setup is needed.
 

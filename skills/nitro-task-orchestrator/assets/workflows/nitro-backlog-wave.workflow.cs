@@ -12,25 +12,33 @@ var maxCycles = Venti.Args<int?>("maxCycles") ?? 3;
 var stopOnFailure = Venti.Args<bool?>("stopOnFailure") ?? false;
 
 if (new[] { actor, repo, branch, area }.Any(string.IsNullOrWhiteSpace) || tickets.Length == 0)
+{
     throw new ArgumentException("actor, repo, branch, area and a nonempty tickets array are required.");
+}
 
 if (maxCycles is < 1 or > 3)
+{
     throw new ArgumentException("maxCycles must be between 1 and 3.");
+}
 
 if (tickets.Select(t => t.Id).Distinct().Count() != tickets.Length ||
     tickets.Any(t => string.IsNullOrWhiteSpace(t.Id) || t.Mode is not ("implement" or "review") ||
         t.PriorCycles < 0 || t.PriorCycles >= maxCycles ||
         (t.Mode == "review" && t.Commits.Length == 0)))
+{
     throw new ArgumentException("Tickets need unique ids, implement/review mode, valid priorCycles and commits for review mode.");
+}
 
-// Four agents per failed round, then implement/review: keep within the 50-agent run budget.
-if (tickets.Length * (4 * maxCycles - 2) > 50)
+// Two sessions per ticket plus a fresh verifier per failed round; continuations reuse agents.
+if (tickets.Length * (maxCycles + 1) > 50)
+{
     throw new ArgumentException("Split this wave into smaller runs to stay within 50 agents.");
+}
 
 var implementer =
     Venti.Role(
         "implementer",
-        "Implements one Nitro ticket, tests and self-reviews it, then commits only its scoped files.",
+        "Implements one Nitro ticket and its verified corrections, tests and self-reviews it, then commits only its scoped files.",
         specified: Specified.Clear,
         size: Size.Medium,
         risk: Risk.Medium);
@@ -51,37 +59,31 @@ var verifier =
         size: Size.Medium,
         risk: Risk.High);
 
-var fixer =
-    Venti.Role(
-        "fixer",
-        "Applies only the verified correction plan, runs focused checks and adds scoped commits.",
-        specified: Specified.Clear,
-        size: Size.Medium,
-        risk: Risk.Medium);
+var standingRules = 
+    $"""
+    Binding rules:
+    - Work only inside repository {repo}, on existing branch {branch}, within area {area}. No other writers may run during this workflow.
+    - Read the ticket and its binding comments with nitro agent tasks show <id> --output json before acting. Check its labels and scope: never work on wayfinder:* or research* tasks. Report blocked if the ticket is not claimed by {actor} or does not belong to this area.
+    - Read repository instructions. Do not touch the user's uncommitted files.
+    - Atomic commits with pathspec: git commit -m "..." -- <files>. Never git add then bare git commit.
+    - Run the repository formatter in write then check mode on touched files before committing. Run focused verification; do not share build outputs with other processes. Restore only your own known build side effects.
+    - On git index.lock failure wait and retry; never force or delete the lock.
+    - Never close or claim tasks, push, switch branches, rebase, merge, amend or rewrite commits. Only the orchestrator changes task status.
+    - Pass --actor {actor} on every task comment. If a conservative interpretation is possible, record NEEDS-PLANNER: <question> | chose: <what I did> and continue; otherwise report blocked.
+    - Report only commands actually run and results actually seen. notVerified lists all checks or claims not exercised. escalation contains deferred decisions or a blocker, otherwise null.
+    Project rules from the orchestrator and shared memory:
+    {rules}
+    Tooling and environment instructions:
+    {tooling}
+    """;
 
-var standingRules = $"""
-Binding rules:
-- Work only inside repository {repo}, on existing branch {branch}, within area {area}. No other writers may run during this workflow.
-- Read the ticket and its binding comments with nitro agent tasks show <id> --output json before acting. Check its labels and scope: never work on wayfinder:* or research* tasks. Report blocked if the ticket is not claimed by {actor} or does not belong to this area.
-- Read repository instructions. Do not touch the user's uncommitted files.
-- Atomic commits with pathspec: git commit -m "..." -- <files>. Never git add then bare git commit.
-- Run the repository formatter in write then check mode on touched files before committing. Run focused verification; do not share build outputs with other processes. Restore only your own known build side effects.
-- On git index.lock failure wait and retry; never force or delete the lock.
-- Never close or claim tasks, push, switch branches, rebase, merge, amend or rewrite commits. Only the orchestrator changes task status.
-- Pass --actor {actor} on every task comment. If a conservative interpretation is possible, record NEEDS-PLANNER: <question> | chose: <what I did> and continue; otherwise report blocked.
-- Report only commands actually run and results actually seen. notVerified lists all checks or claims not exercised. escalation contains deferred decisions or a blocker, otherwise null.
-Project rules from the orchestrator and shared memory:
-{rules}
-Tooling and environment instructions:
-{tooling}
-""";
-
-string Header(Ticket ticket) => $"""
-Ticket: {ticket.Id}. Repository: {repo}. Branch: {branch}. Area: {area}.
-Read nitro agent tasks show {ticket.Id} --output json, including comments.
-Orchestrator context (binding): {ticket.Context ?? "none"}
-{standingRules}
-""";
+string Header(Ticket ticket) => 
+    $"""
+    Ticket: {ticket.Id}. Repository: {repo}. Branch: {branch}. Area: {area}.
+    Read nitro agent tasks show {ticket.Id} --output json, including comments.
+    Orchestrator context (binding): {ticket.Context ?? "none"}
+    {standingRules}
+    """;
 
 string Json<T>(T value) =>
     JsonSerializer.Serialize(
@@ -125,22 +127,29 @@ async Task RunTicket(Ticket ticket, TicketResult result)
             result.Deferred.Add(escalation);
     }
 
+    Conversation? implementerConversation = null;
+    Conversation? reviewerConversation = null;
+
     if (ticket.Mode == "implement")
     {
         ChangeResult change;
 
         using (Venti.Phase("Implement"))
-            change =
-                await Venti.Agent<ChangeResult>(
+        {
+            var session =
+                await Venti.AgentSession<ChangeResult>(
                     $"""
                     ROLE: Implementer. Implement exactly this ticket: problem, file scope, fix direction, verification and non-goals.
                     {Header(ticket)}
                     Fix the root cause, add focused tests, then self-review correctness, scope creep and verification gaps. Fix your own findings before reporting.
-                    Commit with pathspec and a conventional subject. Return status (completed/blocked/failed), new commit hashes, verified, notVerified and escalation.
+                    Commit with pathspec and a plain imperative subject in sentence case, with no type or scope prefix and no trailing period. Return status (completed/blocked/failed), new commit hashes, verified, notVerified and escalation.
                     """,
                     implementer,
                     fork: false,
                     title: $"Implement {ticket.Id}");
+            change = session.Value;
+            implementerConversation = session.Conversation;
+        }
 
         result.Changes.Add(change);
         Take(change.NotVerified, change.Escalation);
@@ -160,9 +169,10 @@ async Task RunTicket(Ticket ticket, TicketResult result)
         ReviewResult review;
 
         using (Venti.Phase("Review"))
-            review =
-                await Venti.Agent<ReviewResult>(
-                    $"""
+        {
+            if (reviewerConversation is null)
+            {
+                var prompt = $"""
                     ROLE: Independent reviewer, cycle {cycle}. Modify nothing, commit nothing, change no task status.
                     {Header(ticket)}
                     Read actual diffs and surrounding code for commits {Json(result.Commits)}, not an implementation summary.
@@ -170,10 +180,30 @@ async Task RunTicket(Ticket ticket, TicketResult result)
                     Re-run focused checks where feasible. Check these outstanding verification gaps first: {Json(result.NotVerified)}.
                     Return status (completed/blocked/failed), verdict (pass/fail/unknown), findings with unique ids, severity (blocker/major/minor), summary, evidence (file:line or command output), remediation, verified, notVerified and escalation.
                     Pass only with zero blocker or major findings. Minor findings do not fail review.
-                    """,
-                    reviewer,
-                    fork: false,
-                    title: $"Review {ticket.Id} {cycle}");
+                    """;
+                var session = await Venti.AgentSession<ReviewResult>(
+                    prompt, reviewer, fork: false, title: $"Review {ticket.Id}");
+                review = session.Value;
+                reviewerConversation = session.Conversation;
+            }
+            else
+            {
+                var prompt = $"""
+                    Ticket: {ticket.Id}. Verify the correction, cycle {cycle}. Remain read-only; standing rules still apply.
+                    Verifier rulings, evidence and correction plan: {Json(result.Verifications.Last())}.
+                    Implementer's correction report: {Json(result.Changes.Last())}.
+                    All ticket commits: {Json(result.Commits)}.
+                    Outstanding notVerified checks: {Json(result.NotVerified)}.
+
+                    Inspect the new commits and relevant surrounding code, not just the correction report. Do not restart the original review of unchanged code.
+                    Verify confirmed/modified findings are resolved, the verified plan was followed without scope expansion, and the correction introduced no regressions.
+                    Respect dismissals and their evidence; reopen a dismissed finding only with new evidence contradicting the verifier's ruling.
+                    Re-read ticket comments for updated binding decisions and re-run relevant focused checks.
+                    Return the same review structure. Pass only with zero blocker or major findings; report remaining verification gaps.
+                    """;
+                review = await reviewerConversation.ContinueAsync<ReviewResult>(prompt);
+            }
+        }
 
         result.Reviews.Add(review);
         Take(review.NotVerified, review.Escalation);
@@ -255,18 +285,25 @@ async Task RunTicket(Ticket ticket, TicketResult result)
         ChangeResult fix;
 
         using (Venti.Phase("Fix"))
-            fix =
-                await Venti.Agent<ChangeResult>(
-                    $"""
-                    ROLE: Fixer. Apply only this verified correction plan, no dismissed findings or wider scope.
+        {
+            var prompt = $"""
+                    ROLE: Implementer correcting review findings. Apply only this verified correction plan, no dismissed findings or wider scope.
                     {Header(ticket)}
                     Existing commits: {Json(result.Commits)}. Verification: {Json(verification)}.
                     Run focused checks, add new pathspec commits on top, never amend or rewrite.
                     Return status (completed/blocked/failed), new commit hashes only, verified, notVerified and escalation.
-                    """,
-                    fixer,
-                    fork: false,
-                    title: $"Fix {ticket.Id} {cycle}");
+                    """;
+            if (implementerConversation is null)
+            {
+                // Review-only recovery has no implementation session in this run.
+                var session = await Venti.AgentSession<ChangeResult>(
+                    prompt, implementer, fork: false, title: $"Fix {ticket.Id}");
+                fix = session.Value;
+                implementerConversation = session.Conversation;
+            }
+            else
+                fix = await implementerConversation.ContinueAsync<ChangeResult>(prompt);
+        }
 
         result.Changes.Add(fix);
         Take(fix.NotVerified, fix.Escalation);
