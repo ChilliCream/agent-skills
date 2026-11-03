@@ -31,6 +31,7 @@ Every task's description must contain:
 - **File scope**: the concrete directories/files the implementer may touch. This is a boundary, not a hint.
 - **Fix direction**: the intended approach. "Fix it" is not a plan.
 - **Verification**: the commands or checks that prove it works. Name the real test filter or entry path.
+- **Done when**: one observable check that proves the ticket is finished (a named test passes, a command prints X). One behavior per ticket.
 - **Non-goals**: what is explicitly out of scope, especially adjacent cleanup an implementer would be tempted to do.
 
 A worked example, with the area epic already created as `app-9z8`:
@@ -51,6 +52,9 @@ Debounce the query 300 ms in useOrderSearch; cancel in-flight requests on new in
 ## Verification
 pnpm test --filter orders-search; manually: typing 10 chars fires at most 2 requests.
 
+## Done when
+pnpm test --filter orders-search passes and typing 10 chars fires at most 2 requests.
+
 ## Non-goals
 Server-side rate limiting, redesigning the search UI, other pages' search boxes.
 EOF
@@ -64,7 +68,7 @@ Plus metadata the orchestrator depends on:
 - **Dependencies**: link children to their epic with `--parent` at create time or `nitro agent tasks update <id> --parent <epic> --actor <name>`, never with a bare `dep add`: its default `blocks` edge would block the child on an epic that cannot close first, a deadlock `dep cycles` does not catch (the parent edge blocks only the epic, never the child). Add `nitro agent tasks dep add <later> <first> --actor <name>` where ordering matters (foundations before features). `nitro agent tasks dep cycles --output json` must return empty before handoff.
 - Cross-area interactions get an explicit note in the later task ("re-verify what <id> landed").
 
-Size tasks for one implementer agent each: one coherent change, verifiable on its own. Split anything that needs two code areas into linked tasks.
+Size tasks for one implementer agent each: one coherent change, verifiable on its own. At most 8 steps: if the fix direction needs more than 8 steps, two code areas, or a schema change plus its callers, split it into linked tasks with dep edges, each with its own Done when. Leave no open questions: every ruling the implementer needs is written into the task before handoff, and user-visible text is given verbatim.
 
 ## Handing off to the orchestrator
 

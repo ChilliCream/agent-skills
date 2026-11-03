@@ -28,7 +28,7 @@ The first call compiles and proposes role picks; start it with `Workflow({ confi
 
 Each ticket keeps one implementer and one reviewer for its whole run, so neither has to rebuild context between cycles. The reviewer never edits files.
 
-When a review fails, a fresh verifier checks every finding and writes the smallest correction plan. The implementer applies only that plan. The reviewer then checks the correction, plan adherence, scope and regressions rather than reviewing unchanged code again. It reopens a dismissed finding only with new evidence; otherwise an intentionally dismissed suggestion can be mistaken for an unaddressed defect.
+When a review fails, a fresh verifier checks every finding and writes the smallest correction plan. The implementer applies only that plan. A correction plan of more than 8 items is split into several writer turns of at most 8 items each, in dependency order. Each turn gets one "done when" line and is committed before the next starts. Never hand a writer the whole list in one turn. The reviewer then checks the correction, plan adherence, scope and regressions rather than reviewing unchanged code again. It reopens a dismissed finding only with new evidence; otherwise an intentionally dismissed suggestion can be mistaken for an unaddressed defect.
 
 ```text
 Implementer A -> Reviewer B -> fresh Verifier C

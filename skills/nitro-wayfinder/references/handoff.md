@@ -15,7 +15,7 @@ The orchestrator is a separate session running the sibling nitro-task-orchestrat
 
 - One `epic` per code area (`storage`, `api`, `ui`, `jobs`...), titled `[<effort>] <area>`, labelled with the area. Implementation tasks are children of their area epic (`--parent`). The parent edge does not block the children; the orchestrator closes an epic once its children are done (`nitro agent tasks epic status`).
 - Order with `blocks` edges from foundations to tests: storage before services, services before API, API before UI, everything before end-to-end tests. Cross-area interactions get an explicit note in the later task ("re-verify what <id> landed").
-- Size each task for one implementer agent: one coherent change, verifiable on its own. Anything that needs two code areas becomes two linked tasks.
+- Size tasks for one implementer agent each: one coherent change, verifiable on its own. At most 8 steps: if the fix direction needs more than 8 steps, two code areas, or a schema change plus its callers, split it into linked tasks with dep edges, each with its own Done when. Leave no open questions: every ruling the implementer needs is written into the task before handoff, and user-visible text is given verbatim.
 - Every locked parameter from the decision tickets goes into the task that implements it, by value, with a pointer to the ticket by name and id. Implementers treat the task as authoritative and will not go looking.
 
 ## Task quality bar
@@ -26,6 +26,7 @@ Every implementation task's description contains:
 - **File scope**: the concrete directories and files the implementer may touch. A boundary, not a hint.
 - **Fix direction**: the intended approach, including the locked parameters. "Implement it" is not a plan.
 - **Verification**: the commands or checks that prove it works. Name the real test filter or entry path.
+- **Done when**: one observable check that proves the ticket is finished (a named test passes, a command prints X). One behavior per ticket.
 - **Non-goals**: what is explicitly out of scope, especially adjacent cleanup an implementer would be tempted to do.
 
 Plus the metadata the orchestrator schedules by: `--priority` 0-4, `--type` (`task`, `bug`, `feature`, `chore`), and the **area label**. An unlabelled task cannot be placed in a wave.
@@ -48,6 +49,9 @@ One file per day, named invoices-YYYY-MM-DD.csv, written to the finance share de
 
 ## Verification
 dotnet test src/Billing.Jobs/Export.Tests --filter Category=Export
+
+## Done when
+dotnet test src/Billing.Jobs/Export.Tests --filter Category=Export passes.
 
 ## Non-goals
 Scheduling ("Export schedule", bill-3f2.7), retention (out of scope on the map), any UI.
