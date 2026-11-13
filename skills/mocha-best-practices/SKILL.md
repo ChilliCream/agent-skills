@@ -71,8 +71,8 @@ A service project references the runtime packages plus the source generator, whi
 ```
 
 `Mocha.Analyzers` ships its generator under `analyzers/dotnet/cs` and is marked as a development dependency, so a plain
-`PackageReference` is enough. Inside this repository, where the generator is consumed as a project reference, it needs
-the analyzer plumbing spelled out:
+`PackageReference` is enough. Inside the ChilliCream graphql-platform repository, where the generator is consumed as a
+project reference, it needs the analyzer plumbing spelled out:
 
 ```xml
 <ProjectReference Include="..\..\src\Mocha.Analyzers\Mocha.Analyzers.csproj"
