@@ -10,7 +10,7 @@ Apply the tier rule to Venti's available lineup; the workflow declares roles wit
 - **Implementer**: Sonnet/Terra-class model at high effort.
 - **Reviewer**: Opus/Sol-class model at medium effort.
 - **Verifier**: Fable/Astra-class model at medium effort.
-- **Corrections**: continue the implementer session at its original model and effort; there is no separate fixer role.
+- **Fixer**: continue the implementer session at its original model and effort; there is no separate fixer role.
 
 When lineups change, re-derive from the tier rule instead of copying model names; check and override the proposed picks before confirming.
 
