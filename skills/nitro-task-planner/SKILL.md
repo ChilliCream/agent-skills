@@ -18,8 +18,12 @@ Roles are how the two sides find each other. The orchestrator takes the `orchest
 ## Before writing tasks
 
 - Load the workspace's shared memory first: `nitro agent memory context` prints a prompt-ready block of the standing preferences, conventions, and domain facts every agent in this repo works from (mechanics in the nitro-memory skill; reads take no actor). A task that contradicts a standing rule comes back as a review finding.
-- Inspect reality first. Read the code that would change; for UI or behavior goals, look at the live app. Tasks written from memory produce implementer churn.
+- Inspect reality first. Read the code that would change; for UI or behavior goals, look at the live app. Tasks written from memory produce implementer churn. Cite only paths, lines and symbols you opened in this session: a plausible but wrong Starting point misleads the implementer more than none.
 - Check the tracker for overlap before creating: `nitro agent tasks search "<keyword>" --output json`, `nitro agent tasks list --output json` (the default view shows every non-terminal status, including `in_progress` work an implementer may already be executing: the worst kind of task to duplicate). Neither `search` nor `list --all` sees auto-archived tasks (closed work past the 100-closed cap); check `list --status archived` when a brief may reopen old ground. Update or comment an existing task instead of duplicating it. Parallel planners are the main source of duplicates the orchestrator has to reconcile.
+- Create tasks directly; do not present the batch for approval first. Come back to the user only for rulings that are theirs to make:
+  - You decide what the code or a standing memory settles: which helper to reuse, file layout, step order, test names.
+  - The user rules on user-visible behavior or text, scope changes, public API or schema shape, and anything that would contradict a memory.
+  - Collect the user's questions and ask them in one round, then keep planning the tasks that do not depend on the answers.
 - If the user makes a ruling during planning, record it as a task comment (`nitro agent tasks comment add <id> "<text>" --actor <name>`), not just in the description. Comments are the decision log implementers read via `nitro agent tasks show`.
 - A ruling that outlives the batch is also a memory: `nitro agent memory save "<text>" --type preference --tag <area> --actor <name>` (`--type` is required: `fact`, `decision`, `preference`, or `reference`). Rule of thumb -- binds this task, comment it; binds every future task in this repo, save it and still write it into the task so the implementer never has to go looking. Memory is workspace-wide, so the orchestrator and its agents read what you save.
 
@@ -88,7 +92,9 @@ Plus metadata the orchestrator depends on:
 
 Size tasks for one implementer agent each: one coherent change, verifiable on its own. At most 8 steps: if the fix direction needs more than 8 steps, two code areas, or a schema change plus its callers, split it into linked tasks with dep edges, each with its own Done when. Leave no open questions: every ruling the implementer needs is in Decisions before handoff.
 
-Before handoff, cold-read each task as an engineer who has seen none of the planning conversation. If they would have to ask a question, open a file outside File scope to understand the task, or guess what done looks like, the task is not ready: fill the gap in the task, not in the briefing.
+Before handoff, cold-read each task as an engineer who has seen none of the planning conversation. If they would have to ask a question, open a file outside File scope to understand the task, or guess what done looks like, the task is not ready: fill the gap in the task, not in the briefing. Check that every path in File scope and Starting points exists and every cited line still shows what the task says it does.
+
+Before handoff, also check coverage: every item of the user's input ends as a new task, a comment or update on an existing task, or a "not planned: <reason>" line in the briefing. An item that ends as none of these was dropped.
 
 ## Handing off to the orchestrator
 
@@ -106,4 +112,11 @@ Implement, close or claim tasks, run waves, restart shared infrastructure, commi
 
 ## Rhythm
 
-Take input from the user, plan a coherent batch, notify the orchestrator, then wait for the next input or an orchestrator question. End a planning session by confirming: `nitro agent tasks lint --output json` has no findings on the new tasks, no dep cycles, every task labeled, scoped and cold-read, any standing rule the session produced saved to memory, orchestrator notified (or user informed there is none).
+Take input from the user, plan a coherent batch, notify the orchestrator, then wait for the next input or an orchestrator question. A batch is done only when every step below has passed in this session; do not end the turn before that, except to ask the user's round of rulings once every task that does not depend on them is planned:
+
+1. Run `nitro agent tasks lint --output json`, fix every finding on the new tasks, and rerun until it reports none. Reporting a finding instead of fixing it does not count.
+2. `nitro agent tasks dep cycles --output json` returns empty.
+3. Every task is labeled, scoped and cold-read, with its paths checked.
+4. The coverage check accounts for every input item.
+5. Every standing rule the session produced is saved to memory.
+6. The orchestrator is notified, or the user is told there is none.
