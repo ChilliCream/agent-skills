@@ -6,10 +6,10 @@ How the harness-neutral roles and protocol in SKILL.md map onto Claude Code.
 
 Apply the tier rule to the current Claude lineup. As of 2026 a good mapping:
 
-- **Planner (fable, medium effort)**: usually a separate session running the nitro-task-planner skill, not a subagent you spawn.
-- **Implementer (sonnet, high effort)**
-- **Reviewer (opus, medium effort)**
-- **Verifier (fable, medium effort)**
+- **Planner (fable, high effort)**: usually a separate session running the nitro-task-planner skill, not a subagent you spawn.
+- **Implementer (sonnet, high effort)**; hard tickets opus, medium effort
+- **Reviewer (opus, medium effort)**; hard tickets fable, medium effort
+- **Verifier (fable, high effort)**
 - **Fixer (sonnet, high effort)**
 
 When lineups change, re-derive from the tier rule instead of copying these names; the mapping lives in the `TIER` table of the workflow script.

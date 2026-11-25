@@ -4,6 +4,7 @@ enum Specified { Clear }
 enum Size { Medium }
 enum Risk { Medium, High }
 class VentiToolException(string message) : Exception(message);
+record BashResult(string Output, int ExitCode, bool TimedOut);
 static class Venti
 {
     static readonly string Scenario = Environment.GetEnvironmentVariable("WAVE_TEST_SCENARIO")!;
@@ -52,6 +53,8 @@ static class Venti
     static Ticket NewTicket(string id) => new(id, Scenario is "resume" or "resume-fix" ? "review" : "implement",
         Scenario is "resume" or "resume-fix" ? ["existing"] : [], Scenario is "resume" or "resume-fix" ? 1 : 0, null);
 
+    public static Task<BashResult> Bash(string command) =>
+        Task.FromResult(new BashResult("{\"description\":\"## Done when\\nfocused tests pass\",\"comments\":[]}", 0, false));
     public static string Role(string name, string does, Specified specified, Size size, Risk risk) => name;
     public static IDisposable Phase(string name) => new PhaseScope();
     public static void Log(string message) => Console.WriteLine(message);

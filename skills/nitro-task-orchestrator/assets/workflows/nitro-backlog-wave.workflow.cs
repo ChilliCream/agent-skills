@@ -63,13 +63,15 @@ var standingRules =
     $"""
     Binding rules:
     - Work only inside repository {repo}, on existing branch {branch}, within area {area}. No other writers may run during this workflow.
-    - Read the ticket and its binding comments with nitro agent tasks show <id> --output json before acting. Check its labels and scope: never work on wayfinder:* or research* tasks. Report blocked if the ticket is not claimed by {actor} or does not belong to this area.
+    - The ticket and its binding comments are embedded below; rerun nitro agent tasks show <id> --output json only to pick up newer comments. Check its labels and scope: never work on wayfinder:* or research* tasks.
     - Read repository instructions. Do not touch the user's uncommitted files.
     - Atomic commits with pathspec: git commit -m "..." -- <files>. Never git add then bare git commit.
     - Run the repository formatter in write then check mode on touched files before committing. Run focused verification; do not share build outputs with other processes. Restore only your own known build side effects.
     - On git index.lock failure wait and retry; never force or delete the lock.
     - Never close or claim tasks, push, switch branches, rebase, merge, amend or rewrite commits. Only the orchestrator changes task status.
-    - Pass --actor {actor} on every task comment. If a conservative interpretation is possible, record NEEDS-PLANNER: <question> | chose: <what I did> and continue; otherwise report blocked.
+    - Pass --actor {actor} on every task comment.
+    - Report blocked only for a condition the ticket's "Stop and report only if" section names, or a ticket that is not claimed by {actor} or does not belong to this area. Anything else: make a reasonable, reversible choice, record NEEDS-PLANNER: <question> | chose: <what I did> as a task comment, and continue.
+    - Persist until the ticket's outcome is delivered. Do not stop after a first draft, after describing what you could do, or at the first failing command: find the cause, fix it and run the check again.
     - Report only commands actually run and results actually seen. notVerified lists all checks or claims not exercised. escalation contains deferred decisions or a blocker, otherwise null.
     Project rules from the orchestrator and shared memory:
     {rules}
@@ -77,10 +79,11 @@ var standingRules =
     {tooling}
     """;
 
-string Header(Ticket ticket) => 
+string Header(Ticket ticket, string ticketText) =>
     $"""
     Ticket: {ticket.Id}. Repository: {repo}. Branch: {branch}. Area: {area}.
-    Read nitro agent tasks show {ticket.Id} --output json, including comments.
+    The ticket as nitro agent tasks show {ticket.Id} --output json printed it at the start of this run, description and comments included. Every section of it binds you:
+    {ticketText}
     Orchestrator context (binding): {ticket.Context ?? "none"}
     {standingRules}
     """;
@@ -127,6 +130,16 @@ async Task RunTicket(Ticket ticket, TicketResult result)
             result.Deferred.Add(escalation);
     }
 
+    // Embedding the ticket keeps a terse agent from skimming or skipping the tracker read.
+    var show = await Venti.Bash($"cd '{repo}' && nitro agent tasks show '{ticket.Id}' --output json");
+    if (show.ExitCode != 0)
+    {
+        result.Outcome = "ticket-unreadable";
+        result.Escalation = show.Output;
+        return;
+    }
+
+    var ticketText = show.Output;
     Conversation? implementerConversation = null;
     Conversation? reviewerConversation = null;
 
@@ -139,10 +152,11 @@ async Task RunTicket(Ticket ticket, TicketResult result)
             var session =
                 await Venti.AgentSession<ChangeResult>(
                     $"""
-                    ROLE: Implementer. Implement exactly this ticket: problem, file scope, fix direction, verification and non-goals.
-                    {Header(ticket)}
+                    ROLE: Implementer. Implement exactly this ticket, following every section of it: problem, file scope, starting points, fix direction steps, decisions, stop-and-report conditions, verification, done when and non-goals.
+                    {Header(ticket, ticketText)}
                     Fix the root cause, add focused tests, then self-review correctness, scope creep and verification gaps. Fix your own findings before reporting.
                     Commit with pathspec and a plain imperative subject in sentence case, with no type or scope prefix and no trailing period. Return status (completed/blocked/failed), new commit hashes, verified, notVerified and escalation.
+                    completed means every fix direction step is committed and the ticket's Done when check passed in this session and appears in verified. Until then, keep working; a first draft is not completed.
                     """,
                     implementer,
                     fork: false,
@@ -174,7 +188,7 @@ async Task RunTicket(Ticket ticket, TicketResult result)
             {
                 var prompt = $"""
                     ROLE: Independent reviewer, cycle {cycle}. Modify nothing, commit nothing, change no task status.
-                    {Header(ticket)}
+                    {Header(ticket, ticketText)}
                     Read actual diffs and surrounding code for commits {Json(result.Commits)}, not an implementation summary.
                     Judge correctness (root cause, no suppression), scope creep (anything beyond the ticket) and verification gaps.
                     Re-run focused checks where feasible. Check these outstanding verification gaps first: {Json(result.NotVerified)}.
@@ -248,7 +262,7 @@ async Task RunTicket(Ticket ticket, TicketResult result)
                 await Venti.Agent<VerificationResult>(
                     $"""
                     ROLE: Adversarial verifier. Modify nothing, commit nothing. Try to refute every finding using code and focused checks.
-                    {Header(ticket)}
+                    {Header(ticket, ticketText)}
                     Commits: {Json(result.Commits)}. Review: {Json(review)}.
                     Return status (completed/blocked/failed), findings keeping exactly the review ids, disposition (confirmed/dismissed/modified), evidence and correction (string or null), correctionPlan, verified, notVerified and escalation.
                     Explain every dismissal. correctionPlan is the smallest ordered set of edits resolving confirmed/modified blocker and major findings, not minor findings or unrelated refactoring.
@@ -288,10 +302,11 @@ async Task RunTicket(Ticket ticket, TicketResult result)
         {
             var prompt = $"""
                     ROLE: Implementer correcting review findings. Apply only this verified correction plan, no dismissed findings or wider scope.
-                    {Header(ticket)}
+                    {Header(ticket, ticketText)}
                     Existing commits: {Json(result.Commits)}. Verification: {Json(verification)}.
                     Run focused checks, add new pathspec commits on top, never amend or rewrite.
                     Return status (completed/blocked/failed), new commit hashes only, verified, notVerified and escalation.
+                    completed means every correction plan item is committed and the focused checks and the ticket's Done when check passed in this session and appear in verified. Until then, keep working.
                     """;
             if (implementerConversation is null)
             {

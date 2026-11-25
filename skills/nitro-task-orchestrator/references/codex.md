@@ -6,11 +6,11 @@ How the harness-neutral roles and protocol in SKILL.md map onto the Codex CLI.
 
 Apply the tier rule to the current Codex lineup; set the model override per spawned subagent and the effort per role. As of 2026 a good mapping:
 
-- **Planner (gpt-5.6-sol, medium effort)**
-- **Implementer (gpt-5.6-terra, high effort)**
-- **Reviewer (gpt-5.6-sol, high effort)**
-- **Verifier (gpt-5.6-sol, xhigh effort)**
-- **Fixer (gpt-5.6-terra, high effort)**
+- **Planner (gpt-6.2-sol, medium effort)**
+- **Implementer (gpt-6.1-terra, high effort)**
+- **Reviewer (gpt-6.2-sol, high effort)**
+- **Verifier (gpt-6.2-sol, xhigh effort)**
+- **Fixer (gpt-6.1-terra, high effort)**
 
 When lineups change, re-derive from the tier rule instead of copying these names.
 

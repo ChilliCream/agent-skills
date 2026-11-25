@@ -4,15 +4,25 @@ How the harness-neutral roles and protocol in SKILL.md map onto Venti.
 
 ## Models and effort
 
-Apply the tier rule to Venti's available lineup; the workflow declares roles with `Venti.Role` and proposes models and effort before execution:
+The workflow declares roles with `Venti.Role` and proposes models and effort before execution. Override the proposals with this map, in either an all-Anthropic or an all-GPT stack:
 
-- **Planner**: usually a separate session running the nitro-task-planner skill, not a subagent you spawn.
-- **Implementer**: Sonnet/Terra-class model at high effort.
-- **Reviewer**: Opus/Sol-class model at medium effort.
-- **Verifier**: Fable/Astra-class model at medium effort.
-- **Fixer**: continue the implementer session at its original model and effort; there is no separate fixer role.
+| Role | Anthropic | GPT |
+| --- | --- | --- |
+| Implementer | claude-sonnet-5-5 high | gpt-6.1-terra high |
+| Implementer, hard tickets | claude-opus-5-5 medium | gpt-6.2-sol medium |
+| Reviewer | claude-opus-5-5 medium | gpt-6.2-sol medium |
+| Reviewer, hard tickets | claude-fable-5-2 medium | gpt-6.2-astra medium |
+| Verifier | claude-fable-5-2 high | gpt-6.2-astra high |
+| Orchestrator session | claude-fable-5-2 medium | gpt-6.2-astra medium |
+| Planner session | claude-fable-5-2 high | gpt-6.2-astra high |
 
-When lineups change, re-derive from the tier rule instead of copying model names; check and override the proposed picks before confirming.
+- Set every effort explicitly. Venti defaults several GPT models to `low`, which makes them stop early.
+- On hard tickets the reviewer moves up a tier, so the hard-ticket implementer's model never reviews its own work. A ticket is hard when it meets two or more of: crosses several projects or changes an interface with many implementers; its acceptance test needs layers outside the file scope; open design questions; concurrency or state machines; model-visible text or snapshot-heavy output; overlap with in-flight tickets.
+- Role picks apply to a whole run, so put hard tickets in their own wave run.
+- The fixer continues the implementer session at its original model and effort; there is no separate fixer role.
+- The planner and the orchestrator are separate sessions, not roles in the workflow.
+
+When lineups change, re-derive the map by tier instead of copying model names.
 
 ## The wave is a workflow
 
@@ -24,7 +34,9 @@ Workflow({ name: "Nitro Backlog Wave", path: "<absolute-skill-directory>/assets/
     tickets: [{ id, mode: "implement", commits: [], priorCycles: 0, context: null }] } })
 ```
 
-The first call compiles and proposes role picks; start it with `Workflow({ confirm: { run: "<returned-run-id>" } })`. End the turn after confirmation; `WorkflowFinished` wakes the session. Do not poll.
+The first call compiles and proposes role picks; start it with `Workflow({ confirm: { run: "<returned-run-id>", roles: { ... } } })`, overriding the picks with the model map above. Confirm the picks yourself; do not ask the user to approve them. End the turn after confirmation; `WorkflowFinished` wakes the session. Do not poll.
+
+When `WorkflowFinished` arrives, keep going in that turn: verify and close the passes, escalate the rest, drain mail, and launch the next wave. A wave summary is not a stopping point. End the turn only at the run-end condition in SKILL.md's Rhythm, or when every remaining ticket is blocked with the planner.
 
 Each ticket keeps one implementer and one reviewer for its whole run, so neither has to rebuild context between cycles. The reviewer never edits files.
 
@@ -42,7 +54,7 @@ Each run takes one area and at most twelve tickets, and handles tickets one at a
 
 To re-review existing commits, pass `mode: "review"` with `commits` and `priorCycles`. This starts a new reviewer, because earlier runs' conversations do not carry over. If corrections are needed, a new implementer starts from the verified plan.
 
-The result carries per ticket the outcome, commits, cycles, and deferred notes: verify and close the passes with their commits as evidence, escalate the rest. Standing rules from memory go into `args.rules`.
+The workflow reads each ticket with `nitro agent tasks show` itself and embeds it in every agent prompt; a ticket it cannot read ends as `ticket-unreadable`. The result carries per ticket the outcome, commits, cycles, and deferred notes: verify and close the passes with their commits as evidence, escalate the rest. Standing rules from memory go into `args.rules`.
 
 Agents share the working directory: start in the target repository or a prepared worktree, pass its absolute path as `repo`, and run no other writers alongside the workflow. Nitro resolves the same agent workspace from every worktree of the repository, so no extra setup is needed.
 
