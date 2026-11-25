@@ -27,11 +27,14 @@ Roles are how the two sides find each other. The orchestrator takes the `orchest
 
 Every task's description must contain:
 
-- **Problem**: what is wrong or missing, with evidence (file path, error, screenshot reference).
+- **Problem**: current behavior, expected behavior, and evidence (file path, error, screenshot reference).
 - **File scope**: the concrete directories/files the implementer may touch. This is a boundary, not a hint.
-- **Fix direction**: the intended approach. "Fix it" is not a plan.
-- **Verification**: the commands or checks that prove it works. Name the real test filter or entry path.
-- **Done when**: one observable check that proves the ticket is finished (a named test passes, a command prints X). One behavior per ticket.
+- **Starting points**: the `file:line` or symbol where the change begins, and the existing helper or pattern to reuse. You read this code while planning; write it down so the implementer does not rediscover it or reinvent what exists.
+- **Fix direction**: the intended approach as numbered steps, each naming the file or symbol it changes, the last one the test that proves it. "Fix it" is not a plan, and a single sentence lets an implementer stop after a first draft.
+- **Decisions**: every ruling the implementer needs, already made (values, naming, error handling, user-visible text verbatim), so it never stops to ask.
+- **Stop and report only if**: the concrete conditions that justify escalating instead of continuing (the fix needs a file outside File scope, a reused API would have to change its signature). Close the section with: "Anything else: make a reasonable, reversible choice, note it in the result, and continue." Without this list, every small uncertainty becomes a reason to hand back.
+- **Verification**: the exact commands, copy-pasteable from the repo root, or checks that prove it works. Name the real test filter or entry path.
+- **Done when**: one observable check that proves the ticket is finished (a named test passes, a command prints X). For a bug, the named test must fail on the current code, so a test that passes either way does not count. One behavior per ticket.
 - **Non-goals**: what is explicitly out of scope, especially adjacent cleanup an implementer would be tempted to do.
 
 A worked example, with the area epic already created as `app-9z8`:
@@ -41,19 +44,34 @@ nitro agent tasks create "Debounce search input on the orders page" --actor <nam
   --parent app-9z8 --type bug --priority 1 --label frontend --output json \
   --description "$(cat <<'EOF'
 ## Problem
-Every keystroke in the orders search fires a request; the list flickers and the API rate-limits (user report 2026-08-20).
+Every keystroke in the orders search fires a request; the list flickers and the API rate-limits (user report 2026-08-20). Expected: one request after the user pauses typing.
 
 ## File scope
-src/app/orders/SearchBox.tsx, src/app/orders/useOrderSearch.ts
+src/app/orders/SearchBox.tsx, src/app/orders/useOrderSearch.ts, src/app/orders/useOrderSearch.test.ts
+
+## Starting points
+- src/app/orders/useOrderSearch.ts:42: `useOrderSearch` fetches on every `query` change.
+- Reuse `useDebouncedValue` from src/shared/hooks/useDebouncedValue.ts; do not write a new debounce.
 
 ## Fix direction
-Debounce the query 300 ms in useOrderSearch; cancel in-flight requests on new input.
+1. Wrap `query` in `useDebouncedValue(query, 300)` inside `useOrderSearch`.
+2. Pass an `AbortController` signal to the fetch and abort the previous request on new input.
+3. Add the test `debounces rapid input` to useOrderSearch.test.ts: type 10 chars, assert at most 2 requests.
+
+## Decisions
+- 300 ms, not configurable.
+- Aborted requests are silent: no error toast, no log.
+
+## Stop and report only if
+- The fix needs a file outside File scope.
+- `useDebouncedValue` cannot be reused without changing its signature.
+Anything else: make a reasonable, reversible choice, note it in the result, and continue.
 
 ## Verification
 pnpm test --filter orders-search; manually: typing 10 chars fires at most 2 requests.
 
 ## Done when
-pnpm test --filter orders-search passes and typing 10 chars fires at most 2 requests.
+pnpm test --filter orders-search passes, and `debounces rapid input` fails on the current code.
 
 ## Non-goals
 Server-side rate limiting, redesigning the search UI, other pages' search boxes.
@@ -68,7 +86,9 @@ Plus metadata the orchestrator depends on:
 - **Dependencies**: link children to their epic with `--parent` at create time or `nitro agent tasks update <id> --parent <epic> --actor <name>`, never with a bare `dep add`: its default `blocks` edge would block the child on an epic that cannot close first, a deadlock `dep cycles` does not catch (the parent edge blocks only the epic, never the child). Add `nitro agent tasks dep add <later> <first> --actor <name>` where ordering matters (foundations before features). `nitro agent tasks dep cycles --output json` must return empty before handoff.
 - Cross-area interactions get an explicit note in the later task ("re-verify what <id> landed").
 
-Size tasks for one implementer agent each: one coherent change, verifiable on its own. At most 8 steps: if the fix direction needs more than 8 steps, two code areas, or a schema change plus its callers, split it into linked tasks with dep edges, each with its own Done when. Leave no open questions: every ruling the implementer needs is written into the task before handoff, and user-visible text is given verbatim.
+Size tasks for one implementer agent each: one coherent change, verifiable on its own. At most 8 steps: if the fix direction needs more than 8 steps, two code areas, or a schema change plus its callers, split it into linked tasks with dep edges, each with its own Done when. Leave no open questions: every ruling the implementer needs is in Decisions before handoff.
+
+Before handoff, cold-read each task as an engineer who has seen none of the planning conversation. If they would have to ask a question, open a file outside File scope to understand the task, or guess what done looks like, the task is not ready: fill the gap in the task, not in the briefing.
 
 ## Handing off to the orchestrator
 
@@ -86,4 +106,4 @@ Implement, close or claim tasks, run waves, restart shared infrastructure, commi
 
 ## Rhythm
 
-Take input from the user, plan a coherent batch, notify the orchestrator, then wait for the next input or an orchestrator question. End a planning session by confirming: `nitro agent tasks lint --output json` has no findings on the new tasks, no dep cycles, every task labeled and scoped, any standing rule the session produced saved to memory, orchestrator notified (or user informed there is none).
+Take input from the user, plan a coherent batch, notify the orchestrator, then wait for the next input or an orchestrator question. End a planning session by confirming: `nitro agent tasks lint --output json` has no findings on the new tasks, no dep cycles, every task labeled, scoped and cold-read, any standing rule the session produced saved to memory, orchestrator notified (or user informed there is none).
