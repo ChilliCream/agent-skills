@@ -157,6 +157,24 @@ The `[Lookup]` attribute on the field is a subgraph concept — it marks the fie
 - Match the load method to the field's nullability. `LoadAsync` returns `TValue?` — for nullable fields, where a missing key legitimately yields `null`. `LoadRequiredAsync` returns non-null `TValue` and errors when the key cannot be resolved — for non-null fields.
 - Do not combine `QueryContext<T>` with `[UseProjection]` on the same field — both apply a selector, and the HC0099 analyzer flags the combination.
 
+## Contract in another assembly: `[DataLoader<T>]`
+
+When the consumer cannot reference the assembly of the fetch method (an application layer above the data layer), declare the interface on the consumer's side and name it in the attribute. Do not hand-write a partial class or a DI mapping for it.
+
+```csharp
+// Application assembly
+public interface IUserByIdDataLoader : IBatchDataLoader<int, User>;
+
+// Data-layer assembly
+[DataLoader<IUserByIdDataLoader>]
+public static async Task<Dictionary<int, User>> GetUserByIdAsync(
+    IReadOnlyList<int> ids, QueryContext<User> query, CatalogContext context, CancellationToken cancellationToken)
+```
+
+- The interface derives from `IBatchDataLoader<TKey, TValue>` (key list) or `ICacheDataLoader<TKey, TValue>` (single key), not from `IDataLoader<TKey, TValue>`.
+- One interface per fetch method.
+- Only `[assembly: DataLoaderModule]` registers the interface; `[assembly: Module]` does not.
+
 ## Gotchas
 
 - The key list passed into the fetch method is rented; copying it is the only safe way to keep it.
